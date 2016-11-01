@@ -11,5 +11,7 @@ module.exports = function() {
 
     router.post('/checkNameAvailability', root.checkNameAvailabilityCtrl.index());
 
+    router.get('/getUsersList', root.getUsersListCtrl.index());
+
     return router;
 };

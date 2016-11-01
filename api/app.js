@@ -20,6 +20,13 @@ app.use(cookieParser());
 // use static/public folder
 app.use(express.static(path.join(__dirname, 'public')));
 
+// enable CORS
+app.use(function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    next();
+});
+
 //routers init
 app.use('/', require('./routes/root')());
 app.use('/public', require('./routes/public')());

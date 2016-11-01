@@ -5,16 +5,14 @@ module.exports = function() {
         router = express.Router(),
         root = require('../controllers');
 
-    router.get('/', root.indexController.index());
+    router.get('/', root.indexCtrl.index());
 
-    router.get('/test', root.testController.index());
+    router.get('/test', root.testCtrl.index());
 
-    router.get('/login', root.loginController.index());
+    router.get('/login', root.loginCtrl.index());
 
-    router.get('/profile', root.profileController.index());
-
-    router.get('/reg', root.regController.index());
-    router.post('/reg', root.regController.new());
+    router.get('/reg', root.regCtrl.index());
+    router.post('/reg', root.regCtrl.new());
 
     router.get('/new', root.userCtrl.index());
 

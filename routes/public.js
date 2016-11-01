@@ -6,7 +6,7 @@ module.exports = function() {
         root = require('../controllers');
 
     router.get('/', function (req, res) {
-        res.send('Hello public routes')
+        res.send('Hello public routes');
     });
 
     router.post('/checkNameAvailability', root.checkNameAvailabilityCtrl.index());

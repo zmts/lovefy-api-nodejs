@@ -1,0 +1,82 @@
+body {
+    height: auto;
+    font-family: $font-main;
+    //font-weight: 600;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+img{
+    vertical-align: top;
+}
+
+div, section, header, footer, input, button, span, p{
+    box-sizing: border-box;
+}
+
+.link,
+a:link,
+a:visited,
+a:active{
+    box-sizing: border-box;
+    text-decoration: none;
+    color: $color-font;
+}
+
+.link.active{
+    color: $color-active-link;
+    border-bottom: 1px solid;
+}
+
+// firefox fix 'shaking font inside button'
+input[type=button], button{
+    padding: 0;
+}
+
+input[type=text]{
+    outline: none;
+}
+
+.row-flex{
+    display: flex;
+    align-items: center;
+}
+
+.clearfix::after {
+    display: table;
+    clear: both;
+    content: "";
+}
+
+.wrapper{
+    //background: red;
+    box-sizing: border-box;
+    min-width: 300px;
+    margin: 0 auto;
+    padding: 0 25px;
+
+    @include media_desktop {
+        max-width: 1240px;
+        // background: red;
+    }
+    @include media_tablet {
+        // background: yellow;
+        max-width: 1024px;
+    }
+    @include media_mobile {
+        // background: green;
+    }
+}
+
+.title{
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.hr{
+    display: block;
+    width: 40px;
+    height: 2px;
+    margin: 0 auto;
+}

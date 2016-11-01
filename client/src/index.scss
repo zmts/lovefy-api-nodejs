@@ -1,0 +1,26 @@
+// EXTERNAL
+//@import "../bower_components/SpinKit/css/spinners/3-wave";
+
+// BASE
+@import "assets/scss/base/reset";
+@import "assets/scss/base/reset_material";
+@import "assets/scss/base/medias";
+@import "assets/scss/base/variables";
+@import "assets/scss/base/fonts";
+@import "assets/scss/base/global";
+@import "assets/scss/base/animation";
+
+// COMPONENTS
+//@import "app/components/spin-loader/spin-loader";
+@import "app/components/header/header";
+@import "app/components/footer/footer";
+
+// PAGES
+@import "app/pages/home/home";
+@import "app/pages/users/users";
+@import "app/pages/reg/reg";
+
+
+
+
+

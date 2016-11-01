@@ -1,0 +1,16 @@
+{
+  "name": "fountain-inject",
+  "version": "0.0.1",
+  "dependencies": {
+    "angular": "^1.5.0",
+    "angular-ui-router": "1.0.0-beta.1",
+    "angular-moment": "^1.0.0",
+    "angular-material": "^1.1.1",
+    "angular-resource": "^1.5.8",
+    "angular-animate": "^1.5.8",
+    "ng-lodash": "^0.5.0"
+  },
+  "devDependencies": {
+    "angular-mocks": "^1.5.0"
+  }
+}

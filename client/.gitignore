@@ -1,0 +1,11 @@
+node_modules/
+bower_components/
+tmp/
+.tmp/
+tmp_files/
+.DS_Store
+.idea
+*.ai
+*.psd
+*.pdf
+

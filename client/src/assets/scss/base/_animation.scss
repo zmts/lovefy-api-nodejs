@@ -1,0 +1,28 @@
+// how to >>
+// https://github.com/angular-ui/ui-router/wiki/Frequently-Asked-Questions#how-to-animate-ui-view-with-ng-animate
+
+[ui-view].ng-enter, [ui-view].ng-leave {
+    transition: all .5s ease-in-out;
+}
+
+[ui-view].ng-enter {
+    opacity: 0;
+    //transform: scale3d(0.5, 0.5, 0.5);
+}
+
+[ui-view].ng-enter-active {
+    opacity: 1;
+    //transform: scale3d(1, 1, 1);
+}
+
+[ui-view].ng-leave {
+    opacity: 1;
+    //padding-left: 0px;
+    //transform: translate3d(0, 0, 0);
+}
+
+[ui-view].ng-leave-active {
+    opacity: 0;
+    //padding-left: 100px;
+    //transform: translate3d(100px, 0, 0);
+}

@@ -6,6 +6,5 @@ module.exports = {
     regCtrl                     :   require('./regCtrl'),
     testCtrl                    :   require('./testCtrl'),
     checkNameAvailabilityCtrl   :   require('./checkNameAvailabilityCtrl'),
-    userCtrl                    :   require('./userCtrl'),
-    getUsersListCtrl            :   require('./getUsersListCtrl')
+    userCtrl                    :   require('./userCtrl')
 }

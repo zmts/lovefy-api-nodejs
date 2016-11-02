@@ -28,8 +28,8 @@ app.use(function(req, res, next) {
 });
 
 //routers init
-app.use('/', require('./routes/root')());
-app.use('/public', require('./routes/public')());
+app.use('/', require('./routes/root')()); 
+app.use('/user', require('./routes/user')());
 //catch 404 and forward to error handler
 app.use(function(req, res) {
     res.sendStatus(404);

@@ -1,12 +1,14 @@
-// db setup
+const config = require('./index');
+
 var knex = require('knex')({
     client: 'pg',
     connection: {
-        host: 'localhost',
-        user: 'zandr',
-        password: '',
-        database: 'portal_test',
-        charset: 'utf8'
+        host: config.db.host,
+        port: config.db.port,
+        user: config.db.user,
+        password: config.db.password,
+        database: config.db.db_name,
+        charset: config.db.charset
     },
     pool: {
         min: 1,

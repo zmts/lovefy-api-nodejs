@@ -15,9 +15,9 @@ module.exports = function() {
     // router.get('/user/:id',      root.userCtrl.read());      // Display user details using the id
     // router.put('/user/:id',      root.userCtrl.update());    // Update details for a given user with id.
     // router.delete('/user/:id',   root.userCtrl.delete());    // Delete a given user with id.
+    // router.get('/help',          root.userCtrl.help());     // Sends route help
 
     router.post('/checkNameAvailability', root.userCtrl.checkNameAvailability());
-
 
     return router;
 };

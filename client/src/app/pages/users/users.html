@@ -1,3 +1,8 @@
 <section class="users wrapper ">
-    <h1>users</h1>
+   <ul ng-repeat="user in $ctrlUsers.usersList">
+       <li class="item">
+           <div>user_id:{{user.id}}</div>
+           <div>username: {{user.name}}</div>
+       </li>
+   </ul>
 </section>

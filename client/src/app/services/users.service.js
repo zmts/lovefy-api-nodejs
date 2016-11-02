@@ -12,7 +12,7 @@
         }
 
         function fetchUsersList() {
-            var resource = $resource(CONFIG.API_URL + 'public/getUsersList');
+            var resource = $resource(CONFIG.API_URL + 'public/user/all');
             var deferred = $q.defer();
 
             resource.query(function (resp) {

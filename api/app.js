@@ -20,7 +20,7 @@ app.use(cookieParser());
 // use static/public folder
 app.use(express.static(path.join(__dirname, 'public')));
 
-// enable CORS
+// enable CORS only for local client
 app.use(function(req, res, next) {
     res.header("Access-Control-Allow-Origin", config.client.host + ':' + config.client.port);
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");

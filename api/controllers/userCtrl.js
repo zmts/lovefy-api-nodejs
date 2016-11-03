@@ -1,8 +1,19 @@
 'use strict';
 
-var User = require('../models/user');
+var express = require('express'),
+    router = express.Router(),
+    User = require('../models/user');
 
-module.exports.index = function() {
+router.get('/all',              index());     // Show list of all users
+// router.post('/user',         create());    // Save user to the database.
+// router.get('/user/:id',      read());      // Display user details using the id
+// router.put('/user/:id',      update());    // Update details for a given user with id.
+// router.delete('/user/:id',   delete());    // Delete a given user with id.
+// router.get('/help',          help());      // Sends route help
+
+router.post('/checkNameAvailability', checkNameAvailability());
+
+function index() {
     return function(req, res) {
         User.forge()
             .fetchAll()
@@ -14,9 +25,9 @@ module.exports.index = function() {
                 res.send(error);
             });
     }
-};
+}
 
-module.exports.checkNameAvailability = function() {
+function checkNameAvailability() {
     return function(req, res) {
         User.forge()
             .where('name', req.body.name)
@@ -32,28 +43,6 @@ module.exports.checkNameAvailability = function() {
                 res.send(error);
             });
     }
-};
+}
 
-// bad implementation >> =) >>
-// module.exports.checkNameAvailability = function() {
-//     return function(req, res) {
-//         User.forge()
-//             .fetchAll()
-//             .then(function (users) {
-//                 var data = users.serialize();
-//
-//                 var that = this;
-//                 that.availabilityStatus = {success: true};
-//
-//                 _.forEach(data, function (user) {
-//                     if (user.name === req.body.name){
-//                         that.availabilityStatus.success = false;
-//                     }
-//                 })
-//                 res.json(that.availabilityStatus);
-//             }).catch(function (error) {
-//             console.log(error)
-//         });
-//     }
-// };
-
+module.exports = router;

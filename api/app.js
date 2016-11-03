@@ -28,8 +28,7 @@ app.use(function(req, res, next) {
 });
 
 //routers init
-app.use('/', require('./routes/root')());
-app.use('/user', require('./routes/user')());
+app.use(require('./controllers'));
 //catch 404 and forward to error handler
 app.use(function(req, res) {
     res.sendStatus(404);

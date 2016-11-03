@@ -1,9 +1,9 @@
 'use strict';
 
-module.exports = {
-    indexCtrl                   :   require('./indexCtrl'),
-    loginCtrl                   :   require('./loginCtrl'),
-    regCtrl                     :   require('./regCtrl'),
-    testCtrl                    :   require('./testCtrl'),
-    userCtrl                    :   require('./userCtrl')
-}
+var express = require('express'),
+    router = express.Router();
+
+router.use('/',     require('./rootCtrl'));
+router.use('/user', require('./userCtrl'));
+
+module.exports = router;

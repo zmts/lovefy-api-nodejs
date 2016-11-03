@@ -12,9 +12,8 @@ var User = bookshelf.Model.extend({
     get: function () {
         return this.fetchAll();
     }
-},
-    {
-        Get: function () {
+}, {
+        Fetch: function () {
             return this.forge().fetchAll();
         },
 

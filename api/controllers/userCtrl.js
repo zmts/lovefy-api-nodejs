@@ -16,7 +16,8 @@ router.post('/checkNameAvailability', checkNameAvailability());
 function index() {
     return function(req, res) {
         // User.forge().get() // instance method
-        User.Get()            // static method
+        // User.fetchAll()    // static method inherit from bookshelf
+        User.Fetch()            // custom static method
             .then(function(list) {
                 // console.log(list.serialize())
                 res.json(list);

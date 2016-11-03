@@ -34,7 +34,6 @@ app.use(function(req, res) {
     res.sendStatus(404);
 });
 
-
 // development error handler
 // will print stacktrace
 if (app.get('env') === 'development') {

@@ -3,7 +3,10 @@
 var express = require('express'),
     router = express.Router();
 
-router.use('/',     require('./rootCtrl'));
-router.use('/user', require('./userCtrl'));
+var rootCtrl = require('./rootCtrl'),
+    userCtrl = require('./userCtrl');
+
+router.use('/',     rootCtrl);
+router.use('/user', userCtrl);
 
 module.exports = router;

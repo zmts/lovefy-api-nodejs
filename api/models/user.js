@@ -1,5 +1,6 @@
 'use strict';
 
+var Promise = require('bluebird');
 var bookshelf = require('../config/db').bookshelf;
 require('./post');
 
@@ -7,20 +8,15 @@ var User = bookshelf.Model.extend({
     tableName: 'users',
     posts: function() {
         return this.hasMany('Post');
-    },
-
-    get: function () {
-        return this.fetchAll();
     }
 }, {
-        Fetch: function () {
-            return this.forge().fetchAll();
-        },
-
-        AnotherStaticMethod: function () {
-            console.log('AnotherStaticMethod');
-        }
-
+        getField: Promise.method(function(fieldName, fieldValue) {
+            if (fieldName && fieldValue) {
+                    return this.forge().where(fieldName, fieldValue).fetch();
+                } else {
+                    throw new Error('fieldName and fieldValue are both required');
+                }
+        })
     }
 );
 

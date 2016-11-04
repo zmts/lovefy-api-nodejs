@@ -15,9 +15,7 @@ router.post('/checkNameAvailability', checkNameAvailability());
 
 function index() {
     return function(req, res) {
-        // User.forge().get() // instance method
-        // User.fetchAll()    // static method inherit from bookshelf
-        User.Fetch()            // custom static method
+        User.fetchAll()
             .then(function(list) {
                 // console.log(list.serialize())
                 res.json(list);
@@ -30,18 +28,15 @@ function index() {
 
 function checkNameAvailability() {
     return function(req, res) {
-        User.forge()
-            .where('name', req.body.name)
-            .fetch()
+        User.getField('name', req.body.name)
             .then(function(model) {
                 if (model) {
-                    res.json({success: true});
+                    res.json({success: false, message: 'Not Available'});
                 } else {
-                    res.json({success: false});
+                    res.json({success: true, message: 'Available'});
                 }
-            })
-            .catch(function(error) {
-                res.send(error);
+            }).catch(function(err) {
+                res.send(err.message);
             });
     }
 }

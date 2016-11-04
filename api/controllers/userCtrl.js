@@ -28,7 +28,7 @@ function index() {
 
 function checkNameAvailability() {
     return function(req, res) {
-        User.getField('name', req.body.name)
+        User.getName(req.body.name)
             .then(function(model) {
                 if (model) {
                     res.json({success: false, message: 'Not Available'});
@@ -36,7 +36,7 @@ function checkNameAvailability() {
                     res.json({success: true, message: 'Available'});
                 }
             }).catch(function(err) {
-                res.send(err.message);
+                res.status(400).send(err.message);
             });
     }
 }

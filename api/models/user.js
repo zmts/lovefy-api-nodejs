@@ -10,11 +10,11 @@ var User = bookshelf.Model.extend({
         return this.hasMany('Post');
     }
 }, {
-        getField: Promise.method(function(fieldName, fieldValue) {
-            if (fieldName && fieldValue) {
-                    return this.forge().where(fieldName, fieldValue).fetch();
+        getName: Promise.method(function(value) {
+            if (value) {
+                    return this.forge().where('name', value).fetch();
                 } else {
-                    throw new Error('fieldName and fieldValue are both required');
+                    throw new Error('Bad Request. Required {"name" : "value"} object in request is incorrect');
                 }
         })
     }

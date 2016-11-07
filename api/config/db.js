@@ -14,7 +14,7 @@ var knex = require('knex')({
         min: 1,
         max: 10
     },
-    debug: true
+    // debug: true
 });
 
 module.exports.bookshelf = require('bookshelf')(knex).plugin('registry');

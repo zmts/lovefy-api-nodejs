@@ -58,7 +58,7 @@ function create() {
                 res.json(model);
             })
             .catch(function (error) {
-                res.status(400).send(error.message);
+                res.status(400).send(error);
             });
     }
 }
@@ -79,7 +79,7 @@ function read() {
                 }
             })
             .catch(function(error) {
-                res.send(error.message);
+                res.send(error);
             });
     }
 }

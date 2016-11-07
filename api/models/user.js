@@ -1,8 +1,17 @@
 'use strict';
 
-var Promise = require('bluebird');
-var bookshelf = require('../config/db').bookshelf;
+var Promise = require('bluebird'),
+    Joi = require('joi'),
+    bookshelf = require('../config/db').bookshelf;
 require('./post');
+
+var validationSchema = Joi.object().keys({
+    id: Joi.number().integer(),
+    name: Joi.string().alphanum().min(4).max(30).required(),
+    email: Joi.string().email().min(10).max(30).required(),
+    created_at: Joi.date(),
+    updated_at: Joi.date()
+});
 
 var User = bookshelf.Model.extend({
     tableName: 'users',
@@ -11,14 +20,18 @@ var User = bookshelf.Model.extend({
         return this.hasMany('Post');
     },
 
-    // initialize: function() {
-    //     this.on('fetched', this.validate);
-    // },
+    initialize: function() {
+        this.on('fetched', this.validate);
+        this.on('saving', this.validate);
+    },
 
-    // validate: function () {
-        // console.log('model validation!!!!!');
-        // console.log(this.get('name'));
-    // }
+    validate: function () {
+        return Joi.validate(this.serialize(), validationSchema, function (err, value) {
+            if (err) {
+                throw {success: false, message: err.name, details: err.details};
+            }
+        });
+    }
 
 }, {
         getById: function (id) {

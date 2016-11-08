@@ -21,7 +21,7 @@ var User = bookshelf.Model.extend({
     },
 
     initialize: function() {
-        this.on('fetched', this.validate);
+        // this.on('fetched', this.validate);
         this.on('saving', this.validate);
     },
 
@@ -34,6 +34,10 @@ var User = bookshelf.Model.extend({
     }
 
 }, {
+        create: function(data) {
+            return this.forge(data).save();
+        },
+
         getById: function (id) {
             return this.forge().where('id', id).fetch();
         },
@@ -46,10 +50,6 @@ var User = bookshelf.Model.extend({
                 }
         }),
 
-        create: function(data) {
-            return this.forge(data).save();
-        },
-
         update: function(id, data) {
             return this.forge({id: id}).save(data);
         },
@@ -57,8 +57,6 @@ var User = bookshelf.Model.extend({
         remove: function (id) {
             return this.forge({id: id}).destroy();
         }
-
-
     }
 );
 

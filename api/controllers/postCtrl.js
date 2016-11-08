@@ -72,7 +72,7 @@ function read() {
                 if (post){
                     res.json({success: true, data: post});
                 } else {
-                    res.json({success: false, error: "id " + req.params.id + " not found"});
+                    res.status(404).json({success: false, error: "Post id " + req.params.id + " not found"});
                 }
             })
             .catch(function(error) {

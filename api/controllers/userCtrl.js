@@ -2,28 +2,29 @@
 
 var express = require('express'),
     router = express.Router(),
-    User = require('../models/user');
+    User = require('../models/user'),
+    fs = require('fs');
 
 /**
  * baseUrl: user/
  */
-router.get('/help',         help());            // Sends route help
-router.get('/all',          readAll());         // Show list of all users
-router.get('/:id/posts',    readPosts());         // Show list of all posts related by user id
-router.post('/',            create());          // Save user to the database
-router.get('/:id',          read());            // Display user details using the id
-router.put('/:id',          update());          // Update details for a given user with id
-router.delete('/:id',       remove());          // Delete a given user with id
-
+router.get('/help',         help());        // Sends help route
+router.get('/all',          readAll());     // Show list of all items
+router.get('/:id/posts',    readPosts());   // Show list of all posts related by user id
+router.post('/',            create());      // Save item to the database
+router.get('/:id',          read());        // Display item by id
+router.put('/:id',          update());      // Update item details by id
+router.delete('/:id',       remove());      // Delete item by id
 router.post('/checkNameAvailability', checkNameAvailability());
 
-
 /**
+ * @api public
  * url: user/help
  * method: GET
  */
 function help() {
     return function(req, res) {
+        // var str = fs.readFileSync(__filename, 'utf8');
         res.send('User route help info');
     }
 }
@@ -71,10 +72,10 @@ function readPosts() {
 }
 
 /**
- * description: create user
+ * description: create User
  * url: user/
  * method: POST
- * request: {"name": "value"}
+ * request: {"name": "string", "email": "string"}
  */
 function create() {
     return function(req, res) {
@@ -89,7 +90,7 @@ function create() {
 }
 
 /**
- * description: get user by id
+ * description: get User by id
  * url: user/:id
  * method: GET
  */
@@ -110,9 +111,10 @@ function read() {
 }
 
 /**
- * description: update user by id
+ * description: update User by id
  * url: user/:id
  * method: PUT
+ * request: {"name": "string", "email": "string"}
  */
 function update() {
     return function(req, res) {
@@ -127,9 +129,9 @@ function update() {
 }
 
 /**
- * description: remove user from db by id
+ * description: remove User from db by id
  * url: user/:id
- * method: PUT
+ * method: DELETE
  */
 function remove() {
     return function(req, res) {
@@ -139,6 +141,9 @@ function remove() {
                     User.remove(req.params.id)
                         .then(function () {
                             res.json({success: true, message: 'User id ' + req.params.id + ' was removed'});
+                        })
+                        .catch(function(error) {
+                            res.status(400).send(error);
                         });
                 } else {
                     res.status(404).json({success: false, message: 'User id ' + req.params.id + ' not found'});
@@ -151,10 +156,10 @@ function remove() {
 }
 
 /**
- * description: check user name availability
+ * description: check User name availability
  * url: user/checkNameAvailability
  * method: POST
- * request: {"name": "value"}
+ * request: {"name": "string"}
  */
 function checkNameAvailability() {
     return function(req, res) {

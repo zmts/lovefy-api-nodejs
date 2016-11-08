@@ -7,12 +7,12 @@ var express = require('express'),
 /**
  * baseUrl: post/
  */
-router.get('/help',         help());      // Sends route help
-router.get('/all',          getAll());    // Show list of all users
-router.post('/',            create());    // Save user to the database.
-router.get('/:id',          read());      // Display user details using the id
-// router.put('/:id',          update());    // Update details for a given user with id.
-// router.delete('/:id',       remove());    // Delete a given user with id.
+router.get('/help',         help());      // Sends help route
+router.get('/all',          getAll());    // Show list of all items
+router.post('/',            create());    // Save item to the database
+router.get('/:id',          read());      // Display item by id
+router.put('/:id',          update());    // Update item details by id
+router.delete('/:id',       remove());    // Delete item by id
 
 /**
  * url: post/help
@@ -46,7 +46,7 @@ function getAll() {
  * description: create Post
  * url: post/
  * method: POST
- * request: {"userId": "id", "title": "value", "content": "value"}
+ * request: {"userId": "int", "title": "string", "content": "string"}
  */
 function create() {
     return function(req, res) {
@@ -76,6 +76,51 @@ function read() {
                 }
             })
             .catch(function(error) {
+                res.status(400).send(error);
+            });
+    }
+}
+
+/**
+ * description: update Post by id
+ * url: post/:id
+ * method: PUT
+ * request: {"title": "string", "content": "string"}
+ */
+function update() {
+    return function(req, res) {
+        Post.update(req.params.id, req.body)
+            .then(function (model) {
+                res.json(model);
+            })
+            .catch(function (error) {
+                res.status(400).send(error.message);
+            });
+    }
+}
+
+/**
+ * description: remove Post from db by id
+ * url: post/:id
+ * method: DELETE
+ */
+function remove() {
+    return function(req, res) {
+        Post.getById(req.params.id)
+            .then(function (model) {
+                if(model){
+                    Post.remove(req.params.id)
+                        .then(function () {
+                            res.json({success: true, message: 'Post id ' + req.params.id + ' was removed'});
+                        })
+                        .catch(function(error) {
+                            res.status(400).send(error);
+                        });
+                } else {
+                    res.status(404).json({success: false, message: 'Post id ' + req.params.id + ' not found'});
+                }
+            })
+            .catch(function (error) {
                 res.status(400).send(error);
             });
     }

@@ -50,6 +50,10 @@ var User = bookshelf.Model.extend({
                 }
         }),
 
+        getPosts: function (id) {
+            return this.forge().where('id', id).fetch({withRelated: ['posts']});
+        },
+
         update: function(id, data) {
             return this.forge({id: id}).save(data);
         },

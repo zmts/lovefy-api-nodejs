@@ -7,12 +7,13 @@ var express = require('express'),
 /**
  * baseUrl: user/
  */
-router.get('/help',         help());      // Sends route help
-router.get('/all',          getAll());    // Show list of all users
-router.post('/',            create());    // Save user to the database.
-router.get('/:id',          read());      // Display user details using the id
-router.put('/:id',          update());    // Update details for a given user with id.
-router.delete('/:id',       remove());    // Delete a given user with id.
+router.get('/help',         help());            // Sends route help
+router.get('/all',          readAll());         // Show list of all users
+router.get('/:id/posts',    readPosts());         // Show list of all posts related by user id
+router.post('/',            create());          // Save user to the database
+router.get('/:id',          read());            // Display user details using the id
+router.put('/:id',          update());          // Update details for a given user with id
+router.delete('/:id',       remove());          // Delete a given user with id
 
 router.post('/checkNameAvailability', checkNameAvailability());
 
@@ -23,25 +24,49 @@ router.post('/checkNameAvailability', checkNameAvailability());
  */
 function help() {
     return function(req, res) {
-        res.send('help info');
+        res.send('User route help info');
     }
 }
 
 /**
- * description: Get all Users
+ * description: get all Users
  * url: user/all
  * method: GET
  */
-function getAll() {
+function readAll() {
     return function(req, res) {
-        User.fetchAll()
+        User.fetchAll({require: true})
             .then(function(list) {
                 // console.log(list.serialize())
                 res.json(list);
             })
             .catch(function(error) {
-                res.send(error);
+                res.status(400).send(error);
             });
+    }
+}
+
+/**
+ * description: show list of all Posts related by User id
+ * url: user/user_id/posts
+ * method: GET
+ */
+function readPosts() {
+    return function (req, res) {
+        User.getById(req.params.id)
+            .then(function (id) {
+                if (id) {
+                    User.getPosts(req.params.id)
+                        .then(function (list) {
+                            res.json({success: true, data: list.related('posts')});
+                        })
+                        .catch(function (error) {
+                            res.status(400).send(error);
+                        });
+                } else {
+                    res.status(404).json({success: false, error: "User id " + req.params.id + " not found"});
+                }
+            })
     }
 }
 
@@ -75,11 +100,11 @@ function read() {
                 if (user){
                     res.json({success: true, data: user});
                 } else {
-                    res.json({success: false, error: "id " + req.params.id + " not found"});
+                    res.status(404).json({success: false, error: "User id " + req.params.id + " not found"});
                 }
             })
             .catch(function(error) {
-                res.send(error);
+                res.status(400).send(error);
             });
     }
 }
@@ -113,10 +138,10 @@ function remove() {
                 if(model){
                     User.remove(req.params.id)
                         .then(function () {
-                            res.json({success: true, message: 'Id ' + req.params.id + ' was removed'});
+                            res.json({success: true, message: 'User id ' + req.params.id + ' was removed'});
                         });
                 } else {
-                    res.json({success: false, message: 'Id ' + req.params.id + ' does not exist'});
+                    res.status(404).json({success: false, message: 'User id ' + req.params.id + ' not found'});
                 }
             })
             .catch(function (error) {
@@ -136,7 +161,7 @@ function checkNameAvailability() {
         User.getByName(req.body.name)
             .then(function(model) {
                 if (model) {
-                    res.json({success: false, message: 'Not Available, name is taken'});
+                    res.status(403).json({success: false, message: 'Not Available, name is taken'});
                 } else {
                     res.json({success: true, message: 'Available, name is free'});
                 }

@@ -4,6 +4,7 @@ var bookshelf = require('../config/db').bookshelf;
 
 var Post = bookshelf.Model.extend({
     tableName: 'posts',
+    hasTimestamps: true,
 
     initialize: function() {
         // this.on('fetched', this.validate);

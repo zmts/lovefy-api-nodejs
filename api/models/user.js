@@ -3,12 +3,14 @@
 var Promise = require('bluebird'),
     Joi = require('joi'),
     bookshelf = require('../config/db').bookshelf;
+
 require('./post');
 
 var validationSchema = Joi.object().keys({
     id: Joi.number().integer(),
-    name: Joi.string().alphanum().min(4).max(30).required(),
+    name: Joi.string().min(4).max(30).required(),
     email: Joi.string().email().min(10).max(30).required(),
+    password_hash: Joi.string(),
     created_at: Joi.date(),
     updated_at: Joi.date()
 });
@@ -16,6 +18,7 @@ var validationSchema = Joi.object().keys({
 var User = bookshelf.Model.extend({
     tableName: 'users',
     hasTimestamps: true,
+    hidden: ['password_hash'],
     posts: function() {
         return this.hasMany('Post');
     },
@@ -47,6 +50,14 @@ var User = bookshelf.Model.extend({
                     return this.forge().where('name', name).fetch();
                 } else {
                     throw new Error('Bad Request. Required {"name" : "value"} object in request is incorrect');
+                }
+        }),
+
+        getByEmail: Promise.method(function(email) {
+            if (email) {
+                    return this.forge().where('email', email).fetch();
+                } else {
+                    throw new Error('Bad Request. Required {"email" : "value"} object in request is incorrect');
                 }
         }),
 

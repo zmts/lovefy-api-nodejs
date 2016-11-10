@@ -3,19 +3,48 @@
 var express = require('express'),
     router = express.Router(),
     User = require('../models/user'),
-    fs = require('fs');
+    fs = require('fs'),
+    bcrypt = require('bcryptjs'),
+    auth = require('../middleware/auth');
 
 /**
  * baseUrl: user/
  */
-router.get('/help',         help());        // Sends help route
-router.get('/all',          readAll());     // Show list of all items
-router.get('/:id/posts',    readPosts());   // Show list of all posts related by user id
-router.post('/',            create());      // Save item to the database
-router.get('/:id',          read());        // Display item by id
-router.put('/:id',          update());      // Update item details by id
-router.delete('/:id',       remove());      // Delete item by id
-router.post('/checkNameAvailability', checkNameAvailability());
+router.get('/help',         help()); // Sends help route
+router.get('/all',          readAll()); // Show list of all items
+router.get('/:id/posts',    readPosts()); // Show list of all posts related by user id
+router.post('/',            auth.hashPassword(), create()); // Save item to the database
+router.get('/:id',          read()); // Display item by id
+router.put('/:id',          update()); // Update item details by id
+router.delete('/:id',       remove()); // Delete item by id
+router.post('/signin',      auth.checkEmailAvailability(), auth.checkPassword(), auth.signIn()); // User sign in system
+router.get('/signout',      auth.signOut()); // User sign out system
+
+/**
+ * description: check User name availability
+ * url: user/checkNameAvailability
+ * method: POST
+ * request: {"name": "string"}
+ * response: true if found, false if not found
+ */
+router.post('/checkNameAvailability', auth.checkNameAvailability(), function (req, res) {
+    res.json({success: true, message: 'Found'});
+});
+
+/**
+ * description: check User email availability
+ * url: user/checkEmailAvailability
+ * method: POST
+ * request: {"email": "string"}
+ * response: true if found, false if not found
+ */
+router.post('/checkEmailAvailability', auth.checkEmailAvailability(), function (req, res) {
+    res.json({success: true, message: 'Found'});
+});
+
+/********** end routes **********/
+/********** end routes **********/
+/********** end routes **********/
 
 /**
  * @api public
@@ -151,27 +180,6 @@ function remove() {
             })
             .catch(function (error) {
                 res.status(400).send(error);
-            });
-    }
-}
-
-/**
- * description: check User name availability
- * url: user/checkNameAvailability
- * method: POST
- * request: {"name": "string"}
- */
-function checkNameAvailability() {
-    return function(req, res) {
-        User.getByName(req.body.name)
-            .then(function(model) {
-                if (model) {
-                    res.status(403).json({success: false, message: 'Not Available, name is taken'});
-                } else {
-                    res.json({success: true, message: 'Available, name is free'});
-                }
-            }).catch(function(error) {
-                res.status(400).send(error.message);
             });
     }
 }

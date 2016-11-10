@@ -2,7 +2,6 @@
 
 var bcrypt = require('bcryptjs'),
     jwt = require('jsonwebtoken'),
-    moment = require('moment'),
     secret = require('../config').token.secret,
     User = require('../models/user');
 
@@ -16,20 +15,24 @@ module.exports.makeToken = function() {
                     };
 
                     var options = {
-                        algorithm: 'HS384',
-                        expiresIn: moment().add(1, 'days').unix(),
+                        algorithm: 'HS512',
+                        expiresIn: '5m',
                         subject: user.get('id').toString()
                     };
 
-                    var token = jwt.sign(playload, secret, options);
-
-                    res.json({
-                        success: true,
-                        message: 'Password accepted',
-                        token: token
-                    });
+                    jwt.sign(playload, secret, options, function(error, token) {
+                        if (token) {
+                            res.json({
+                                success: true,
+                                message: 'Password accepted',
+                                token: token
+                            });
+                        } else {
+                            res.status(400).json({success: false, message: error})
+                        }
+                    })
                 } else {
-                    res.json({success: false});
+                    res.status(400).json({success: false});
                 }
             })
     }
@@ -37,7 +40,15 @@ module.exports.makeToken = function() {
 
 module.exports.checkToken = function () {
     return function (req, res, next) {
-        console.log('check Token');
+        var token = req.body.token || req.headers['token'];
+        jwt.verify(token, secret, function(error, decoded) {
+             if (decoded){
+                 console.log(decoded);
+                 next();
+             } else {
+                 res.status(401).json({success: false, message: error})
+             }
+        })
     }
 };
 
@@ -56,13 +67,13 @@ module.exports.hashPassword = function() {
         bcrypt.genSalt(10, function(error, salt) {
             bcrypt.hash(req.body.password_hash, salt, function(error, hash) {
                 if (error) {
-                    res.json({success: false, message: error});
+                    res.status(400).json({success: false, message: error});
                 } else {
                     req.body.password_hash = hash;
                     next();
                 }
-            });
-        });
+            })
+        })
     }
 };
 
@@ -76,7 +87,7 @@ module.exports.checkPassword = function() {
                     } else {
                         res.status(403).json({success: false, message: 'Invalid password'});
                     }
-                });
+                })
             })
     }
 };
@@ -92,7 +103,7 @@ module.exports.checkNameAvailability = function() {
                 }
             }).catch(function(error) {
             res.status(400).send(error.message);
-        });
+        })
     }
 };
 
@@ -107,7 +118,7 @@ module.exports.checkEmailAvailability = function() {
                 }
             }).catch(function(error) {
             res.status(400).send(error.message);
-        });
+        })
     }
 };
 

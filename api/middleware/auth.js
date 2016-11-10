@@ -5,7 +5,7 @@ var bcrypt = require('bcryptjs'),
 
 module.exports.signIn = function() {
     return function (req, res) {
-        res.json({success: true, message: 'Good password'});
+        res.json({success: true, message: 'Password accepted'});
     }
 };
 
@@ -42,7 +42,7 @@ module.exports.checkPassword = function() {
                     if (result) {
                         next();
                     } else {
-                        res.status(403).json({success: false, message: 'Bad password'});
+                        res.status(403).json({success: false, message: 'Invalid password'});
                     }
                 });
             })

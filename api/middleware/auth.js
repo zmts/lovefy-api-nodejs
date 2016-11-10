@@ -1,11 +1,43 @@
 'use strict';
 
 var bcrypt = require('bcryptjs'),
+    jwt = require('jsonwebtoken'),
+    moment = require('moment'),
+    secret = require('../config').token.secret,
     User = require('../models/user');
 
-module.exports.signIn = function() {
+module.exports.makeToken = function() {
     return function (req, res) {
-        res.json({success: true, message: 'Password accepted'});
+        User.getByEmail(req.body.email)
+            .then(function (user) {
+                if (user){
+                    var playload = {
+                        username: user.get('name'),
+                    };
+
+                    var options = {
+                        algorithm: 'HS384',
+                        expiresIn: moment().add(1, 'days').unix(),
+                        subject: user.get('id').toString()
+                    };
+
+                    var token = jwt.sign(playload, secret, options);
+
+                    res.json({
+                        success: true,
+                        message: 'Password accepted',
+                        token: token
+                    });
+                } else {
+                    res.json({success: false});
+                }
+            })
+    }
+};
+
+module.exports.checkToken = function () {
+    return function (req, res, next) {
+        console.log('check Token');
     }
 };
 

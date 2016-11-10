@@ -25,7 +25,7 @@ var User = bookshelf.Model.extend({
 
     initialize: function() {
         // this.on('fetched', this.validate);
-        this.on('saving', this.validate);
+        // this.on('saving', this.validate);
     },
 
     validate: function () {

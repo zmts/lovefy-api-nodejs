@@ -11,5 +11,9 @@ module.exports = {
         password: '',
         db_name: 'portal_test',
         charset: 'utf8'
+    },
+
+    token: {
+        secret: 'Shhh908df97bf897gdf8bdf87dbcvbidfjgklrjt84'
     }
 }

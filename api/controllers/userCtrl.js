@@ -25,7 +25,7 @@ router.delete('/:id',       remove()); // Delete item by id
  * method: POST
  * request: {"email": "string", password: "string"}
  */
-router.post('/signin', auth.checkEmailAvailability(), auth.checkPassword(), auth.signIn());
+router.post('/signin', auth.checkEmailAvailability(), auth.checkPassword(), auth.makeToken());
 
 /**
  * ------------------------------

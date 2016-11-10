@@ -7,10 +7,18 @@
 ### Client
 - gulp serve
 
-## Made with
-- Express.js
-- Bookshelf.js
-- PostgreSQL
+## Implemented (API, ExpressJS)
+- Controllers with own routing
+- Database - PostgreSQL 
+- Models (booksshelf.js)
+- CRUD (user, post)
+- Model validation (joi.js)
+- Fields visibility in model
+- Passwords(hashes in DB, bcrypt.js)
+- Sign in
+- Sign out
+- Check hashes
+- Tokens(JWT) ... wip
 
-## Todo
-- Passport.js
+## Implemented (Client, AngularJS)
+- Base

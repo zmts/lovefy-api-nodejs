@@ -16,6 +16,7 @@
     "express-jade": "0.0.3",
     "faker": "^3.1.0",
     "joi": "^9.2.0",
+    "jsonwebtoken": "^7.1.9",
     "knex": "^0.12.6",
     "lodash": "^4.16.4",
     "moment": "^2.15.2",

@@ -21,7 +21,7 @@ module.exports.signOut = function() {
  */
 module.exports.hashPassword = function() {
     return function(req, res, next){
-        bcrypt.genSalt(10, function(err, salt) {
+        bcrypt.genSalt(10, function(error, salt) {
             bcrypt.hash(req.body.password_hash, salt, function(error, hash) {
                 if (error) {
                     res.json({success: false, message: error});

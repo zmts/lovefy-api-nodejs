@@ -1,10 +1,9 @@
 'use strict';
 
 var express = require('express'),
+    fs = require('fs'),
     router = express.Router(),
     User = require('../models/user'),
-    fs = require('fs'),
-    bcrypt = require('bcryptjs'),
     auth = require('../middleware/auth');
 
 /**
@@ -13,15 +12,35 @@ var express = require('express'),
 router.get('/help',         help()); // Sends help route
 router.get('/all',          readAll()); // Show list of all items
 router.get('/:id/posts',    readPosts()); // Show list of all posts related by user id
-router.post('/',            auth.hashPassword(), create()); // Save item to the database
+router.post('/',            auth.hashPassword(), create()); // Create user
 router.get('/:id',          read()); // Display item by id
 router.put('/:id',          update()); // Update item details by id
 router.delete('/:id',       remove()); // Delete item by id
-router.post('/signin',      auth.checkEmailAvailability(), auth.checkPassword(), auth.signIn()); // User sign in system
-router.get('/signout',      auth.signOut()); // User sign out system
 
 /**
+ * ------------------------------
+ * description: User sign in system
+ * ------------------------------
+ * url: user/signin
+ * method: POST
+ * request: {"email": "string", password: "string"}
+ */
+router.post('/signin', auth.checkEmailAvailability(), auth.checkPassword(), auth.signIn());
+
+/**
+ * ------------------------------
+ * description: User sign out system
+ * ------------------------------
+ * url: user/signout
+ * method: POST
+ * request: {"email": "string"}
+ */
+router.post('/signout', auth.signOut());
+
+/**
+ * ------------------------------
  * description: check User name availability
+ * ------------------------------
  * url: user/checkNameAvailability
  * method: POST
  * request: {"name": "string"}
@@ -32,7 +51,9 @@ router.post('/checkNameAvailability', auth.checkNameAvailability(), function (re
 });
 
 /**
+ * ------------------------------
  * description: check User email availability
+ * ------------------------------
  * url: user/checkEmailAvailability
  * method: POST
  * request: {"email": "string"}
@@ -48,6 +69,9 @@ router.post('/checkEmailAvailability', auth.checkEmailAvailability(), function (
 
 /**
  * @api public
+ * ------------------------------
+ * description: help
+ * ------------------------------
  * url: user/help
  * method: GET
  */
@@ -59,7 +83,9 @@ function help() {
 }
 
 /**
+ * ------------------------------
  * description: get all Users
+ * ------------------------------
  * url: user/all
  * method: GET
  */
@@ -77,7 +103,9 @@ function readAll() {
 }
 
 /**
+ * ------------------------------
  * description: show list of all Posts related by User id
+ * ------------------------------
  * url: user/user_id/posts
  * method: GET
  */
@@ -101,7 +129,9 @@ function readPosts() {
 }
 
 /**
+ * ------------------------------
  * description: create User
+ * ------------------------------
  * url: user/
  * method: POST
  * request: {"name": "string", "email": "string"}
@@ -119,7 +149,9 @@ function create() {
 }
 
 /**
+ * ------------------------------
  * description: get User by id
+ * ------------------------------
  * url: user/:id
  * method: GET
  */
@@ -140,7 +172,9 @@ function read() {
 }
 
 /**
+ * ------------------------------
  * description: update User by id
+ * ------------------------------
  * url: user/:id
  * method: PUT
  * request: {"name": "string", "email": "string"}
@@ -158,7 +192,9 @@ function update() {
 }
 
 /**
+ * ------------------------------
  * description: remove User from db by id
+ * ------------------------------
  * url: user/:id
  * method: DELETE
  */

@@ -9,20 +9,13 @@ var express = require('express'),
 /**
  * baseUrl: user/
  */
-router.get('/safe',         auth.checkToken(), function (req, res) {
-    res.send('You in!!!')
-});      // Safe route
-
-
 router.get('/help',         help()); // Sends help route
 router.get('/all',          readAll()); // Show list of all items
-router.get('/:id/posts',    readPosts()); // Show list of all posts related by user id
+router.get('/:id/posts',    auth.checkToken(), readPosts()); // Show list of all posts related by user id
 router.post('/',            auth.hashPassword(), create()); // Create user
 router.get('/:id',          read()); // Display item by id
 router.put('/:id',          update()); // Update item details by id
 router.delete('/:id',       remove()); // Delete item by id
-
-
 
 /**
  * ------------------------------

@@ -43,7 +43,6 @@ module.exports.checkToken = function () {
         var token = req.body.token || req.headers['token'];
         jwt.verify(token, secret, function(error, decoded) {
              if (decoded){
-                 console.log(decoded);
                  next();
              } else {
                  res.status(401).json({success: false, message: error})

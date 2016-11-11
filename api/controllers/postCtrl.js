@@ -46,7 +46,7 @@ function getAll() {
  * description: create Post
  * url: post/
  * method: POST
- * request: {"userId": "int", "title": "string", "content": "string"}
+ * request: {"user_id": "int", "title": "string", "content": "string"}
  */
 function create() {
     return function(req, res) {

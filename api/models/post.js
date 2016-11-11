@@ -1,8 +1,9 @@
 'use strict';
 
 var bookshelf = require('../config/db').bookshelf;
+var MainModel = require('./main');
 
-var Post = bookshelf.Model.extend({
+var Post = MainModel.extend({
     tableName: 'posts',
     hasTimestamps: true,
 
@@ -11,21 +12,9 @@ var Post = bookshelf.Model.extend({
         // this.on('saving', this.validate);
     }
 
-}, {
-        create: function(data) {
-            return this.forge(data).save();
-        },
-
-        getById: function (id) {
-            return this.forge().where('id', id).fetch();
-        },
-
-        update: function(id, data) {
-            return this.forge({id: id}).save(data);
-        },
-
-        remove: function (id) {
-            return this.forge({id: id}).destroy();
+},  {
+        do: function () {
+            console.log('lol')
         }
     }
 );

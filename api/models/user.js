@@ -2,6 +2,7 @@
 
 var Promise = require('bluebird'),
     Joi = require('joi'),
+    MainModel = require('./main'),
     bookshelf = require('../config/db').bookshelf;
 
 require('./post');
@@ -15,7 +16,7 @@ var validationSchema = Joi.object().keys({
     updated_at: Joi.date()
 });
 
-var User = bookshelf.Model.extend({
+var User = MainModel.extend({
     tableName: 'users',
     hasTimestamps: true,
     hidden: ['password_hash'],
@@ -37,14 +38,6 @@ var User = bookshelf.Model.extend({
     }
 
 }, {
-        create: function(data) {
-            return this.forge(data).save();
-        },
-
-        getById: function (id) {
-            return this.forge().where('id', id).fetch();
-        },
-
         getByName: Promise.method(function(name) {
             if (name) {
                     return this.forge().where('name', name).fetch();
@@ -63,14 +56,6 @@ var User = bookshelf.Model.extend({
 
         getPosts: function (id) {
             return this.forge().where('id', id).fetch({withRelated: ['posts']});
-        },
-
-        update: function(id, data) {
-            return this.forge({id: id}).save(data);
-        },
-
-        remove: function (id) {
-            return this.forge({id: id}).destroy();
         }
     }
 );

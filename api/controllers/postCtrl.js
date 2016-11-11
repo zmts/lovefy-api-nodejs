@@ -25,7 +25,9 @@ function help() {
 }
 
 /**
+ * ------------------------------
  * description: get all Posts
+ * ------------------------------
  * url: post/all
  * method: GET
  */
@@ -43,7 +45,9 @@ function getAll() {
 }
 
 /**
+ * ------------------------------
  * description: create Post
+ * ------------------------------
  * url: post/
  * method: POST
  * request: {"user_id": "int", "title": "string", "content": "string"}
@@ -61,7 +65,9 @@ function create() {
 }
 
 /**
+ * ------------------------------
  * description: get Post by id
+ * ------------------------------
  * url: post/:id
  * method: GET
  */
@@ -82,7 +88,9 @@ function read() {
 }
 
 /**
+ * ------------------------------
  * description: update Post by id
+ * ------------------------------
  * url: post/:id
  * method: PUT
  * request: {"title": "string", "content": "string"}
@@ -100,7 +108,9 @@ function update() {
 }
 
 /**
+ * ------------------------------
  * description: remove Post from db by id
+ * ------------------------------
  * url: post/:id
  * method: DELETE
  */

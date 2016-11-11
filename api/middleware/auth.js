@@ -59,7 +59,7 @@ module.exports.signOut = function() {
 };
 
 /**
- * description: help middleware to create User,
+ * description: help middleware,
  * makes hash for password at User creation
  */
 module.exports.hashPassword = function() {

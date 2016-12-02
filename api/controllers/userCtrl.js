@@ -181,13 +181,22 @@ function read() {
  */
 function update() {
     return function(req, res) {
-        User.update(req.params.id, req.body)
-            .then(function (model) {
-                res.json(model);
+        User.getById(req.params.id)
+            .then(function (user) {
+                if (user){
+                    User.update(req.params.id, req.body)
+                        .then(function (model) {
+                            res.json({success: true, data: model});
+                        });
+                } else {
+                    res.status(404).json({success: false, error: "User id " + req.params.id + " not found"});
+                }
             })
             .catch(function (error) {
-                res.status(400).send(error.message);
-            });
+                res.status(400).send(error);
+            })
+
+
     }
 }
 
@@ -202,13 +211,10 @@ function remove() {
     return function(req, res) {
         User.getById(req.params.id)
             .then(function (model) {
-                if(model){
+                if (model) {
                     User.remove(req.params.id)
                         .then(function () {
                             res.json({success: true, message: 'User id ' + req.params.id + ' was removed'});
-                        })
-                        .catch(function(error) {
-                            res.status(400).send(error);
                         });
                 } else {
                     res.status(404).json({success: false, message: 'User id ' + req.params.id + ' not found'});

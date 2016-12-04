@@ -1,9 +1,9 @@
 'use strict';
 
-var Promise = require('bluebird'),
-    Joi = require('joi'),
-    MainModel = require('./main'),
-    bookshelf = require('../config/db').bookshelf;
+var Promise = require('bluebird');
+var Joi = require('joi');
+var MainModel = require('./main');
+var bookshelf = require('../config/db').bookshelf;
 
 require('./post');
 
@@ -11,7 +11,7 @@ var validationSchema = Joi.object().keys({
     id: Joi.number().integer(),
     name: Joi.string().min(4).max(30).required(),
     email: Joi.string().email().min(10).max(30).required(),
-    password_hash: Joi.string(),
+    password_hash: Joi.string().required(),
     created_at: Joi.date(),
     updated_at: Joi.date()
 });
@@ -25,8 +25,9 @@ var User = MainModel.extend({
     },
 
     initialize: function() {
-        // this.on('fetched', this.validate);
-        // this.on('saving', this.validate);
+        // this.on('fetching', this.validate);
+        this.on('creating', this.validate);
+        this.on('updating', this.validate);
     },
 
     validate: function () {
@@ -36,8 +37,8 @@ var User = MainModel.extend({
             }
         });
     }
-
-}, {
+},
+    {
         getByName: Promise.method(function(name) {
             if (name) {
                     return this.forge().where('name', name).fetch();

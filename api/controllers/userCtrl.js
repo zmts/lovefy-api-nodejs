@@ -19,26 +19,6 @@ router.delete('/:id',       remove()); // Delete item by id
 
 /**
  * ------------------------------
- * description: User sign in system
- * ------------------------------
- * url: user/signin
- * method: POST
- * request: {"email": "string", password: "string"}
- */
-router.post('/signin', auth.checkEmailAvailability(), auth.checkPassword(), auth.makeToken());
-
-/**
- * ------------------------------
- * description: User sign out system
- * ------------------------------
- * url: user/signout
- * method: POST
- * request: {"email": "string"}
- */
-router.post('/signout', auth.signOut());
-
-/**
- * ------------------------------
  * description: check User name availability
  * ------------------------------
  * url: user/checkNameAvailability
@@ -62,6 +42,26 @@ router.post('/checkNameAvailability', auth.checkNameAvailability(), function (re
 router.post('/checkEmailAvailability', auth.checkEmailAvailability(), function (req, res) {
     res.json({success: true, message: 'Found'});
 });
+
+/**
+ * ------------------------------
+ * description: User sign in(login) system
+ * ------------------------------
+ * url: user/signin
+ * method: POST
+ * request: {"email": "string", password: "string"}
+ */
+router.post('/signin', auth.checkEmailAvailability(), auth.checkPassword(), auth.makeToken());
+
+/**
+ * ------------------------------
+ * description: User sign out(logout) system
+ * ------------------------------
+ * url: user/signout
+ * method: POST
+ * request: {"email": "string"}
+ */
+router.post('/signout', auth.signOut());
 
 /********** end routes **********/
 /********** end routes **********/
@@ -112,37 +112,34 @@ function readAll() {
 function readPosts() {
     return function (req, res) {
         User.getById(req.params.id)
-            .then(function (id) {
-                if (id) {
-                    User.getPosts(req.params.id)
-                        .then(function (list) {
-                            res.json({success: true, data: list.related('posts')});
-                        })
-                        .catch(function (error) {
-                            res.status(400).send(error);
-                        });
-                } else {
-                    res.status(404).json({success: false, error: "User id " + req.params.id + " not found"});
-                }
-            })
+            .then(function (user) {
+                User.getPosts(user.id)
+                    .then(function (list) {
+                        res.json({success: true, data: list.related('posts')});
+                    })
+                    .catch(function (error) {
+                        res.status(400).send(error);
+                    });
+            }).catch(function (error) {
+                res.status(404).send({success: false, description: error});
+            });
     }
 }
 
 /**
  * ------------------------------
- * description: create User
+ * description: create new User(Registration)
  * ------------------------------
  * url: user/
  * method: POST
- * request: {"name": "string", "email": "string"}
+ * request: {"name": "string", "email": "string", "password_hash": "string"}
  */
 function create() {
     return function(req, res) {
         User.create(req.body)
             .then(function (model) {
                 res.json(model);
-            })
-            .catch(function (error) {
+            }).catch(function (error) {
                 res.status(400).send(error);
             });
     }
@@ -159,14 +156,9 @@ function read() {
     return function(req, res) {
         User.getById(req.params.id)
             .then(function(user) {
-                if (user){
                     res.json({success: true, data: user});
-                } else {
-                    res.status(404).json({success: false, error: "User id " + req.params.id + " not found"});
-                }
-            })
-            .catch(function(error) {
-                res.status(400).send(error);
+            }).catch(function(error) {
+                res.status(404).send({success: false, description: error});
             });
     }
 }
@@ -183,20 +175,15 @@ function update() {
     return function(req, res) {
         User.getById(req.params.id)
             .then(function (user) {
-                if (user){
-                    User.update(req.params.id, req.body)
-                        .then(function (model) {
-                            res.json({success: true, data: model});
-                        });
-                } else {
-                    res.status(404).json({success: false, error: "User id " + req.params.id + " not found"});
-                }
-            })
-            .catch(function (error) {
-                res.status(400).send(error);
-            })
-
-
+                User.update(user.id, req.body)
+                    .then(function (data) {
+                        res.json({success: true, data: data});
+                    }).catch(function (error) {
+                        res.status(400).send(error);
+                    });
+            }).catch(function (error) {
+                res.status(404).send({success: false, description: error});
+            });
     }
 }
 
@@ -211,17 +198,15 @@ function remove() {
     return function(req, res) {
         User.getById(req.params.id)
             .then(function (model) {
-                if (model) {
-                    User.remove(req.params.id)
-                        .then(function () {
-                            res.json({success: true, message: 'User id ' + req.params.id + ' was removed'});
-                        });
-                } else {
-                    res.status(404).json({success: false, message: 'User id ' + req.params.id + ' not found'});
-                }
-            })
-            .catch(function (error) {
-                res.status(400).send(error);
+                User.remove(model.id)
+                    .then(function () {
+                        res.json({success: true, message: 'User id ' + model.id + ' was removed'});
+                    }).catch(function (error) {
+                        res.status(400).send(error);
+                    });
+
+            }).catch(function (error) {
+                res.status(404).send({success: false, description: error});
             });
     }
 }

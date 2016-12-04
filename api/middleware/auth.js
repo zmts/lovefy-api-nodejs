@@ -63,16 +63,20 @@ module.exports.signOut = function() {
  */
 module.exports.hashPassword = function() {
     return function(req, res, next){
-        bcrypt.genSalt(10, function(error, salt) {
-            bcrypt.hash(req.body.password_hash, salt, function(error, hash) {
-                if (error) {
-                    res.status(400).json({success: false, message: error});
-                } else {
-                    req.body.password_hash = hash;
-                    next();
-                }
+        if (req.body.password_hash) {
+            bcrypt.genSalt(10, function(error, salt) {
+                bcrypt.hash(req.body.password_hash, salt, function(error, hash) {
+                    if (error) {
+                        res.status(400).json({success: false, message: error});
+                    } else {
+                        req.body.password_hash = hash;
+                        next();
+                    }
+                })
             })
-        })
+        } else {
+            res.status(400).json({success: false, message: 'Password not found'});
+        }
     }
 };
 

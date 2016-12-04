@@ -16,18 +16,18 @@ var MainModel = bookshelf.Model.extend({},
         },
 
         getById: Promise.method(function(id) {
-            if (_.isNaN(+id)) throw ({success: false, error:"Bad user id. Wrong param >> " + id});
-            return this.forge().where('id', id).fetch({require: true});
+            if (_.isNaN(+id)) { throw ({success: false, error:"Bad user id. Wrong param >> " + id}) }
+            else { return this.forge().where('id', id).fetch({require: true}) }
         }),
 
         update: Promise.method(function(id, data) {
-            if (_.isNaN(+id)) throw ({success: false, error:"Bad user id. Wrong param >> " + id});
-            return this.forge({id: id}).save(data);
+            if (_.isNaN(+id)) { throw ({success: false, error:"Bad user id. Wrong param >> " + id}) }
+            else { return this.forge({id: id}).save(data) }
         }),
 
         remove: Promise.method(function (id) {
-            if (_.isNaN(+id)) throw ({success: false, error:"Bad user id. Wrong param >> " + id});
-            return this.forge({id: id}).destroy();
+            if (_.isNaN(+id)) { throw ({success: false, error:"Bad user id. Wrong param >> " + id}) }
+            else { return this.forge({id: id}).destroy() }
         })
     }
 );

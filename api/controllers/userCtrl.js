@@ -1,10 +1,11 @@
 'use strict';
 
-var express = require('express'),
-    fs = require('fs'),
-    router = express.Router(),
-    User = require('../models/user'),
-    auth = require('../middleware/auth');
+var express = require('express');
+var fs = require('fs');
+var router = express.Router();
+
+var User = require('../models/user');
+var auth = require('../middleware/auth');
 
 /**
  * baseUrl: user/
@@ -27,7 +28,7 @@ router.delete('/:id',       remove()); // Delete item by id
  * response: true if found, false if not found
  */
 router.post('/checkNameAvailability', auth.checkNameAvailability(), function (req, res) {
-    res.json({success: true, message: 'Found'});
+    res.json({success: true});
 });
 
 /**
@@ -40,28 +41,8 @@ router.post('/checkNameAvailability', auth.checkNameAvailability(), function (re
  * response: true if found, false if not found
  */
 router.post('/checkEmailAvailability', auth.checkEmailAvailability(), function (req, res) {
-    res.json({success: true, message: 'Found'});
+    res.json({success: true});
 });
-
-/**
- * ------------------------------
- * description: User sign in(login) system
- * ------------------------------
- * url: user/signin
- * method: POST
- * request: {"email": "string", password: "string"}
- */
-router.post('/signin', auth.checkEmailAvailability(), auth.checkPassword(), auth.makeToken());
-
-/**
- * ------------------------------
- * description: User sign out(logout) system
- * ------------------------------
- * url: user/signout
- * method: POST
- * request: {"email": "string"}
- */
-router.post('/signout', auth.signOut());
 
 /********** end routes **********/
 /********** end routes **********/
@@ -95,9 +76,8 @@ function readAll() {
             .then(function(list) {
                 // console.log(list.serialize())
                 res.json(list);
-            })
-            .catch(function(error) {
-                res.status(400).send(error);
+            }).catch(function(error) {
+                res.status(400).send({success: false, description: error});
             });
     }
 }
@@ -107,21 +87,16 @@ function readAll() {
  * description: show list of all Posts related by User id
  * ------------------------------
  * url: user/user_id/posts
+ * headers: token
  * method: GET
  */
 function readPosts() {
     return function (req, res) {
-        User.getById(req.params.id)
-            .then(function (user) {
-                User.getPosts(user.id)
-                    .then(function (list) {
-                        res.json({success: true, data: list.related('posts')});
-                    })
-                    .catch(function (error) {
-                        res.status(400).send(error);
-                    });
+        User.getPosts(req.params.id)
+            .then(function (list) {
+                res.json({success: true, data: list.related('posts')});
             }).catch(function (error) {
-                res.status(404).send({success: false, description: error});
+                res.status(400).send({success: false, description: error});
             });
     }
 }
@@ -140,7 +115,7 @@ function create() {
             .then(function (model) {
                 res.json(model);
             }).catch(function (error) {
-                res.status(400).send(error);
+                res.status(400).send({success: false, description: error});
             });
     }
 }
@@ -179,7 +154,7 @@ function update() {
                     .then(function (data) {
                         res.json({success: true, data: data});
                     }).catch(function (error) {
-                        res.status(400).send(error);
+                        res.status(400).send({success: false, description: error});
                     });
             }).catch(function (error) {
                 res.status(404).send({success: false, description: error});
@@ -202,9 +177,8 @@ function remove() {
                     .then(function () {
                         res.json({success: true, message: 'User id ' + model.id + ' was removed'});
                     }).catch(function (error) {
-                        res.status(400).send(error);
+                        res.status(400).send({success: false, description: error});
                     });
-
             }).catch(function (error) {
                 res.status(404).send({success: false, description: error});
             });

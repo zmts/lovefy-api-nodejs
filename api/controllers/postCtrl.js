@@ -1,8 +1,9 @@
 'use strict';
 
-var express = require('express'),
-    router = express.Router(),
-    Post = require('../models/post');
+var express = require('express');
+var router = express.Router();
+
+var Post = require('../models/post');
 
 /**
  * baseUrl: post/

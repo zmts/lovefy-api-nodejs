@@ -24,11 +24,10 @@ module.exports.makeToken = function() {
                         if (token) {
                             res.json({
                                 success: true,
-                                message: 'Password accepted',
                                 token: token
                             });
                         } else {
-                            res.status(400).json({success: false, message: error})
+                            res.status(400).json({success: false, description: error})
                         }
                     })
                 } else {
@@ -42,18 +41,15 @@ module.exports.checkToken = function () {
     return function (req, res, next) {
         var token = req.body.token || req.headers['token'];
         jwt.verify(token, secret, function(error, decoded) {
-             if (decoded){
-                 next();
-             } else {
-                 res.status(401).json({success: false, message: error})
-             }
+            if (decoded) { next() }
+            else { res.status(401).json({success: false, description: error}) }
         })
     }
 };
 
 module.exports.signOut = function() {
     return function (req, res) {
-        res.json({success: true, message: 'User sign out system'});
+        res.json({success: true, description: 'User sign out system'});
     }
 };
 
@@ -66,30 +62,24 @@ module.exports.hashPassword = function() {
         if (req.body.password_hash) {
             bcrypt.genSalt(10, function(error, salt) {
                 bcrypt.hash(req.body.password_hash, salt, function(error, hash) {
-                    if (error) {
-                        res.status(400).json({success: false, message: error});
-                    } else {
-                        req.body.password_hash = hash;
-                        next();
-                    }
+                    if (error) { res.status(400).json({success: false, description: error}) }
+                    else { req.body.password_hash = hash; next() }
                 })
             })
-        } else {
-            res.status(400).json({success: false, message: 'Password not found'});
         }
+        else { res.status(400).json({success: false, description: 'Password("password_hash" field) not found'}) }
     }
 };
+
+
 
 module.exports.checkPassword = function() {
     return function (req, res, next) {
         User.getByEmail(req.body.email)
             .then(function (model) {
                 bcrypt.compare(req.body.password, model.get('password_hash'), function(error, result) {
-                    if (result) {
-                        next();
-                    } else {
-                        res.status(403).json({success: false, message: 'Invalid password'});
-                    }
+                    if (result) { next() }
+                    else { res.status(403).json({success: false, description: 'Invalid password'}) }
                 })
             })
     }
@@ -99,13 +89,9 @@ module.exports.checkNameAvailability = function() {
     return function(req, res, next) {
         User.getByName(req.body.name)
             .then(function(model) {
-                if (model) {
-                    next();
-                } else {
-                    res.status(403).json({success: false, message: 'Not found'});
-                }
+                next();
             }).catch(function(error) {
-            res.status(400).send(error.message);
+            res.status(400).send({success: false, description: error});
         })
     }
 };
@@ -114,13 +100,9 @@ module.exports.checkEmailAvailability = function() {
     return function(req, res, next) {
         User.getByEmail(req.body.email)
             .then(function(model) {
-                if (model) {
                     next();
-                } else {
-                    res.status(403).json({success: false, message: 'Not found'});
-                }
             }).catch(function(error) {
-            res.status(400).send(error.message);
+            res.status(400).send({success: false, description: error});
         })
     }
 };

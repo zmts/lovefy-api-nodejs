@@ -26,8 +26,8 @@ var User = MainModel.extend({
 
     initialize: function() {
         // this.on('fetching', this.validate);
+        this.on('saving', this.validate);
         this.on('creating', this.validate);
-        this.on('updating', this.validate);
     },
 
     validate: function () {
@@ -37,26 +37,22 @@ var User = MainModel.extend({
             }
         });
     }
-},
+
+}, // end static methods
+
     {
         getByName: Promise.method(function(name) {
-            if (name) {
-                    return this.forge().where('name', name).fetch();
-                } else {
-                    throw new Error('Bad Request. Required {"name" : "value"} object in request is incorrect');
-                }
+            if (name) { return this.forge().where('name', name).fetch({require: true}) }
+            else { throw ('Bad Request. Required {"name" : "value"} object in request is incorrect') }
         }),
 
         getByEmail: Promise.method(function(email) {
-            if (email) {
-                    return this.forge().where('email', email).fetch();
-                } else {
-                    throw new Error('Bad Request. Required {"email" : "value"} object in request is incorrect');
-                }
+            if (email) { return this.forge().where('email', email).fetch({require: true}) }
+            else { throw ('Bad Request. Required {"email" : "value"} object in request is incorrect') }
         }),
 
         getPosts: function (id) {
-            return this.forge().where('id', id).fetch({withRelated: ['posts']});
+            return this.forge().where('id', id).fetch({withRelated: ['posts'], require: true});
         }
     }
 );

@@ -31,10 +31,8 @@ var User = MainModel.extend({
     },
 
     validate: function () {
-        return Joi.validate(this.serialize(), validationSchema, function (err, value) {
-            if (err) {
-                throw {success: false, message: err.name, details: err.details};
-            }
+        return Joi.validate(this.serialize(), validationSchema, function (error, value) {
+            if (error) { throw ({success: false, message: error.name, details: error.details}) }
         });
     }
 
@@ -43,12 +41,12 @@ var User = MainModel.extend({
     {
         getByName: Promise.method(function(name) {
             if (name) { return this.forge().where('name', name).fetch({require: true}) }
-            else { throw ('Bad Request. Required {"name" : "value"} object in request is incorrect') }
+            throw ('Bad Request. Required {"name" : "value"} object in request is incorrect');
         }),
 
         getByEmail: Promise.method(function(email) {
             if (email) { return this.forge().where('email', email).fetch({require: true}) }
-            else { throw ('Bad Request. Required {"email" : "value"} object in request is incorrect') }
+            throw ('Bad Request. Required {"email" : "value"} object in request is incorrect');
         }),
 
         getPosts: function (id) {

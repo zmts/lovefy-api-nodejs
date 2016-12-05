@@ -21,14 +21,8 @@ module.exports.makeToken = function() {
                     };
 
                     jwt.sign(playload, secret, options, function(error, token) {
-                        if (token) {
-                            res.json({
-                                success: true,
-                                token: token
-                            });
-                        } else {
-                            res.status(400).json({success: false, description: error})
-                        }
+                        if (token) { return res.json({ success: true, token: token}) }
+                        res.status(400).json({success: false, description: error})
                     })
                 } else {
                     res.status(400).json({success: false});
@@ -41,8 +35,8 @@ module.exports.checkToken = function () {
     return function (req, res, next) {
         var token = req.body.token || req.headers['token'];
         jwt.verify(token, secret, function(error, decoded) {
-            if (decoded) { next() }
-            else { res.status(401).json({success: false, description: error}) }
+            if (decoded) { return next() }
+            res.status(401).json({success: false, description: error});
         })
     }
 };
@@ -62,8 +56,9 @@ module.exports.hashPassword = function() {
         if (req.body.password_hash) {
             bcrypt.genSalt(10, function(error, salt) {
                 bcrypt.hash(req.body.password_hash, salt, function(error, hash) {
-                    if (error) { res.status(400).json({success: false, description: error}) }
-                    else { req.body.password_hash = hash; next() }
+                    if (error) { return res.status(400).json({success: false, description: error}) }
+                    req.body.password_hash = hash;
+                    next();
                 })
             })
         }
@@ -71,17 +66,17 @@ module.exports.hashPassword = function() {
     }
 };
 
-
-
 module.exports.checkPassword = function() {
     return function (req, res, next) {
         User.getByEmail(req.body.email)
             .then(function (model) {
                 bcrypt.compare(req.body.password, model.get('password_hash'), function(error, result) {
-                    if (result) { next() }
-                    else { res.status(403).json({success: false, description: 'Invalid password'}) }
+                    if (result) { return next() }
+                    res.status(403).json({success: false, description: 'Invalid password'})
                 })
-            })
+            }).catch(function (error) {
+                res.status(404).json({success: false, description: error});
+            });
     }
 };
 
@@ -91,8 +86,8 @@ module.exports.checkNameAvailability = function() {
             .then(function(model) {
                 next();
             }).catch(function(error) {
-            res.status(400).send({success: false, description: error});
-        })
+                res.status(400).send({success: false, description: error});
+            });
     }
 };
 
@@ -100,10 +95,10 @@ module.exports.checkEmailAvailability = function() {
     return function(req, res, next) {
         User.getByEmail(req.body.email)
             .then(function(model) {
-                    next();
+                next();
             }).catch(function(error) {
-            res.status(400).send({success: false, description: error});
-        })
+                res.status(400).send({success: false, description: error});
+            });
     }
 };
 

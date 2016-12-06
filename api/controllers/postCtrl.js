@@ -44,10 +44,10 @@ function getAll() {
 function create() {
     return function(req, res) {
         Post.create(req.body)
-            .then(function (post) {
+            .then(function(post) {
                 res.json({success: true, data: post});
             })
-            .catch(function (error) {
+            .catch(function(error) {
                 res.status(400).send({success: false, description: error});
             });
     }
@@ -82,14 +82,14 @@ function read() {
 function update() {
     return function(req, res) {
         Post.getById(req.params.id)
-            .then(function (post) {
+            .then(function(post) {
                 Post.update(post.id, req.body)
-                    .then(function (updated_post) {
+                    .then(function(updated_post) {
                         res.json({success: true, data: updated_post});
-                    }).catch(function (error) {
+                    }).catch(function(error) {
                         res.status(400).send({success: false, description: error});
                     });
-            }).catch(function (error) {
+            }).catch(function(error) {
                 res.status(400).send({success: false, description: error});
             });
 
@@ -106,14 +106,14 @@ function update() {
 function remove() {
     return function(req, res) {
         Post.getById(req.params.id)
-            .then(function (model) {
+            .then(function(model) {
                 Post.remove(model.id)
-                    .then(function () {
-                        res.json({success: true, message: 'Post id ' + model.id + ' was removed'});
+                    .then(function() {
+                        res.json({success: true, description: 'Post id ' + model.id + ' was removed'});
                     }).catch(function(error) {
                         res.status(400).send({success: false, description: error});
                     });
-            }).catch(function (error) {
+            }).catch(function(error) {
                 res.status(400).send({success: false, description: error});
             });
     }

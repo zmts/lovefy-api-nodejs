@@ -76,9 +76,9 @@ function readAll() {
 function readPosts() {
     return function (req, res) {
         User.getPosts(req.params.id)
-            .then(function (list) {
+            .then(function(list) {
                 res.json({success: true, data: list.related('posts')});
-            }).catch(function (error) {
+            }).catch(function(error) {
                 res.status(400).send({success: false, description: error});
             });
     }
@@ -95,9 +95,9 @@ function readPosts() {
 function create() {
     return function(req, res) {
         User.create(req.body)
-            .then(function (user) {
+            .then(function(user) {
                 res.json(user);
-            }).catch(function (error) {
+            }).catch(function(error) {
                 res.status(400).send({success: false, description: error});
             });
     }
@@ -132,14 +132,14 @@ function read() {
 function update() {
     return function(req, res) {
         User.getById(req.params.id)
-            .then(function (user) {
+            .then(function(user) {
                 User.update(user.id, req.body)
-                    .then(function (updated_user) {
+                    .then(function(updated_user) {
                         res.json({success: true, data: updated_user});
-                    }).catch(function (error) {
+                    }).catch(function(error) {
                         res.status(400).send({success: false, description: error});
                     });
-            }).catch(function (error) {
+            }).catch(function(error) {
                 res.status(404).send({success: false, description: error});
             });
     }
@@ -155,14 +155,14 @@ function update() {
 function remove() {
     return function(req, res) {
         User.getById(req.params.id)
-            .then(function (model) {
+            .then(function(model) {
                 User.remove(model.id)
-                    .then(function () {
+                    .then(function() {
                         res.json({success: true, description: 'User id ' + model.id + ' was removed'});
-                    }).catch(function (error) {
+                    }).catch(function(error) {
                         res.status(400).send({success: false, description: error});
                     });
-            }).catch(function (error) {
+            }).catch(function(error) {
                 res.status(404).send({success: false, description: error});
             });
     }

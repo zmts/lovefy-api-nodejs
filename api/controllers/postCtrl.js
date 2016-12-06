@@ -23,11 +23,10 @@ router.delete('/:id',       remove());    // Delete item by id
  */
 function getAll() {
     return function(req, res) {
-        Post.fetchAll()
+        Post.getAll()
             .then(function(list) {
                 res.json({success: true, data: list});
-            })
-            .catch(function(error) {
+            }).catch(function(error) {
                 res.status(400).send({success: false, description: error});
             });
     }
@@ -46,8 +45,7 @@ function create() {
         Post.create(req.body)
             .then(function(post) {
                 res.json({success: true, data: post});
-            })
-            .catch(function(error) {
+            }).catch(function(error) {
                 res.status(400).send({success: false, description: error});
             });
     }

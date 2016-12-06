@@ -56,7 +56,7 @@ router.post('/checkEmailAvailability', auth.checkEmailAvailability(), function (
  */
 function readAll() {
     return function(req, res) {
-        User.fetchAll({require: true})
+        User.getAll()
             .then(function(list) {
                 res.json({success: true, data: list});
             }).catch(function(error) {

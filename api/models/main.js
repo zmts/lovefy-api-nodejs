@@ -11,9 +11,14 @@ var Promise = require('bluebird');
 
 var MainModel = bookshelf.Model.extend({},
     {
-        create: function(data) {
+        getAll: Promise.method(function() {
+            return this.forge().orderBy('id').fetchAll({require: true});
+        }),
+
+        create: Promise.method(function(data) {
+            if (_.isEmpty(data)) { throw ({success: false, error:"No data. Request is empty"}) }
             return this.forge(data).save();
-        },
+        }),
 
         getById: Promise.method(function(id) {
             if (_.isNaN(+id)) { throw ({success: false, error:"Bad user id. Wrong param >> " + id}) }
@@ -22,6 +27,7 @@ var MainModel = bookshelf.Model.extend({},
 
         update: Promise.method(function(id, data) {
             if (_.isNaN(+id)) { throw ({success: false, error:"Bad user id. Wrong param >> " + id}) }
+            if (_.isEmpty(data)) { throw ({success: false, error:"No data. Request is empty"}) }
             return this.forge({id: id}).save(data);
         }),
 

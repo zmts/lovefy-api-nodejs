@@ -10,7 +10,6 @@ var auth = require('../middleware/auth');
 /**
  * baseUrl: user/
  */
-router.get('/help',         help()); // Sends help route
 router.get('/all',          readAll()); // Show list of all items
 router.get('/:id/posts',    auth.checkToken(), readPosts()); // Show list of all posts related by user id
 router.post('/',            auth.hashPassword(), create()); // Create user
@@ -49,21 +48,6 @@ router.post('/checkEmailAvailability', auth.checkEmailAvailability(), function (
 /********** end routes **********/
 
 /**
- * @api public
- * ------------------------------
- * description: help
- * ------------------------------
- * url: user/help
- * method: GET
- */
-function help() {
-    return function(req, res) {
-        // var str = fs.readFileSync(__filename, 'utf8');
-        res.send('User route help info');
-    }
-}
-
-/**
  * ------------------------------
  * description: get all Users
  * ------------------------------
@@ -74,8 +58,7 @@ function readAll() {
     return function(req, res) {
         User.fetchAll({require: true})
             .then(function(list) {
-                // console.log(list.serialize())
-                res.json(list);
+                res.json({success: true, data: list});
             }).catch(function(error) {
                 res.status(400).send({success: false, description: error});
             });
@@ -112,8 +95,8 @@ function readPosts() {
 function create() {
     return function(req, res) {
         User.create(req.body)
-            .then(function (model) {
-                res.json(model);
+            .then(function (user) {
+                res.json(user);
             }).catch(function (error) {
                 res.status(400).send({success: false, description: error});
             });
@@ -151,8 +134,8 @@ function update() {
         User.getById(req.params.id)
             .then(function (user) {
                 User.update(user.id, req.body)
-                    .then(function (data) {
-                        res.json({success: true, data: data});
+                    .then(function (updated_user) {
+                        res.json({success: true, data: updated_user});
                     }).catch(function (error) {
                         res.status(400).send({success: false, description: error});
                     });
@@ -175,7 +158,7 @@ function remove() {
             .then(function (model) {
                 User.remove(model.id)
                     .then(function () {
-                        res.json({success: true, message: 'User id ' + model.id + ' was removed'});
+                        res.json({success: true, description: 'User id ' + model.id + ' was removed'});
                     }).catch(function (error) {
                         res.status(400).send({success: false, description: error});
                     });

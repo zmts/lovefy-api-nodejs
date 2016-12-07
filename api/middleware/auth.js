@@ -11,7 +11,7 @@ module.exports.makeToken = function () {
         User.getByEmail(req.body.email)
             .then(function (user) {
                 var playload = {
-                    username: user.get('name'),
+                    username: user.get('name')
                 };
 
                 var options = {
@@ -23,10 +23,11 @@ module.exports.makeToken = function () {
                 jwt.sign(playload, secret, options, function (error, token) {
                     if (token) { return res.json({ success: true, token: token}) }
                     res.status(400).json({success: false, description: error})
-                })
+                });
+
             }).catch(function (error) {
-                res.status(404).json({success: false, description: error});
-        })
+                res.status(404).send({success: false, description: error});
+            });
     }
 };
 
@@ -61,42 +62,22 @@ module.exports.hashPassword = function () {
                 })
             })
         }
-        else { res.status(400).json({success: false, description: 'Password("password_hash" field) not found'}) }
+        else {
+            res.status(400).json({success: false, description: 'Password("password_hash" field) not found'})
+        }
     }
 };
 
 module.exports.checkPassword = function () {
     return function (req, res, next) {
         User.getByEmail(req.body.email)
-            .then(function (model) {
-                bcrypt.compare(req.body.password, model.get('password_hash'), function(error, result) {
+            .then(function (user) {
+                bcrypt.compare(req.body.password, user.get('password_hash'), function(error, result) {
                     if (result) { return next() }
                     res.status(403).json({success: false, description: 'Invalid password'})
-                })
+                });
             }).catch(function (error) {
-                res.status(404).json({success: false, description: error});
-            });
-    }
-};
-
-module.exports.checkNameAvailability = function () {
-    return function(req, res, next) {
-        User.getByName(req.body.name)
-            .then(function (model) {
-                next();
-            }).catch(function (error) {
-                res.status(400).send({success: false, description: error});
-            });
-    }
-};
-
-module.exports.checkEmailAvailability = function () {
-    return function(req, res, next) {
-        User.getByEmail(req.body.email)
-            .then(function (model) {
-                next();
-            }).catch(function (error) {
-                res.status(400).send({success: false, description: error});
+                res.status(404).send({success: false, description: error});
             });
     }
 };

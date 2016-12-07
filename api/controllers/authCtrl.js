@@ -20,7 +20,7 @@ var auth = require('../middleware/auth');
  * method: POST
  * request: {"email": "string", password: "string"}
  */
-router.post('/signin', auth.checkEmailAvailability(), auth.checkPassword(), auth.makeToken());
+router.post('/signin', auth.checkPassword(), auth.makeToken());
 
 /**
  * ------------------------------

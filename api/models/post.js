@@ -1,5 +1,7 @@
 'use strict';
 
+var Joi = require('joi');
+
 var bookshelf = require('../config/db').bookshelf;
 var MainModel = require('./main');
 

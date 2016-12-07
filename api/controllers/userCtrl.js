@@ -12,40 +12,14 @@ var auth = require('../middleware/auth');
  */
 router.get('/all',          readAll()); // Show list of all items
 router.get('/:id/posts',    auth.checkToken(), readPosts()); // Show list of all posts related by user id
+
 router.post('/',            auth.hashPassword(), create()); // Create user
 router.get('/:id',          read()); // Display item by id
 router.put('/:id',          update()); // Update item details by id
 router.delete('/:id',       remove()); // Delete item by id
 
-/**
- * ------------------------------
- * description: check User name availability
- * ------------------------------
- * url: user/checkNameAvailability
- * method: POST
- * request: {"name": "string"}
- * response: true if found, false if not found
- */
-router.post('/checkNameAvailability', auth.checkNameAvailability(), function (req, res) {
-    res.json({success: true});
-});
-
-/**
- * ------------------------------
- * description: check User email availability
- * ------------------------------
- * url: user/checkEmailAvailability
- * method: POST
- * request: {"email": "string"}
- * response: true if found, false if not found
- */
-router.post('/checkEmailAvailability', auth.checkEmailAvailability(), function (req, res) {
-    res.json({success: true});
-});
-
-/********** end routes **********/
-/********** end routes **********/
-/********** end routes **********/
+router.post('/checkNameAvailability', checkNameAvailability());
+router.post('/checkEmailAvailability', checkEmailAvailability());
 
 /**
  * ------------------------------
@@ -162,6 +136,47 @@ function remove() {
                     }).catch(function (error) {
                         res.status(400).send({success: false, description: error});
                     });
+            }).catch(function (error) {
+                res.status(404).send({success: false, description: error});
+            });
+    }
+}
+
+/**
+ * ------------------------------
+ * description: check User name availability
+ * ------------------------------
+ * url: user/checkNameAvailability
+ * method: POST
+ * request: {"name": "string"}
+ * response: true if found, false if not found
+ */
+function checkNameAvailability() {
+    return function (req, res) {
+        User.getByName(req.body.name)
+            .then(function (user) {
+                res.json({success: true});
+            }).catch(function (error) {
+                res.status(404).send({success: false, description: error});
+            });
+    }
+}
+
+
+/**
+ * ------------------------------
+ * description: check User email availability
+ * ------------------------------
+ * url: user/checkEmailAvailability
+ * method: POST
+ * request: {"email": "string"}
+ * response: true if found, false if not found
+ */
+function checkEmailAvailability() {
+    return function (req, res) {
+        User.getByEmail(req.body.email)
+            .then(function (user) {
+                res.json({success: true});
             }).catch(function (error) {
                 res.status(404).send({success: false, description: error});
             });

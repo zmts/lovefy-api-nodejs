@@ -10,25 +10,23 @@ module.exports.makeToken = function () {
     return function (req, res) {
         User.getByEmail(req.body.email)
             .then(function (user) {
-                if (user) {
-                    var playload = {
-                        username: user.get('name'),
-                    };
+                var playload = {
+                    username: user.get('name'),
+                };
 
-                    var options = {
-                        algorithm: 'HS512',
-                        expiresIn: '5m',
-                        subject: user.get('id').toString()
-                    };
+                var options = {
+                    algorithm: 'HS512',
+                    expiresIn: '5m',
+                    subject: user.get('id').toString()
+                };
 
-                    jwt.sign(playload, secret, options, function (error, token) {
-                        if (token) { return res.json({ success: true, token: token}) }
-                        res.status(400).json({success: false, description: error})
-                    })
-                } else {
-                    res.status(400).json({success: false});
-                }
-            })
+                jwt.sign(playload, secret, options, function (error, token) {
+                    if (token) { return res.json({ success: true, token: token}) }
+                    res.status(400).json({success: false, description: error})
+                })
+            }).catch(function (error) {
+                res.status(404).json({success: false, description: error});
+        })
     }
 };
 

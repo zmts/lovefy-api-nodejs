@@ -23,7 +23,7 @@ router.get('/help', help());
  * url: user/help
  * method: GET
  */
-function help() {
+function help () {
     return function(req, res) {
         // var str = fs.readFileSync(__filename, 'utf8');
         res.send('User route help info');

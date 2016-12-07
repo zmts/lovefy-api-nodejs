@@ -22,11 +22,11 @@ router.delete('/:id',       remove());    // Delete item by id
  * method: GET
  */
 function getAll() {
-    return function(req, res) {
+    return function (req, res) {
         Post.getAll()
-            .then(function(list) {
+            .then(function (list) {
                 res.json({success: true, data: list});
-            }).catch(function(error) {
+            }).catch(function (error) {
                 res.status(400).send({success: false, description: error});
             });
     }
@@ -41,11 +41,11 @@ function getAll() {
  * request: {"user_id": "int", "title": "string", "content": "string"}
  */
 function create() {
-    return function(req, res) {
+    return function (req, res) {
         Post.create(req.body)
-            .then(function(post) {
+            .then(function (post) {
                 res.json({success: true, data: post});
-            }).catch(function(error) {
+            }).catch(function (error) {
                 res.status(400).send({success: false, description: error});
             });
     }
@@ -59,11 +59,11 @@ function create() {
  * method: GET
  */
 function read() {
-    return function(req, res) {
+    return function (req, res) {
         Post.getById(req.params.id)
-            .then(function(post) {
+            .then(function (post) {
                     res.json({success: true, data: post});
-            }).catch(function(error) {
+            }).catch(function (error) {
                 res.status(400).send({success: false, description: error});
             });
     }
@@ -78,16 +78,16 @@ function read() {
  * request: {"title": "string", "content": "string"}
  */
 function update() {
-    return function(req, res) {
+    return function (req, res) {
         Post.getById(req.params.id)
-            .then(function(post) {
+            .then(function (post) {
                 Post.update(post.id, req.body)
-                    .then(function(updated_post) {
+                    .then(function (updated_post) {
                         res.json({success: true, data: updated_post});
-                    }).catch(function(error) {
+                    }).catch(function (error) {
                         res.status(400).send({success: false, description: error});
                     });
-            }).catch(function(error) {
+            }).catch(function (error) {
                 res.status(400).send({success: false, description: error});
             });
 
@@ -102,16 +102,16 @@ function update() {
  * method: DELETE
  */
 function remove() {
-    return function(req, res) {
+    return function (req, res) {
         Post.getById(req.params.id)
-            .then(function(model) {
+            .then(function (model) {
                 Post.remove(model.id)
-                    .then(function() {
+                    .then(function () {
                         res.json({success: true, description: 'Post id ' + model.id + ' was removed'});
-                    }).catch(function(error) {
+                    }).catch(function (error) {
                         res.status(400).send({success: false, description: error});
                     });
-            }).catch(function(error) {
+            }).catch(function (error) {
                 res.status(400).send({success: false, description: error});
             });
     }

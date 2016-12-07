@@ -24,8 +24,7 @@ var User = MainModel.extend({
         return this.hasMany('Post');
     },
 
-    initialize: function() {
-        // this.on('fetching', this.validate);
+    initialize: function () {
         this.on('saving', this.validate);
         this.on('creating', this.validate);
     },
@@ -39,12 +38,12 @@ var User = MainModel.extend({
 }, // end static methods
 
     {
-        getByName: Promise.method(function(name) {
+        getByName: Promise.method(function (name) {
             if (name) { return this.forge().where('name', name).fetch({require: true}) }
             throw ('Bad Request. Required {"name" : "value"} object in request is incorrect');
         }),
 
-        getByEmail: Promise.method(function(email) {
+        getByEmail: Promise.method(function (email) {
             if (email) { return this.forge().where('email', email).fetch({require: true}) }
             throw ('Bad Request. Required {"email" : "value"} object in request is incorrect');
         }),

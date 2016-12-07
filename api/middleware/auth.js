@@ -1,15 +1,16 @@
 'use strict';
 
-var bcrypt = require('bcryptjs'),
-    jwt = require('jsonwebtoken'),
-    secret = require('../config').token.secret,
-    User = require('../models/user');
+var bcrypt = require('bcryptjs');
+var jwt = require('jsonwebtoken');
 
-module.exports.makeToken = function() {
+var secret = require('../config').token.secret;
+var User = require('../models/user');
+
+module.exports.makeToken = function () {
     return function (req, res) {
         User.getByEmail(req.body.email)
             .then(function (user) {
-                if (user){
+                if (user) {
                     var playload = {
                         username: user.get('name'),
                     };
@@ -20,7 +21,7 @@ module.exports.makeToken = function() {
                         subject: user.get('id').toString()
                     };
 
-                    jwt.sign(playload, secret, options, function(error, token) {
+                    jwt.sign(playload, secret, options, function (error, token) {
                         if (token) { return res.json({ success: true, token: token}) }
                         res.status(400).json({success: false, description: error})
                     })
@@ -34,14 +35,14 @@ module.exports.makeToken = function() {
 module.exports.checkToken = function () {
     return function (req, res, next) {
         var token = req.body.token || req.headers['token'];
-        jwt.verify(token, secret, function(error, decoded) {
+        jwt.verify(token, secret, function (error, decoded) {
             if (decoded) { return next() }
             res.status(401).json({success: false, description: error});
         })
     }
 };
 
-module.exports.signOut = function() {
+module.exports.signOut = function () {
     return function (req, res) {
         res.json({success: true, description: 'User sign out system'});
     }
@@ -51,11 +52,11 @@ module.exports.signOut = function() {
  * description: help middleware,
  * makes hash for password at User creation
  */
-module.exports.hashPassword = function() {
-    return function(req, res, next){
+module.exports.hashPassword = function () {
+    return function(req, res, next) {
         if (req.body.password_hash) {
-            bcrypt.genSalt(10, function(error, salt) {
-                bcrypt.hash(req.body.password_hash, salt, function(error, hash) {
+            bcrypt.genSalt(10, function (error, salt) {
+                bcrypt.hash(req.body.password_hash, salt, function (error, hash) {
                     if (error) { return res.status(400).json({success: false, description: error}) }
                     req.body.password_hash = hash;
                     next();
@@ -66,7 +67,7 @@ module.exports.hashPassword = function() {
     }
 };
 
-module.exports.checkPassword = function() {
+module.exports.checkPassword = function () {
     return function (req, res, next) {
         User.getByEmail(req.body.email)
             .then(function (model) {
@@ -80,23 +81,23 @@ module.exports.checkPassword = function() {
     }
 };
 
-module.exports.checkNameAvailability = function() {
+module.exports.checkNameAvailability = function () {
     return function(req, res, next) {
         User.getByName(req.body.name)
-            .then(function(model) {
+            .then(function (model) {
                 next();
-            }).catch(function(error) {
+            }).catch(function (error) {
                 res.status(400).send({success: false, description: error});
             });
     }
 };
 
-module.exports.checkEmailAvailability = function() {
+module.exports.checkEmailAvailability = function () {
     return function(req, res, next) {
         User.getByEmail(req.body.email)
-            .then(function(model) {
+            .then(function (model) {
                 next();
-            }).catch(function(error) {
+            }).catch(function (error) {
                 res.status(400).send({success: false, description: error});
             });
     }

@@ -39,13 +39,11 @@ var User = MainModel.extend({
 
     {
         getByName: Promise.method(function (name) {
-            if (name) { return this.forge().where('name', name).fetch({require: true}) }
-            throw ('Bad Request. Required {"name" : "value"} is broken');
+            return this.forge().where('name', name).fetch({require: true})
         }),
 
         getByEmail: Promise.method(function (email) {
-            if (email) { return this.forge().where('email', email).fetch({require: true}) }
-            throw ('Bad Request. Required {"email" : "value"} is broken');
+            return this.forge().where('email', email).fetch({require: true})
         }),
 
         getPosts: function (id) {

@@ -6,6 +6,8 @@ var router = express.Router();
 
 var User = require('../models/user');
 var auth = require('../middleware/auth');
+var validateReqId = require('../middleware/validateRequest').validateReqId;
+var validateReqBody = require('../middleware/validateRequest').validateReqBody;
 
 /**
  * baseUrl: user/
@@ -13,13 +15,13 @@ var auth = require('../middleware/auth');
 router.get('/all',          readAll()); // Show list of all items
 router.get('/:id/posts',    auth.checkToken(), readPosts()); // Show list of all posts related by user id
 
-router.post('/',            auth.hashPassword(), create()); // Create user
-router.get('/:id',          read()); // Display item by id
-router.put('/:id',          update()); // Update item details by id
-router.delete('/:id',       remove()); // Delete item by id
+router.post('/',            validateReqBody(), auth.hashPassword(), create()); // Create user
+router.get('/:id',          validateReqId(), read()); // Display item by id
+router.put('/:id',          validateReqId(), validateReqBody(), update()); // Update item details by id
+router.delete('/:id',       validateReqId(), remove()); // Delete item by id
 
-router.post('/checkNameAvailability', checkNameAvailability());
-router.post('/checkEmailAvailability', checkEmailAvailability());
+router.post('/checkNameAvailability', validateReqBody(), checkNameAvailability());
+router.post('/checkEmailAvailability', validateReqBody(), checkEmailAvailability());
 
 /**
  * ------------------------------
@@ -88,7 +90,7 @@ function read() {
     return function (req, res) {
         User.getById(req.params.id)
             .then(function (user) {
-                    res.json({success: true, data: user});
+                res.json({success: true, data: user});
             }).catch(function (error) {
                 res.status(404).send({success: false, description: error});
             });
@@ -161,7 +163,6 @@ function checkNameAvailability() {
             });
     }
 }
-
 
 /**
  * ------------------------------

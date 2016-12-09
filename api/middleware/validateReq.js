@@ -1,6 +1,6 @@
 var _ = require('lodash');
 
-module.exports.validateReqId = function () {
+module.exports.id = function () {
     return function (req, res, next) {
         if ( _.isNaN(+req.params.id) ) {
             return res.status(400).send({success: false, description: "Invalid request param id >> " + req.params.id});
@@ -9,7 +9,7 @@ module.exports.validateReqId = function () {
     }
 };
 
-module.exports.validateReqBody = function () {
+module.exports.body = function () {
     return function (req, res, next) {
         if ( _.isEmpty(req.body) ) {
             return res.status(400).send({success: false, description: "Invalid request"});

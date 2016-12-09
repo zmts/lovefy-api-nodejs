@@ -6,22 +6,23 @@ var router = express.Router();
 
 var User = require('../models/user');
 var auth = require('../middleware/auth');
-var validateReqId = require('../middleware/validateRequest').validateReqId;
-var validateReqBody = require('../middleware/validateRequest').validateReqBody;
+var validateReq = require('../middleware/validateReq');
 
 /**
  * baseUrl: user/
  */
 router.get('/all',          readAll()); // Show list of all items
+router.post('/checkNameAvailability', validateReq.body(), checkNameAvailability());
+router.post('/checkEmailAvailability', validateReq.body(), checkEmailAvailability());
+
+router.use('/:id',          validateReq.id());
+
 router.get('/:id/posts',    auth.checkToken(), readPosts()); // Show list of all posts related by user id
+router.post('/',            validateReq.body(), auth.hashPassword(), create()); // Create user
+router.get('/:id',          read()); // Display item by id
+router.put('/:id',          validateReq.body(), update()); // Update item details by id
+router.delete('/:id',       remove()); // Delete item by id
 
-router.post('/',            validateReqBody(), auth.hashPassword(), create()); // Create user
-router.get('/:id',          validateReqId(), read()); // Display item by id
-router.put('/:id',          validateReqId(), validateReqBody(), update()); // Update item details by id
-router.delete('/:id',       validateReqId(), remove()); // Delete item by id
-
-router.post('/checkNameAvailability', validateReqBody(), checkNameAvailability());
-router.post('/checkEmailAvailability', validateReqBody(), checkEmailAvailability());
 
 /**
  * ------------------------------

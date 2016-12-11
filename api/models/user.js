@@ -45,12 +45,22 @@ var User = MainModel.extend({
             return this.forge().where({'email': email}).fetch({require: true})
         },
 
-        getPosts: function (id) {
+        getAllPosts: function (id) {
             return this.forge().where({'id': id}).fetch({withRelated: ['posts'], require: true});
         },
 
-        getPublicPosts: function (id) { //todo {'private': false}
-            return this.forge().where({'id': id}).fetch({withRelated: ['posts'], require: true});
+        getPublicPosts: function (id) {
+            return this
+                .forge()
+                .where({'id': id})
+                .fetch({
+                    withRelated: [{
+                        posts: function (query) {
+                            query.where({'private': false})
+                        }
+                    }],
+                    require: true
+                });
         }
     }
 );

@@ -15,11 +15,11 @@ router.post('/checkNameAvailability',   checkNameAvailability());
 router.post('/checkEmailAvailability',  checkEmailAvailability());
 
 router.post('/getAllUsers',         getAllUsers());
-router.post('/getCurrentUserPosts', auth.checkToken(), getCurrentUserPosts()); // Show list of all posts by Current user
+router.post('/getAllPosts',         auth.checkToken(), getAllPosts());
 
 router.use('/:id',                  validateReq.id());
 
-router.post('/:id/getPublicPosts',  getPublicPosts()); // show all Public posts by Id // todo
+router.post('/:id/getPublicPosts',  getPublicPosts());
 router.post('/',                    auth.hashPassword(), makeNewUser());
 router.post('/:id',                 getUser());
 router.put('/:id',                  update());
@@ -46,15 +46,15 @@ function getAllUsers() {
 /**
  * ------------------------------
  * description: show list of all Posts of current User Id
- * Id takes from token in auth middleware(checkToken method)
+ * Id takes from TOKEN in AUTH middleware(checkToken method)
  * ------------------------------
- * url: user/getCurrentUserPosts
+ * url: user/getAllPosts
  * headers: token
  * method: POST
  */
-function getCurrentUserPosts() {
+function getAllPosts() {
     return function (req, res) {
-        User.getPosts(req.body.userId)
+        User.getAllPosts(req.body.userId)
             .then(function (list) {
                 res.json({success: true, data: list.related('posts')});
             }).catch(function (error) {
@@ -70,7 +70,7 @@ function getCurrentUserPosts() {
  * url: user/user_id/getPublicPosts
  * method: POST
  */
-function getPublicPosts() { // todo: method MUST response only with {'private': false} attribute
+function getPublicPosts() {
     return function (req, res) {
         User.getPublicPosts(req.params.id)
             .then(function (list) {

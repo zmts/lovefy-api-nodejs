@@ -22,54 +22,77 @@ module.exports.checkNameAvailability = function() {
 
 
 // query all entries related to some id
-// User.where({ id: 2 })
-//     .fetch({
-//         withRelated: ['posts']
-//     })
-//     .then(function(model) {
-//         res.send(model.serialize());
-//         // res.send(model.get('name'));
-//     })
-//     .catch(function(error) {
-//         console.log(error);
-//         res.send('An error occured');
-//     });
+User.where({ id: 2 })
+    .fetch({
+        withRelated: ['posts']
+    })
+    .then(function(model) {
+        res.send(model.serialize());
+        // res.send(model.get('name'));
+    })
+    .catch(function(error) {
+        console.log(error);
+        res.send('An error occured');
+    });
 
 // query specific entry
-// User.forge()
-//     .where('id', 2)
-//     .fetch()
-//     .then(function(model) {
-//         res.send(model.serialize());
-//     })
-//     .catch(function(error) {
-//         console.log(error);
-//         res.send('An error occured');
-//     });
+User.forge()
+    .where('id', 2)
+    .fetch()
+    .then(function(model) {
+        res.send(model.serialize());
+    })
+    .catch(function(error) {
+        console.log(error);
+        res.send('An error occured');
+    });
 
 // query all entries
-// User.forge()
-//     .fetchAll()
-//     .then(function(model) {
-//         res.send(model.serialize());
-//     })
-//     .catch(function(error) {
-//         console.log(error);
-//         res.send('An error occured');
-//     });
+User.forge()
+    .fetchAll()
+    .then(function(model) {
+        res.send(model.serialize());
+    })
+    .catch(function(error) {
+        console.log(error);
+        res.send('An error occured');
+    });
 
 // create new entry
-// User.forge({'name': 'qwerty'})
-//     .save()
-//     .then(function(model) {
-//         res.send(model.serialize());
-//     })
-//     .catch(function(error) {
-//         console.log(error);
-//         res.send('An error occured');
-//     });
+User.forge({'name': 'qwerty'})
+    .save()
+    .then(function(model) {
+        res.send(model.serialize());
+    })
+    .catch(function(error) {
+        console.log(error);
+        res.send('An error occured');
+    });
 
 // Promise using
-// update: Promise.method(function (id, data) {
-//     return this.forge({id: id}).save(data);
-// }),
+update: Promise.method(function (id, data) {
+    return this.forge({id: id}).save(data);
+}),
+
+// make query >> by User id >> getPosts(where post attribute 'private' === false)
+// сделать выборку публичных постов({'private': false}) по id юзера
+getPublicPosts: function (id) {
+    return this
+        .forge()
+        .where({'id': id})
+        .fetch({
+            withRelated: [{
+                posts: function (query) {
+                    query.where({'private': false})
+                }
+            }],
+            require: true
+        });
+}
+
+User.getPublicPosts(req.params.id)
+    .then(function (list) {
+        res.json({success: true, data: list.related('posts')});
+    }).catch(function (error) {
+    res.status(400).send({success: false, description: error});
+});

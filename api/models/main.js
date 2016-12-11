@@ -1,7 +1,6 @@
 'use strict';
 
 var bookshelf = require('../config/db').bookshelf;
-var Promise = require('bluebird');
 
 /**
  * description: Main parent model
@@ -10,25 +9,25 @@ var Promise = require('bluebird');
 
 var MainModel = bookshelf.Model.extend({},
     {
-        getAll: Promise.method(function () {
+        getAll: function () {
             return this.forge().orderBy('id').fetchAll({require: true});
-        }),
+        },
 
-        create: Promise.method(function (data) {
+        create: function (data) {
             return this.forge(data).save()
-        }),
+        },
 
-        getById: Promise.method(function (id) {
+        getById: function (id) {
             return this.forge().where('id', id).fetch({require: true});
-        }),
+        },
 
-        update: Promise.method(function (id, data) {
+        update: function (id, data) {
             return this.forge({id: id}).save(data);
-        }),
+        },
 
-        remove: Promise.method(function (id) {
+        remove: function (id) {
             return this.forge({id: id}).destroy();
-        })
+        }
     }
 );
 

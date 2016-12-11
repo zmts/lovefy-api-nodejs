@@ -16,7 +16,7 @@ module.exports.makeToken = function () {
 
                 var options = {
                     algorithm: 'HS512',
-                    expiresIn: '5m',
+                    expiresIn: '15m',
                     subject: user.get('id').toString()
                 };
 
@@ -35,7 +35,10 @@ module.exports.checkToken = function () {
     return function (req, res, next) {
         var token = req.body.token || req.headers['token'];
         jwt.verify(token, secret, function (error, decoded) {
-            if (decoded) { return next() }
+            if (decoded) {
+                req.body.userId = decoded.sub;
+                return next();
+            }
             res.status(401).json({success: false, description: error});
         })
     }

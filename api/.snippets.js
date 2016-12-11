@@ -68,3 +68,8 @@ module.exports.checkNameAvailability = function() {
 //         console.log(error);
 //         res.send('An error occured');
 //     });
+
+// Promise using
+// update: Promise.method(function (id, data) {
+//     return this.forge({id: id}).save(data);
+// }),

@@ -1,6 +1,5 @@
 'use strict';
 
-var Promise = require('bluebird');
 var Joi = require('joi');
 var MainModel = require('./main');
 var bookshelf = require('../config/db').bookshelf;
@@ -38,16 +37,20 @@ var User = MainModel.extend({
 }, // end static methods
 
     {
-        getByName: Promise.method(function (name) {
-            return this.forge().where('name', name).fetch({require: true})
-        }),
+        getByName: function (name) {
+            return this.forge().where({'name': name}).fetch({require: true})
+        },
 
-        getByEmail: Promise.method(function (email) {
-            return this.forge().where('email', email).fetch({require: true})
-        }),
+        getByEmail: function (email) {
+            return this.forge().where({'email': email}).fetch({require: true})
+        },
 
         getPosts: function (id) {
-            return this.forge().where('id', id).fetch({withRelated: ['posts'], require: true});
+            return this.forge().where({'id': id}).fetch({withRelated: ['posts'], require: true});
+        },
+
+        getPublicPosts: function (id) { //todo {'private': false}
+            return this.forge().where({'id': id}).fetch({withRelated: ['posts'], require: true});
         }
     }
 );

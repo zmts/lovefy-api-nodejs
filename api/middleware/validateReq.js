@@ -9,11 +9,12 @@ module.exports.id = function () {
     }
 };
 
-module.exports.body = function () {
-    return function (req, res, next) {
-        if ( _.isEmpty(req.body) ) {
-            return res.status(400).send({success: false, description: "Invalid request"});
-        }
-        next();
-    }
-};
+// How to get all registered routes in Express?
+// app._router.stack
+// router.stack
+
+// app._router.stack.forEach(function(r){
+//     if (r.route && r.route.path){
+//         console.log(r.route.path)
+//     }
+// })

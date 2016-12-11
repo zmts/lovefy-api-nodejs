@@ -11,18 +11,19 @@ var validateReq = require('../middleware/validateReq');
 /**
  * baseUrl: user/
  */
-router.get('/all',          readAll()); // Show list of all items
-router.post('/checkNameAvailability', validateReq.body(), checkNameAvailability());
-router.post('/checkEmailAvailability', validateReq.body(), checkEmailAvailability());
+router.post('/checkNameAvailability',   checkNameAvailability());
+router.post('/checkEmailAvailability',  checkEmailAvailability());
 
-router.use('/:id',          validateReq.id());
+router.post('/getAllUsers',         getAllUsers());
+router.post('/getCurrentUserPosts', auth.checkToken(), getCurrentUserPosts()); // Show list of all posts by Current user
 
-router.get('/:id/posts',    auth.checkToken(), readPosts()); // Show list of all posts related by user id
-router.post('/',            validateReq.body(), auth.hashPassword(), create()); // Create user
-router.get('/:id',          read()); // Display item by id
-router.put('/:id',          validateReq.body(), update()); // Update item details by id
-router.delete('/:id',       remove()); // Delete item by id
+router.use('/:id',                  validateReq.id());
 
+router.post('/:id/getPublicPosts',  getPublicPosts()); // show all Public posts by Id // todo
+router.post('/',                    auth.hashPassword(), makeNewUser());
+router.post('/:id',                 getUser());
+router.put('/:id',                  update());
+router.delete('/:id',               remove());
 
 /**
  * ------------------------------
@@ -31,7 +32,7 @@ router.delete('/:id',       remove()); // Delete item by id
  * url: user/all
  * method: GET
  */
-function readAll() {
+function getAllUsers() {
     return function (req, res) {
         User.getAll()
             .then(function (list) {
@@ -44,15 +45,34 @@ function readAll() {
 
 /**
  * ------------------------------
- * description: show list of all Posts related by User id
+ * description: show list of all Posts of current User Id
+ * Id takes from token in auth middleware(checkToken method)
  * ------------------------------
- * url: user/user_id/posts
+ * url: user/getCurrentUserPosts
  * headers: token
- * method: GET
+ * method: POST
  */
-function readPosts() {
+function getCurrentUserPosts() {
     return function (req, res) {
-        User.getPosts(req.params.id)
+        User.getPosts(req.body.userId)
+            .then(function (list) {
+                res.json({success: true, data: list.related('posts')});
+            }).catch(function (error) {
+                res.status(400).send({success: false, description: error});
+            });
+    }
+}
+
+/**
+ * ------------------------------
+ * description: show list of all PUBLIC Posts related by User id
+ * ------------------------------
+ * url: user/user_id/getPublicPosts
+ * method: POST
+ */
+function getPublicPosts() { // todo: method MUST response only with {'private': false} attribute
+    return function (req, res) {
+        User.getPublicPosts(req.params.id)
             .then(function (list) {
                 res.json({success: true, data: list.related('posts')});
             }).catch(function (error) {
@@ -69,7 +89,7 @@ function readPosts() {
  * method: POST
  * request: {"name": "string", "email": "string", "password_hash": "string"}
  */
-function create() {
+function makeNewUser() {
     return function (req, res) {
         User.create(req.body)
             .then(function (user) {
@@ -85,9 +105,9 @@ function create() {
  * description: get User by id
  * ------------------------------
  * url: user/:id
- * method: GET
+ * method: POST
  */
-function read() {
+function getUser() {
     return function (req, res) {
         User.getById(req.params.id)
             .then(function (user) {

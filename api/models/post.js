@@ -9,6 +9,7 @@ var validationSchema = Joi.object().keys({
     id: Joi.number().integer(),
     title: Joi.string().min(3).max(50).required(),
     content: Joi.string().min(3).max(5000).required(),
+    private: Joi.boolean(),
     created_at: Joi.date(),
     updated_at: Joi.date()
 });

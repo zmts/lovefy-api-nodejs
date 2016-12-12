@@ -14,16 +14,16 @@ var validateReq = require('../middleware/validateReq');
 router.post('/checkNameAvailability',   checkNameAvailability());
 router.post('/checkEmailAvailability',  checkEmailAvailability());
 
-router.post('/getAllUsers',         getAllUsers());
-router.post('/getAllPosts',         auth.checkToken(), getAllPosts());
+router.get('/getAllUsers',          getAllUsers());
+router.get('/getAllPosts',          auth.checkToken(), getAllPosts());
 
 router.use('/:id',                  validateReq.id());
 
-router.post('/:id/getPublicPosts',  getPublicPosts());
+router.get('/:id/getPublicPosts',   getPublicPosts());
 router.post('/',                    auth.hashPassword(), makeNewUser());
-router.post('/:id',                 getUser());
-router.put('/:id',                  update());
-router.delete('/:id',               remove());
+router.get('/:id',                  getUser());
+router.put('/:id',                  auth.checkToken(), auth.checkPermissions(), update());
+router.delete('/:id',               auth.checkToken(), auth.checkPermissions(), remove());
 
 /**
  * ------------------------------
@@ -134,8 +134,8 @@ function update() {
                     .then(function (updated_user) {
                         res.json({success: true, data: updated_user});
                     }).catch(function (error) {
-                        res.status(400).send({success: false, description: error});
-                    });
+                    res.status(400).send({success: false, description: error});
+                });
             }).catch(function (error) {
                 res.status(404).send({success: false, description: error});
             });

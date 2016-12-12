@@ -8,11 +8,11 @@ var Post = require('../models/post');
 /**
  * baseUrl: post/
  */
-router.get('/all',          getAll());    // Show list of all items
-router.post('/',            create());    // Save item to the database
-router.get('/:id',          read());      // Display item by id
-router.put('/:id',          update());    // Update item details by id
-router.delete('/:id',       remove());    // Delete item by id
+router.get('/getAllPublic',     getAllPublic());
+router.post('/',                makeNewPost());
+router.get('/:id',              getPost());
+router.put('/:id',              update());
+router.delete('/:id',           remove());
 
 /**
  * ------------------------------
@@ -21,9 +21,9 @@ router.delete('/:id',       remove());    // Delete item by id
  * url: post/all
  * method: GET
  */
-function getAll() {
+function getAllPublic() {
     return function (req, res) {
-        Post.getAll()
+        Post.getAllPublic()
             .then(function (list) {
                 res.json({success: true, data: list});
             }).catch(function (error) {
@@ -40,7 +40,7 @@ function getAll() {
  * method: POST
  * request: {"user_id": "int", "title": "string", "content": "string"}
  */
-function create() {
+function makeNewPost() {
     return function (req, res) {
         Post.create(req.body)
             .then(function (post) {
@@ -58,7 +58,7 @@ function create() {
  * url: post/:id
  * method: GET
  */
-function read() {
+function getPost() {
     return function (req, res) {
         Post.getById(req.params.id)
             .then(function (post) {

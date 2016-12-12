@@ -84,3 +84,11 @@ module.exports.checkPassword = function () {
             });
     }
 };
+
+module.exports.checkPermissions = function () {
+    return function (req, res, next) {
+        if (req.params.id === req.body.userId) { return next() }
+        res.status(403).send({success: false, description: 'Forbidden. For user id ' + req.body.userId + ' this action Forbidden'});
+    }
+
+}

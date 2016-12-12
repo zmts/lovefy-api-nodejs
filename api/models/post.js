@@ -30,8 +30,12 @@ var Post = MainModel.extend({
     }
 
 },  {
-        do: function () {
-            console.log('lol')
+        getAllPublic: function () {
+            return this
+                .forge()
+                .where({'private': false})
+                .orderBy('id')
+                .fetchAll({require: true});
         }
     }
 );

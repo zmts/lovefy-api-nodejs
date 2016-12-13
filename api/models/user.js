@@ -11,30 +11,31 @@ var validationSchema = Joi.object().keys({
     name: Joi.string().min(4).max(30).required(),
     email: Joi.string().email().min(5).max(30).required(),
     password_hash: Joi.string().required(),
+    role: Joi.string(),
     created_at: Joi.date(),
     updated_at: Joi.date()
 });
 
 var User = MainModel.extend({
-    tableName: 'users',
-    hasTimestamps: true,
-    hidden: ['password_hash'],
-    posts: function() {
-        return this.hasMany('Post');
-    },
+        tableName: 'users',
+        hasTimestamps: true,
+        hidden: ['password_hash'],
+        posts: function() {
+            return this.hasMany('Post');
+        },
 
-    initialize: function () {
-        this.on('saving', this.validate);
-        this.on('creating', this.validate);
-    },
+        initialize: function () {
+            this.on('saving', this.validate);
+            this.on('creating', this.validate);
+        },
 
-    validate: function () {
-        return Joi.validate(this.serialize(), validationSchema, function (error, value) {
-            if (error) { throw ({success: false, message: error.name, details: error.details}) }
-        });
-    }
+        validate: function () {
+            return Joi.validate(this.serialize(), validationSchema, function (error, value) {
+                if (error) { throw ({success: false, message: error.name, details: error.details}) }
+            });
+        }
 
-}, // end static methods
+    }, // end static methods
 
     {
         getByName: function (name) {

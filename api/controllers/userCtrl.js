@@ -19,11 +19,12 @@ router.get('/getAllPosts',          auth.checkToken(), getAllPosts());
 
 router.use('/:id',                  validateReq.id());
 
+router.post('/:id/changeUserRole',  auth.checkSUAccess(), changeUserRole());
 router.get('/:id/getPublicPosts',   getPublicPosts());
 router.post('/',                    auth.hashPassword(), makeNewUser());
 router.get('/:id',                  getUser());
-router.put('/:id',                  auth.checkToken(), auth.checkPermissions(), update());
-router.delete('/:id',               auth.checkToken(), auth.checkPermissions(), remove());
+router.put('/:id',                  auth.checkToken(), auth.checkUserAccess(), update());
+router.delete('/:id',               auth.checkToken(), auth.checkUserAccess(), remove());
 
 /**
  * ------------------------------
@@ -202,6 +203,12 @@ function checkEmailAvailability() {
             }).catch(function (error) {
                 res.status(404).send({success: false, description: error});
             });
+    }
+}
+
+function changeUserRole() {
+    return function (req, res) {
+        res.json({success: true});
     }
 }
 

@@ -1,4 +1,8 @@
+module.exports.adminRoles = ['superuser', 'moderator'];
+module.exports.editorRoles = ['author', 'photo-author'];
+
 module.exports = {
+    superuser: 'superuser',
     client: {
         host: 'http://localhost',
         port: '3000'
@@ -16,4 +20,4 @@ module.exports = {
     token: {
         secret: 'Shhh908df97bf897gdf8bdf87dbcvbidfjgklrjt84'
     }
-}
+};

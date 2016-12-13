@@ -92,6 +92,7 @@ function getPublicPosts() {
  */
 function makeNewUser() {
     return function (req, res) {
+        console.log(req.body);
         User.create(req.body)
             .then(function (user) {
                 res.json(user);
@@ -129,6 +130,7 @@ function getUser() {
  */
 function update() {
     return function (req, res) {
+        delete req.body.helpData;
         User.getById(req.params.id)
             .then(function (user) {
                 User.update(user.id, req.body)

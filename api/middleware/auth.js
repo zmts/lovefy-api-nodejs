@@ -40,8 +40,10 @@ module.exports.checkToken = function () {
         var token = req.body.token || req.headers['token'];
         jwt.verify(token, secret, function (error, decoded) {
             if (decoded) {
-                req.body.userId = decoded.sub;
-                req.body.userRole = decoded.userRole;
+                req.body.helpData = {
+                    userId: decoded.sub,
+                    userRole: decoded.userRole
+                };
                 return next();
             }
             res.status(401).json({success: false, description: error});
@@ -61,17 +63,18 @@ module.exports.signOut = function () {
  */
 module.exports.hashPassword = function () {
     return function(req, res, next) {
-        if (req.body.password_hash) {
+        if (req.body.password) {
             bcrypt.genSalt(10, function (error, salt) {
-                bcrypt.hash(req.body.password_hash, salt, function (error, hash) {
+                bcrypt.hash(req.body.password, salt, function (error, hash) {
                     if (error) { return res.status(400).json({success: false, description: error}) }
                     req.body.password_hash = hash;
+                    delete req.body.password;
                     next();
                 })
             })
         }
         else {
-            res.status(400).json({success: false, description: 'Password("password_hash" field) not found'})
+            res.status(400).json({success: false, description: 'Password("password_" field) not found'})
         }
     }
 };
@@ -96,10 +99,11 @@ module.exports.checkPassword = function () {
 // adminUsers can change any items
 module.exports.checkUserAccess = function () {
     return function (req, res, next) {
-        if (req.params.id === req.body.userId || adminRoles.indexOf(req.body.userRole) >= 0) {
+        if (req.params.id === req.body.helpData.userId ||
+            adminRoles.indexOf(req.body.helpData.userRole) >= 0) {
             return next()
         }
-        res.status(403).send({success: false, description: 'Forbidden. User(' + req.body.userId + ') dont have permissions to make actions at id #' + req.params.id});
+        res.status(403).send({success: false, description: 'Forbidden. User(' + req.body.helpData.userId + ') dont have permissions to make actions at id #' + req.params.id});
     }
 };
 
@@ -109,12 +113,12 @@ module.exports.checkUserAccess = function () {
 // adminUsers can change any items
 module.exports.checkEditorAccess = function () {
     return function (req, res, next) {
-        if (req.params.id === req.body.userId &&
-            adminRoles.indexOf(req.body.userRole) >= 0 ||
-            editorRoles.indexOf(req.body.userRole) >= 0) {
+        if (req.params.id === req.body.helpData.userId &&
+            adminRoles.indexOf(req.body.helpData.userRole) >= 0 ||
+            editorRoles.indexOf(req.body.helpData.userRole) >= 0) {
             return next()
         }
-        res.status(403).send({success: false, description: 'Forbidden. User(' + req.body.userId + ') dont have permissions to make actions at id #' + req.params.id});
+        res.status(403).send({success: false, description: 'Forbidden. User(' + req.body.helpData.userId + ') dont have permissions to make actions at id #' + req.params.id});
     }
 };
 
@@ -123,8 +127,8 @@ module.exports.checkEditorAccess = function () {
 // To view list of adminRoles look in to >> config.adminRoles;
 module.exports.checkAdminAccess = function () {
     return function (req, res, next) {
-        if (adminRoles.indexOf(req.body.userRole) >= 0) { return next() }
-        res.status(403).send({success: false, description: 'Forbidden. User(' + req.body.userId + ') dont have permissions to make actions at id #' + req.params.id});
+        if (adminRoles.indexOf(req.body.helpData.userRole) >= 0) { return next() }
+        res.status(403).send({success: false, description: 'Forbidden. User(' + req.body.helpData.userId + ') dont have permissions to make actions at id #' + req.params.id});
     }
 };
 
@@ -132,7 +136,7 @@ module.exports.checkAdminAccess = function () {
 // superuser can change any item
 module.exports.checkSUAccess = function () {
     return function (req, res, next) {
-        if (req.body.userRole === superuser) { return next() }
-        res.status(403).send({success: false, description: 'Forbidden. User(' + req.body.userId + ') dont have permissions to make actions at id #' + req.params.id});
+        if (req.body.helpData.userRole === superuser) { return next() }
+        res.status(403).send({success: false, description: 'Forbidden. User(' + req.body.helpData.userId + ') dont have permissions to make actions at id #' + req.params.id});
     }
 };

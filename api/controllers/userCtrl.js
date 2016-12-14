@@ -23,7 +23,7 @@ router.post('/:id/changeUserRole',  auth.checkSUAccess(), changeUserRole());
 router.get('/:id/getPublicPosts',   getPublicPosts());
 router.post('/',                    auth.hashPassword(), makeNewUser());
 router.get('/:id',                  getUser());
-router.put('/:id',                  auth.checkToken(), auth.checkUserAccess(), update());
+router.put('/:id',                  auth.checkToken(), auth.checkUserAccess(), auth.hashPassword(), update()); // auth.checkUserOwnership(),
 router.delete('/:id',               auth.checkToken(), auth.checkUserAccess(), remove());
 
 /**
@@ -88,10 +88,12 @@ function getPublicPosts() {
  * ------------------------------
  * url: user/
  * method: POST
- * request: {"name": "string", "email": "string", "password_hash": "string"}
+ * request: {"name": "string", "email": "string", "password": "string"}
+ * "password" field from request transfers and saves to DB as "password_hash"
  */
 function makeNewUser() {
     return function (req, res) {
+        delete req.body.helpData;
         console.log(req.body);
         User.create(req.body)
             .then(function (user) {
@@ -126,7 +128,8 @@ function getUser() {
  * ------------------------------
  * url: user/:id
  * method: PUT
- * request: {"name": "string", "email": "string"}
+ * request: {"name": "string", "email": "string", "password": "string"}
+ * "password" field from request transfers and saves to DB as "password_hash"
  */
 function update() {
     return function (req, res) {

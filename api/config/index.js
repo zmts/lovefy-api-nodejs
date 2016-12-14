@@ -1,8 +1,7 @@
-module.exports.adminRoles = ['superuser', 'moderator'];
-module.exports.editorRoles = ['author', 'photo-author'];
-
 module.exports = {
     superuser: 'superuser',
+    adminRoles: ['superuser', 'moderator'],
+    editorRoles: ['author', 'photo-author'],
     client: {
         host: 'http://localhost',
         port: '3000'

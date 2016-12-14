@@ -67,7 +67,7 @@ module.exports.hashPassword = function () {
             bcrypt.genSalt(10, function (error, salt) {
                 bcrypt.hash(req.body.password, salt, function (error, hash) {
                     if (error) { return res.status(400).json({success: false, description: error}) }
-                    req.body.password_hash = hash;
+                    req.body.password_hash = hash; // transfers and saves to DB
                     delete req.body.password;
                     next();
                 })
@@ -140,3 +140,19 @@ module.exports.checkSUAccess = function () {
         res.status(403).send({success: false, description: 'Forbidden. User(' + req.body.helpData.userId + ') dont have permissions to make actions at id #' + req.params.id});
     }
 };
+
+// module.exports.checkUserOwnership = function () {
+//     return function (req, res, next) {
+//         if (req.params.id === req.body.helpData.userId ||
+//             adminRoles.indexOf(req.body.helpData.userRole) >= 0) {
+//             return next()
+//         }
+//         res.status(403).send({success: false, description: 'Forbidden. User(' + req.body.helpData.userId + ') dont have permissions to make actions at id #' + req.params.id});
+//     }
+// };
+//
+// module.exports.checkItemOwnership = function () {
+//     return function (req, res) {
+//         // выбрать из БД изменяемый объект >> посмотреть idUser(foreign key) объекта >> сравнить с idUser токена)) Done
+//     }
+// };

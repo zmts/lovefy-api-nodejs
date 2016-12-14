@@ -23,7 +23,7 @@ router.post('/:id/changeUserRole',  auth.checkSUAccess(), changeUserRole());
 router.get('/:id/getPublicPosts',   getPublicPosts());
 router.post('/',                    auth.hashPassword(), makeNewUser());
 router.get('/:id',                  getUser());
-router.put('/:id',                  auth.checkToken(), auth.checkUserAccess(), auth.hashPassword(), update()); // auth.checkUserOwnership(),
+router.put('/:id',                  auth.checkToken(), auth.hashPassword(), update()); // auth.checkUserOwnership(), auth.checkUserAccess()
 router.delete('/:id',               auth.checkToken(), auth.checkUserAccess(), remove());
 
 /**
@@ -133,15 +133,19 @@ function getUser() {
  */
 function update() {
     return function (req, res) {
-        delete req.body.helpData;
         User.getById(req.params.id)
             .then(function (user) {
-                User.update(user.id, req.body)
-                    .then(function (updated_user) {
-                        res.json({success: true, data: updated_user});
-                    }).catch(function (error) {
-                    res.status(400).send({success: false, description: error});
-                });
+                if (+user.id === +req.body.helpData.userId) { // todo refactor this
+                    delete req.body.helpData;
+                    User.update(user.id, req.body)
+                        .then(function (updated_user) {
+                            res.json({success: true, data: updated_user});
+                        }).catch(function (error) {
+                            res.status(400).send({success: false, description: error});
+                        });
+                } else {
+                    res.status(404).send({success: false, description: 'Nea', errortype: 'Update Error'});
+                }
             }).catch(function (error) {
                 res.status(404).send({success: false, description: error});
             });

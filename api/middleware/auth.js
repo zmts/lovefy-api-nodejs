@@ -3,10 +3,7 @@
 var bcrypt = require('bcryptjs');
 var jwt = require('jsonwebtoken');
 
-var secret = require('../config').token.secret;
-var adminRoles = require('../config').adminRoles;
-var editorRoles = require('../config').editorRoles;
-var superuser = require('../config').superuser;
+var SECRET = require('../config').token.secret;
 var User = require('../models/user');
 
 module.exports.makeToken = function () {
@@ -24,7 +21,7 @@ module.exports.makeToken = function () {
                     subject: user.get('id').toString()
                 };
 
-                jwt.sign(playload, secret, options, function (error, token) {
+                jwt.sign(playload, SECRET, options, function (error, token) {
                     if (token) { return res.json({ success: true, token: token}) }
                     res.status(400).json({success: false, description: error})
                 });
@@ -35,10 +32,15 @@ module.exports.makeToken = function () {
     }
 };
 
+/**
+ * description: checks token from client request
+ * if token is valid define help object 'helpData'
+ * and pass to next middleware
+ */
 module.exports.checkToken = function () {
     return function (req, res, next) {
         var token = req.body.token || req.headers['token'];
-        jwt.verify(token, secret, function (error, decoded) {
+        jwt.verify(token, SECRET, function (error, decoded) {
             if (decoded) {
                 req.body.helpData = {
                     userId: decoded.sub,
@@ -92,67 +94,3 @@ module.exports.checkPassword = function () {
         });
     }
 };
-
-// check regular User permissions to modify items
-// check adminUsers permissions to modify items
-// User can change only OWN items
-// adminUsers can change any items
-module.exports.checkUserAccess = function () {
-    return function (req, res, next) {
-        if (req.params.id === req.body.helpData.userId ||
-            adminRoles.indexOf(req.body.helpData.userRole) >= 0) {
-            return next()
-        }
-        res.status(403).send({success: false, description: 'Forbidden. User(' + req.body.helpData.userId + ') dont have permissions to make actions at id #' + req.params.id});
-    }
-};
-
-// check editorRoles permissions to modify items
-// check adminUsers permissions to modify items
-// editorRoles can change only OWN items
-// adminUsers can change any items
-module.exports.checkEditorAccess = function () {
-    return function (req, res, next) {
-        if (req.params.id === req.body.helpData.userId &&
-            adminRoles.indexOf(req.body.helpData.userRole) >= 0 ||
-            editorRoles.indexOf(req.body.helpData.userRole) >= 0) {
-            return next()
-        }
-        res.status(403).send({success: false, description: 'Forbidden. User(' + req.body.helpData.userId + ') dont have permissions to make actions at id #' + req.params.id});
-    }
-};
-
-// check adminRoles permissions to modify items
-// adminRoles can change any item
-// To view list of adminRoles look in to >> config.adminRoles;
-module.exports.checkAdminAccess = function () {
-    return function (req, res, next) {
-        if (adminRoles.indexOf(req.body.helpData.userRole) >= 0) { return next() }
-        res.status(403).send({success: false, description: 'Forbidden. User(' + req.body.helpData.userId + ') dont have permissions to make actions at id #' + req.params.id});
-    }
-};
-
-// check superuser permissions to modify items
-// superuser can change any item
-module.exports.checkSUAccess = function () {
-    return function (req, res, next) {
-        if (req.body.helpData.userRole === superuser) { return next() }
-        res.status(403).send({success: false, description: 'Forbidden. User(' + req.body.helpData.userId + ') dont have permissions to make actions at id #' + req.params.id});
-    }
-};
-
-// module.exports.checkUserOwnership = function () {
-//     return function (req, res, next) {
-//         if (req.params.id === req.body.helpData.userId ||
-//             adminRoles.indexOf(req.body.helpData.userRole) >= 0) {
-//             return next()
-//         }
-//         res.status(403).send({success: false, description: 'Forbidden. User(' + req.body.helpData.userId + ') dont have permissions to make actions at id #' + req.params.id});
-//     }
-// };
-//
-// module.exports.checkItemOwnership = function () {
-//     return function (req, res) {
-//         // выбрать из БД изменяемый объект >> посмотреть idUser(foreign key) объекта >> сравнить с idUser токена)) Done
-//     }
-// };

@@ -50,7 +50,7 @@ var User = MainModel.extend({
             return this.forge().where({'id': id}).fetch({withRelated: ['posts'], require: true});
         },
 
-        getPublicPosts: function (id) {
+        getAllPublicPosts: function (id) {
             return this
                 .forge()
                 .where({'id': id})

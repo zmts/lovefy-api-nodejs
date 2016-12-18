@@ -6,6 +6,7 @@ var router = express.Router();
 
 var User = require('../models/user');
 var auth = require('../middleware/auth');
+var sec = require('../middleware/security');
 var validateReq = require('../middleware/validateReq');
 
 /**
@@ -14,17 +15,17 @@ var validateReq = require('../middleware/validateReq');
 router.post('/checkNameAvailability',   checkNameAvailability());
 router.post('/checkEmailAvailability',  checkEmailAvailability());
 
-router.get('/getAllUsers',          getAllUsers());
-router.get('/getAllPosts',          auth.checkToken(), getAllPosts());
+router.get('/getAllUsers',              getAllUsers());
+router.get('/getAllPosts',              auth.checkToken(), getAllPosts());
 
-router.use('/:id',                  validateReq.id());
+router.use('/:id',                      validateReq.id());
 
-router.post('/:id/changeUserRole',  auth.checkSUAccess(), changeUserRole());
-router.get('/:id/getPublicPosts',   getPublicPosts());
-router.post('/',                    auth.hashPassword(), makeNewUser());
-router.get('/:id',                  getUser());
-router.put('/:id',                  auth.checkToken(), auth.hashPassword(), update()); // auth.checkUserOwnership(), auth.checkUserAccess()
-router.delete('/:id',               auth.checkToken(), auth.checkUserAccess(), remove());
+router.post('/:id/changeUserRole',      sec.checkSUAccess(), changeUserRole());
+router.get('/:id/getAllPublicPosts',    getAllPublicPosts());
+router.post('/',                        auth.hashPassword(), makeNewUser());
+router.get('/:id',                      getUser());
+router.put('/:id',                      auth.checkToken(), sec.checkProfileAccess(), auth.hashPassword(), update());
+router.delete('/:id',                   auth.checkToken(), sec.checkProfileAccess(), remove());
 
 /**
  * ------------------------------
@@ -39,7 +40,7 @@ function getAllUsers() {
             .then(function (list) {
                 res.json({success: true, data: list});
             }).catch(function (error) {
-                res.status(400).send({success: false, description: error});
+                res.status(404).send({success: false, description: error});
             });
     }
 }
@@ -55,11 +56,11 @@ function getAllUsers() {
  */
 function getAllPosts() {
     return function (req, res) {
-        User.getAllPosts(req.body.userId)
+        User.getAllPosts(req.body.helpData.userId)
             .then(function (list) {
                 res.json({success: true, data: list.related('posts')});
             }).catch(function (error) {
-                res.status(400).send({success: false, description: error});
+                res.status(404).send({success: false, description: error});
             });
     }
 }
@@ -68,16 +69,16 @@ function getAllPosts() {
  * ------------------------------
  * description: show list of all PUBLIC Posts related by User id
  * ------------------------------
- * url: user/user_id/getPublicPosts
+ * url: user/user_id/getAllPublicPosts
  * method: POST
  */
-function getPublicPosts() {
+function getAllPublicPosts() {
     return function (req, res) {
-        User.getPublicPosts(req.params.id)
+        User.getAllPublicPosts(req.params.id)
             .then(function (list) {
                 res.json({success: true, data: list.related('posts')});
             }).catch(function (error) {
-                res.status(400).send({success: false, description: error});
+                res.status(404).send({success: false, description: error});
             });
     }
 }
@@ -94,7 +95,6 @@ function getPublicPosts() {
 function makeNewUser() {
     return function (req, res) {
         delete req.body.helpData;
-        console.log(req.body);
         User.create(req.body)
             .then(function (user) {
                 res.json(user);
@@ -135,7 +135,7 @@ function update() {
     return function (req, res) {
         User.getById(req.params.id)
             .then(function (user) {
-                if (+user.id === +req.body.helpData.userId) { // todo refactor this
+                // if (+user.id === +req.body.helpData.userId) { // todo refactor this
                     delete req.body.helpData;
                     User.update(user.id, req.body)
                         .then(function (updated_user) {
@@ -143,9 +143,9 @@ function update() {
                         }).catch(function (error) {
                             res.status(400).send({success: false, description: error});
                         });
-                } else {
-                    res.status(404).send({success: false, description: 'Nea', errortype: 'Update Error'});
-                }
+                // } else {
+                //     res.status(404).send({success: false, description: 'Nea', errortype: 'Update Error'});
+                // }
             }).catch(function (error) {
                 res.status(404).send({success: false, description: error});
             });

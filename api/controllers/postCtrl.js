@@ -4,21 +4,23 @@ var express = require('express');
 var router = express.Router();
 
 var Post = require('../models/post');
+var auth = require('../middleware/auth');
+var sec = require('../middleware/security');
 
 /**
  * baseUrl: post/
  */
 router.get('/getAllPublic',     getAllPublic());
 router.post('/',                makeNewPost());
-router.get('/:id',              getPost());
-router.put('/:id',              update());
-router.delete('/:id',           remove());
+router.get('/:id',              getPost()); // todo: handle case >> if post is private
+router.put('/:id',              auth.checkToken(), sec.checkItemAccess(Post), update());
+router.delete('/:id',           auth.checkToken(), sec.checkItemAccess(Post), remove());
 
 /**
  * ------------------------------
- * description: get all Posts
+ * description: get all public Posts
  * ------------------------------
- * url: post/all
+ * url: post/getAllPublic
  * method: GET
  */
 function getAllPublic() {
@@ -62,9 +64,9 @@ function getPost() {
     return function (req, res) {
         Post.getById(req.params.id)
             .then(function (post) {
-                    res.json({success: true, data: post});
+                res.json({success: true, data: post})
             }).catch(function (error) {
-                res.status(400).send({success: false, description: error});
+                res.status(404).send({success: false, description: error});
             });
     }
 }
@@ -88,7 +90,7 @@ function update() {
                         res.status(400).send({success: false, description: error});
                     });
             }).catch(function (error) {
-                res.status(400).send({success: false, description: error});
+                res.status(404).send({success: false, description: error});
             });
 
     }
@@ -112,7 +114,7 @@ function remove() {
                         res.status(400).send({success: false, description: error});
                     });
             }).catch(function (error) {
-                res.status(400).send({success: false, description: error});
+                res.status(404).send({success: false, description: error});
             });
     }
 }

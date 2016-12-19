@@ -12,21 +12,18 @@ var validateReq = require('../middleware/validateReq');
 /**
  * baseUrl: user/
  */
-router.post('/checkNameAvailability',   checkNameAvailability());
-router.post('/checkEmailAvailability',  checkEmailAvailability());
-
 router.get('/getAllUsers',              getAllUsers());
-router.get('/getAllMixPosts',           auth.checkToken(), sec.checkProfileAccess(), getAllMixPosts());
-
-router.use('/:id',                      validateReq.id());
-
 router.get('/:id',                      getUser());
-router.get('/:id/getAllPubPosts',       getAllPubPosts());
 router.post('/',                        auth.hashPassword(), makeNewUser());
 router.put('/:id',                      auth.checkToken(), sec.checkProfileAccess(), auth.hashPassword(), update());
 router.delete('/:id',                   auth.checkToken(), sec.checkProfileAccess(), remove());
 
+router.get('/getAllMixPosts',           auth.checkToken(), sec.checkProfileAccess(), getAllMixPosts());
+router.get('/:id/getAllPubPosts',       getAllPubPosts());
+
 router.post('/:id/changeUserRole',      sec.checkSUAccess(), changeUserRole());
+router.post('/checkNameAvailability',   checkNameAvailability());
+router.post('/checkEmailAvailability',  checkEmailAvailability());
 
 /**
  * ------------------------------
@@ -136,17 +133,13 @@ function update() {
     return function (req, res) {
         User.getById(req.params.id)
             .then(function (user) {
-                // if (+user.id === +req.body.helpData.userId) { // todo refactor this
-                    delete req.body.helpData;
-                    User.update(user.id, req.body)
-                        .then(function (updated_user) {
-                            res.json({success: true, data: updated_user});
-                        }).catch(function (error) {
-                            res.status(400).send({success: false, description: error});
-                        });
-                // } else {
-                //     res.status(404).send({success: false, description: 'Nea', errortype: 'Update Error'});
-                // }
+                delete req.body.helpData;
+                User.update(user.id, req.body)
+                    .then(function (updated_user) {
+                        res.json({success: true, data: updated_user});
+                    }).catch(function (error) {
+                        res.status(400).send({success: false, description: error});
+                    });
             }).catch(function (error) {
                 res.status(404).send({success: false, description: error});
             });

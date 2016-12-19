@@ -25,3 +25,6 @@
 
 ## Implemented (Client, AngularJS)
 - Base ... wip
+
+## TODO
+- Validate each :id param from request with validateReq.id() middleware

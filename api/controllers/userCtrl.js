@@ -10,20 +10,26 @@ var sec = require('../middleware/security');
 var validateReq = require('../middleware/validateReq');
 
 /**
- * baseUrl: user/
+ * other routes
+ */
+router.post('/:id/changeUserRole',      sec.checkSUAccess(), changeUserRole());
+router.post('/checkNameAvailability',   checkNameAvailability());
+router.post('/checkEmailAvailability',  checkEmailAvailability());
+
+/**
+ * related routes
+ */
+router.get('/getAllMixPosts',           auth.checkToken(), sec.checkProfileAccess(), getAllMixPosts());
+router.get('/:id/getAllPubPosts',       getAllPubPosts());
+
+/**
+ * base routes
  */
 router.get('/getAllUsers',              getAllUsers());
 router.get('/:id',                      getUser());
 router.post('/',                        auth.hashPassword(), makeNewUser());
 router.put('/:id',                      auth.checkToken(), sec.checkProfileAccess(), auth.hashPassword(), update());
 router.delete('/:id',                   auth.checkToken(), sec.checkProfileAccess(), remove());
-
-router.get('/getAllMixPosts',           auth.checkToken(), sec.checkProfileAccess(), getAllMixPosts());
-router.get('/:id/getAllPubPosts',       getAllPubPosts());
-
-router.post('/:id/changeUserRole',      sec.checkSUAccess(), changeUserRole());
-router.post('/checkNameAvailability',   checkNameAvailability());
-router.post('/checkEmailAvailability',  checkEmailAvailability());
 
 /**
  * ------------------------------

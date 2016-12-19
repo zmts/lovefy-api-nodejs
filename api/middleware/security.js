@@ -6,7 +6,7 @@ var User = require('../models/user');
 
 /**
  * description: check SUPERUSER permissions
- * SUPERUSER have access to any item
+ * have full access: SUPERUSER
  */
 module.exports.checkSUAccess = function () {
     return function (req, res, next) {
@@ -16,9 +16,8 @@ module.exports.checkSUAccess = function () {
 };
 
 /**
- * description: check User model access
- * middleware uses before make some actions at User model
- * At User model can make some actions >> ADMINROLES and owner
+ * description: check USER model access
+ * have full access: ADMINROLES, OWNER
  */
 module.exports.checkProfileAccess = function () {
     return function (req, res, next) {
@@ -30,14 +29,12 @@ module.exports.checkProfileAccess = function () {
 
 /**
  * description: check Item model access
- * middleware uses before make some actions at Item model
- * In parameters(modelName) takes model that we want to modify
- * At item can make some actions >> ADMINROLES, EDITORROLES and owner
+ * have full access: ADMINROLES, EDITORROLES, OWNER
+ * can read public items: ANONYMOUS(via GET method only)
+ * @param {object} modelName - model that we want to modify
  */
 module.exports.checkItemAccess = function (modelName) {
     return function (req, res, next) {
-        console.log(req.body.helpData)
-
         modelName.getById(req.params.id)
             .then(function (model) {
                 if ( req.route.methods.get && !model.get('private') ) { return next() } // pass public items via GET method

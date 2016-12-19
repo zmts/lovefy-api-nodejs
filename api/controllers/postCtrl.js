@@ -10,11 +10,23 @@ var sec = require('../middleware/security');
 /**
  * baseUrl: post/
  */
-router.get('/getAllPublic',     getAllPublic());
+// router.get('/getAllFull',       auth.checkToken(), sec.checkItemAccess(Post), getAllFull());
+router.get('/getAllPub',        getAllPub());
 router.post('/',                makeNewPost());
-router.get('/:id',              getPost()); // todo: handle case >> if post is private
+router.get('/:id',              auth.checkToken(), sec.checkItemAccess(Post), getPost());
 router.put('/:id',              auth.checkToken(), sec.checkItemAccess(Post), update());
 router.delete('/:id',           auth.checkToken(), sec.checkItemAccess(Post), remove());
+
+/**
+ * ------------------------------
+ * description: get all Posts of All users(public and private)
+ * ------------------------------
+ * url: post/getAllPublic
+ * method: GET
+ */
+// function getAllFull() {
+//
+// }
 
 /**
  * ------------------------------
@@ -23,9 +35,9 @@ router.delete('/:id',           auth.checkToken(), sec.checkItemAccess(Post), re
  * url: post/getAllPublic
  * method: GET
  */
-function getAllPublic() {
+function getAllPub() {
     return function (req, res) {
-        Post.getAllPublic()
+        Post.getAllPub()
             .then(function (list) {
                 res.json({success: true, data: list});
             }).catch(function (error) {

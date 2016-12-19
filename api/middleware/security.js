@@ -36,10 +36,13 @@ module.exports.checkProfileAccess = function () {
  */
 module.exports.checkItemAccess = function (modelName) {
     return function (req, res, next) {
+        console.log(req.body.helpData)
+
         modelName.getById(req.params.id)
             .then(function (model) {
-                if ( ADMINROLES.indexOf(req.body.helpData.userRole ) >= 0) { return next() }
-                if ( EDITORROLES.indexOf(req.body.helpData.userRole ) >= 0) { return next() }
+                if ( req.route.methods.get && !model.get('private') ) { return next() } // pass public items via GET method
+                if ( ADMINROLES.indexOf( req.body.helpData.userRole ) >= 0) { return next() }
+                if ( EDITORROLES.indexOf( req.body.helpData.userRole ) >= 0) { return next() }
                 if ( +req.body.helpData.userId === +model.get('user_id') ) { return next() }
                 res.status(403).send({success: false, description: 'Forbidden. User(' + req.body.helpData.userId + ') dont have permissions to make actions at id #' + req.params.id});
             }).catch(function (error) {

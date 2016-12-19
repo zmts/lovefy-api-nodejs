@@ -40,16 +40,22 @@ module.exports.makeToken = function () {
 module.exports.checkToken = function () {
     return function (req, res, next) {
         var token = req.body.token || req.headers['token'];
-        jwt.verify(token, SECRET, function (error, decoded) {
-            if (decoded) {
-                req.body.helpData = {
-                    userId: decoded.sub,
-                    userRole: decoded.userRole
-                };
-                return next();
-            }
-            res.status(401).json({success: false, description: error});
-        })
+        if (token) {
+            jwt.verify(token, SECRET, function (error, decoded) {
+                if (decoded) {
+                    req.body.helpData = {
+                        userId: decoded.sub,
+                        userRole: decoded.userRole
+                    };
+                    return next();
+                }
+                res.status(401).json({success: false, description: error});
+            })
+        } else {
+            req.body.helpData = {userIsAuth: false}; // 'userIsAuth' just for logs; don't uses any more
+            return next();
+        }
+
     }
 };
 

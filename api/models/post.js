@@ -30,7 +30,7 @@ var Post = MainModel.extend({
     }
 
 },  {
-        getAllPublic: function () {
+        getAllPub: function () {
             return this
                 .forge()
                 .where({'private': false})

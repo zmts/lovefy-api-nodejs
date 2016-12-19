@@ -16,16 +16,17 @@ router.post('/checkNameAvailability',   checkNameAvailability());
 router.post('/checkEmailAvailability',  checkEmailAvailability());
 
 router.get('/getAllUsers',              getAllUsers());
-router.get('/getAllPosts',              auth.checkToken(), getAllPosts());
+router.get('/getAllMixPosts',           auth.checkToken(), sec.checkProfileAccess(), getAllMixPosts());
 
 router.use('/:id',                      validateReq.id());
 
-router.post('/:id/changeUserRole',      sec.checkSUAccess(), changeUserRole());
-router.get('/:id/getAllPublicPosts',    getAllPublicPosts());
-router.post('/',                        auth.hashPassword(), makeNewUser());
 router.get('/:id',                      getUser());
+router.get('/:id/getAllPubPosts',       getAllPubPosts());
+router.post('/',                        auth.hashPassword(), makeNewUser());
 router.put('/:id',                      auth.checkToken(), sec.checkProfileAccess(), auth.hashPassword(), update());
 router.delete('/:id',                   auth.checkToken(), sec.checkProfileAccess(), remove());
+
+router.post('/:id/changeUserRole',      sec.checkSUAccess(), changeUserRole());
 
 /**
  * ------------------------------
@@ -47,16 +48,16 @@ function getAllUsers() {
 
 /**
  * ------------------------------
- * description: show list of all Posts of current User Id
+ * description: show list of mix(PUBLIC and PRIVATE) Posts of current User
  * Id takes from TOKEN in AUTH middleware(checkToken method)
  * ------------------------------
- * url: user/getAllPosts
+ * url: user/getAllMixPosts
  * headers: token
- * method: POST
+ * method: GET
  */
-function getAllPosts() {
+function getAllMixPosts() {
     return function (req, res) {
-        User.getAllPosts(req.body.helpData.userId)
+        User.getAllMixPosts(req.body.helpData.userId)
             .then(function (list) {
                 res.json({success: true, data: list.related('posts')});
             }).catch(function (error) {
@@ -67,14 +68,14 @@ function getAllPosts() {
 
 /**
  * ------------------------------
- * description: show list of all PUBLIC Posts related by User id
+ * description: show list of all PUBLIC Posts of current User
  * ------------------------------
  * url: user/user_id/getAllPublicPosts
- * method: POST
+ * method: GET
  */
-function getAllPublicPosts() {
+function getAllPubPosts() {
     return function (req, res) {
-        User.getAllPublicPosts(req.params.id)
+        User.getAllPubPosts(req.params.id)
             .then(function (list) {
                 res.json({success: true, data: list.related('posts')});
             }).catch(function (error) {

@@ -33,29 +33,35 @@ module.exports.makeToken = function () {
 };
 
 /**
+ * ------------------------------
  * description: checks token from client request
- * if token is valid define help object 'helpData'
+ * ------------------------------
+ * if token is valid define help object 'helpData' with current 'userId', 'userRole' fields
+ * and pass to next middleware
+ *
+ * if token is missing set 'helpData' object 'userId', 'userRole' fields as 'anonymous'
  * and pass to next middleware
  */
 module.exports.checkToken = function () {
     return function (req, res, next) {
         var token = req.body.token || req.headers['token'];
-        if (token) {
-            jwt.verify(token, SECRET, function (error, decoded) {
-                if (decoded) {
-                    req.body.helpData = {
-                        userId: decoded.sub,
-                        userRole: decoded.userRole
-                    };
-                    return next();
-                }
-                res.status(401).json({success: false, description: error});
-            })
-        } else {
-            req.body.helpData = {userIsAuth: false}; // 'userIsAuth' just for logs; don't uses any more
-            return next();
-        }
-
+        jwt.verify(token, SECRET, function (error, decoded) {
+            if (decoded) {
+                req.body.helpData = {
+                    userId: decoded.sub,
+                    userRole: decoded.userRole
+                };
+                return next();
+            }
+            if (error.message === 'jwt must be provided') { // if no token >> user is anonymous
+                req.body.helpData = {
+                    userId: 'anonymous',
+                    userRole: 'anonymous'
+                };
+                return next();
+            }
+            res.status(401).json({success: false, description: error});
+        });
     }
 };
 
@@ -66,7 +72,9 @@ module.exports.signOut = function () {
 };
 
 /**
- * description: help middleware,
+ * ------------------------------
+ * description: help middleware
+ * ------------------------------
  * makes hash for password at User creation
  */
 module.exports.hashPassword = function () {

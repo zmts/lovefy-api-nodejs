@@ -10,9 +10,13 @@ var sec = require('../middleware/security');
 /**
  * baseUrl: post/
  */
-// router.get('/getAllFull',       auth.checkToken(), sec.checkItemAccess(Post), getAllFull());
+
+/**
+ * base routes
+ */
+router.get('/getAllMix',        auth.checkToken(), sec.checkSUAccess(), getAllMix());
 router.get('/getAllPub',        getAllPub());
-router.post('/',                makeNewPost());
+router.post('/',                auth.checkToken(), sec.checkItemCreateAccess(Post), makeNewPost());
 router.get('/:id',              auth.checkToken(), sec.checkItemAccess(Post), getPost());
 router.put('/:id',              auth.checkToken(), sec.checkItemAccess(Post), update());
 router.delete('/:id',           auth.checkToken(), sec.checkItemAccess(Post), remove());
@@ -21,18 +25,25 @@ router.delete('/:id',           auth.checkToken(), sec.checkItemAccess(Post), re
  * ------------------------------
  * description: get all Posts of All users(public and private)
  * ------------------------------
- * url: post/getAllPublic
+ * url: post/getAllMix
  * method: GET
  */
-// function getAllFull() {
-//
-// }
+function getAllMix() {
+    return function (req, res) {
+        Post.getAll()
+            .then(function (list) {
+                res.json({success: true, data: list});
+            }).catch(function (error) {
+                res.status(404).send({success: false, description: error});
+            });
+    }
+}
 
 /**
  * ------------------------------
  * description: get all public Posts
  * ------------------------------
- * url: post/getAllPublic
+ * url: post/getAllPub
  * method: GET
  */
 function getAllPub() {
@@ -56,6 +67,7 @@ function getAllPub() {
  */
 function makeNewPost() {
     return function (req, res) {
+        delete req.body.helpData;
         Post.create(req.body)
             .then(function (post) {
                 res.json({success: true, data: post});
@@ -104,7 +116,6 @@ function update() {
             }).catch(function (error) {
                 res.status(404).send({success: false, description: error});
             });
-
     }
 }
 

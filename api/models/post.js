@@ -7,6 +7,7 @@ var MainModel = require('./main');
 
 var validationSchema = Joi.object().keys({
     id: Joi.number().integer(),
+    user_id: Joi.number().integer().required(),
     title: Joi.string().min(3).max(50).required(),
     content: Joi.string().min(3).max(5000).required(),
     private: Joi.boolean(),

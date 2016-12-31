@@ -19,9 +19,6 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 
-app.set('view engine', 'jade');
-app.set('views', path.join(__dirname, 'templates'));
-
 // use static/public folder
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -42,22 +39,22 @@ app.use(function (req, res) {
 // development error handler
 // will print stacktrace
 if (app.get('env') === 'development') {
-    app.use(function (err, req, res, next) {
-        res.status(err.status || 500);
-        res.render('error', {
-            message: err.message,
-            error: err
+    app.use(function (error, req, res, next) {
+        res.status(error.status || 500).send({
+            success: false,
+            description: error.message,
+            errorHandledAt: __filename
         });
     });
 }
 
 // production error handler
 // no stacktraces leaked to user
-app.use(function (err, req, res, next) {
-    res.status(err.status || 500);
-        res.render('error', {
-        message: err.message,
-        error: {}
+app.use(function (error, req, res, next) {
+    res.status(error.status || 500).send({
+        success: false,
+        description: error.message,
+        errorHandledAt: __filename
     });
 });
 

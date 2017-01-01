@@ -1,3 +1,5 @@
+'use strict';
+
 var SUPERUSER = require('../config').roles.superuser;
 var ADMINROLES = require('../config').roles.adminRoles;
 var EDITORROLES = require('../config').roles.editorRoles;

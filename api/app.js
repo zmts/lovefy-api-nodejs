@@ -37,24 +37,22 @@ app.use(function (req, res) {
 });
 
 // development error handler
-// will print stacktrace
 if (app.get('env') === 'development') {
     app.use(function (error, req, res, next) {
         res.status(error.status || 500).send({
             success: false,
             description: error.message,
-            errorHandledAt: __filename
+            path: 'app.js'
         });
     });
 }
 
 // production error handler
-// no stacktraces leaked to user
 app.use(function (error, req, res, next) {
     res.status(error.status || 500).send({
         success: false,
         description: error.message,
-        errorHandledAt: __filename
+        path: 'app.js'
     });
 });
 

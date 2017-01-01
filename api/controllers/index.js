@@ -7,15 +7,12 @@ var userCtrl = require('./userCtrl');
 var postCtrl = require('./postCtrl');
 var authCtrl = require('./authCtrl');
 
-router.use('/',     index());
+router.get('/', function (req, res) {
+    res.json({success: true, data: 'hello'});
+});
+
 router.use('/user', userCtrl);
 router.use('/post', postCtrl);
 router.use('/auth', authCtrl);
-
-function index () {
-    return function (req, res) {
-        res.end();
-    }
-}
 
 module.exports = router;

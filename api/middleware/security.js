@@ -38,7 +38,7 @@ module.exports.checkAccessById = function () {
 
 /**
  * ------------------------------
- * description: check read access for Item model
+ * description: check access for Item model
  * ------------------------------
  * can read, update, remove: ADMINROLES, EDITORROLES, OWNER
  * can read only public items: ANONYMOUS

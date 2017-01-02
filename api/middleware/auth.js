@@ -2,9 +2,25 @@
 
 var bcrypt = require('bcryptjs');
 var jwt = require('jsonwebtoken');
+var crypto = require('crypto');
 
 var SECRET = require('../config').token.secret;
+var ENCRYPTPASSWORD = require('../config').token.encryptpassword;
 var User = require('../models/user');
+
+function _encryptToken(str){
+    var cipher = crypto.createCipher('aes-256-ctr', ENCRYPTPASSWORD);
+    var crypted = cipher.update(str,'utf8','hex');
+    crypted += cipher.final('hex');
+    return crypted;
+}
+
+function _decryptToken(str){
+    var decipher = crypto.createDecipher('aes-256-ctr', ENCRYPTPASSWORD);
+    var dec = decipher.update(str, 'hex', 'utf8');
+    dec += decipher.final('utf8');
+    return dec;
+}
 
 module.exports.makeToken = function () {
     return function (req, res) {
@@ -22,7 +38,7 @@ module.exports.makeToken = function () {
                 };
 
                 jwt.sign(playload, SECRET, options, function (error, token) {
-                    if (token) { return res.json({ success: true, token: token}) }
+                    if (token) { return res.json({ success: true, token: _encryptToken(token)}) }
                     res.status(400).json({success: false, description: error})
                 });
 
@@ -45,6 +61,7 @@ module.exports.makeToken = function () {
 module.exports.checkToken = function () {
     return function (req, res, next) {
         var token = req.body.token || req.headers['token'];
+        token = _decryptToken(token);
         jwt.verify(token, SECRET, function (error, decoded) {
             if (decoded) {
                 req.body.helpData = {

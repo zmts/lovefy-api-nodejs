@@ -17,14 +17,14 @@ var validateReq = require('../middleware/validateReq');
  * other routes
  */
 // router.post('/:id/changeUserRole',      sec.checkSUAccess(), changeUserRole());
-router.post('/checkNameAvailability',   checkNameAvailability());
-router.post('/checkEmailAvailability',  checkEmailAvailability());
+// router.post('/checkNameAvailability',   checkNameAvailability());
+// router.post('/checkEmailAvailability',  checkEmailAvailability());
 
 /**
  * related routes
  */
-router.get('/:id/getAllMixPosts',       auth.checkToken(), sec.checkAccessById(), getAllMixPosts());
-router.get('/:id/getAllPubPosts',       getAllPubPosts());
+// router.get('/:id/getAllMixPosts',       auth.checkToken(), sec.checkAccessById(), getAllMixPosts());
+// router.get('/:id/getAllPubPosts',       getAllPubPosts());
 
 /**
  * base routes
@@ -32,8 +32,8 @@ router.get('/:id/getAllPubPosts',       getAllPubPosts());
 router.get('/all',                      getAllUsers());
 router.get('/:id',                      getUser());
 router.post('/',                        auth.hashPassword(), makeNewUser());
-router.put('/:id',                      auth.checkToken(), sec.checkAccessById(), auth.hashPassword(), update());
-router.delete('/:id',                   auth.checkToken(), sec.checkAccessById(), remove());
+router.put('/:id',                      update()); // auth.checkToken(), sec.checkAccessById(), auth.hashPassword(),
+router.delete('/:id',                   remove()); // auth.checkToken(), sec.checkAccessById(),
 
 /**
  * ------------------------------
@@ -53,43 +53,43 @@ function getAllUsers() {
     }
 }
 
-/**
- * ------------------------------
- * description: show list of mix(PUBLIC and PRIVATE) Posts of current User
- * Id takes from TOKEN in AUTH middleware(checkToken method)
- * ------------------------------
- * url: user/getAllMixPosts
- * headers: token
- * method: GET
- */
-function getAllMixPosts() {
-    return function (req, res) {
-        User.getAllMixPosts(req.body.helpData.userId)
-            .then(function (list) {
-                res.json({success: true, data: list.related('posts')});
-            }).catch(function (error) {
-                res.status(404).send({success: false, description: error});
-            });
-    }
-}
+// /**
+//  * ------------------------------
+//  * description: show list of mix(PUBLIC and PRIVATE) Posts of current User
+//  * Id takes from TOKEN in AUTH middleware(checkToken method)
+//  * ------------------------------
+//  * url: user/getAllMixPosts
+//  * headers: token
+//  * method: GET
+//  */
+// function getAllMixPosts() {
+//     return function (req, res) {
+//         User.getAllMixPosts(req.body.helpData.userId)
+//             .then(function (list) {
+//                 res.json({success: true, data: list.related('posts')});
+//             }).catch(function (error) {
+//                 res.status(404).send({success: false, description: error});
+//             });
+//     }
+// }
 
-/**
- * ------------------------------
- * description: show list of all PUBLIC Posts of current User
- * ------------------------------
- * url: user/user_id/getAllPublicPosts
- * method: GET
- */
-function getAllPubPosts() {
-    return function (req, res) {
-        User.getAllPubPosts(req.params.id)
-            .then(function (list) {
-                res.json({success: true, data: list.related('posts')});
-            }).catch(function (error) {
-                res.status(404).send({success: false, description: error});
-            });
-    }
-}
+// /**
+//  * ------------------------------
+//  * description: show list of all PUBLIC Posts of current User
+//  * ------------------------------
+//  * url: user/user_id/getAllPublicPosts
+//  * method: GET
+//  */
+// function getAllPubPosts() {
+//     return function (req, res) {
+//         User.getAllPubPosts(req.params.id)
+//             .then(function (list) {
+//                 res.json({success: true, data: list.related('posts')});
+//             }).catch(function (error) {
+//                 res.status(404).send({success: false, description: error});
+//             });
+//     }
+// }
 
 /**
  * ------------------------------
@@ -179,50 +179,50 @@ function remove() {
     }
 }
 
-/**
- * ------------------------------
- * description: check User name availability
- * ------------------------------
- * url: user/checkNameAvailability
- * method: POST
- * request: {"name": "string"}
- * response: true if found, false if not found
- */
-function checkNameAvailability() {
-    return function (req, res) {
-        User.getByName(req.body.name)
-            .then(function (user) {
-                res.json({success: true});
-            }).catch(function (error) {
-                res.status(404).send({success: false, description: error});
-            });
-    }
-}
+// /**
+//  * ------------------------------
+//  * description: check User name availability
+//  * ------------------------------
+//  * url: user/checkNameAvailability
+//  * method: POST
+//  * request: {"name": "string"}
+//  * response: true if found, false if not found
+//  */
+// function checkNameAvailability() {
+//     return function (req, res) {
+//         User.getByName(req.body.name)
+//             .then(function (user) {
+//                 res.json({success: true});
+//             }).catch(function (error) {
+//                 res.status(404).send({success: false, description: error});
+//             });
+//     }
+// }
 
-/**
- * ------------------------------
- * description: check User email availability
- * ------------------------------
- * url: user/checkEmailAvailability
- * method: POST
- * request: {"email": "string"}
- * response: true if found, false if not found
- */
-function checkEmailAvailability() {
-    return function (req, res) {
-        User.getByEmail(req.body.email)
-            .then(function (user) {
-                res.json({success: true});
-            }).catch(function (error) {
-                res.status(404).send({success: false, description: error});
-            });
-    }
-}
+// /**
+//  * ------------------------------
+//  * description: check User email availability
+//  * ------------------------------
+//  * url: user/checkEmailAvailability
+//  * method: POST
+//  * request: {"email": "string"}
+//  * response: true if found, false if not found
+//  */
+// function checkEmailAvailability() {
+//     return function (req, res) {
+//         User.getByEmail(req.body.email)
+//             .then(function (user) {
+//                 res.json({success: true, data: user});
+//             }).catch(function (error) {
+//                 res.status(404).send({success: false, description: error});
+//             });
+//     }
+// }
 
-function changeUserRole() {
-    return function (req, res) {
-        res.json({success: true});
-    }
-}
+// function changeUserRole() {
+//     return function (req, res) {
+//         res.json({success: true});
+//     }
+// }
 
 module.exports = router;

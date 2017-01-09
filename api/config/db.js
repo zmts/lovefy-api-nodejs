@@ -20,9 +20,7 @@ var knexInit = require('knex')({
     // debug: true
 });
 
-// Give the connection to objection.
+// connect objection model to knex
 Model.knex(knexInit);
 
-
 module.exports = Model;
-

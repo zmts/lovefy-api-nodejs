@@ -13,7 +13,7 @@ function MainModel() {
 
 Model.extend(MainModel);
 
-MainModel.getAll = function () {
+MainModel.getAll = function () { // todo handle empty response
     return this.query();
 };
 
@@ -22,15 +22,15 @@ MainModel.create = function (data) {
 };
 
 MainModel.getById =  function (id) {
-    return this.query().where({id: id}); // todo
+    return this.query().findById(id);
 };
 
 MainModel.update = function (id, data) {
-    return this.query().patch(data).where({id: id}); // todo
+    return this.query().patchAndFetchById(id, data);
 };
 
 MainModel.remove = function (id) {
-    // return this // todo
+    return this.query().deleteById(id);
 };
 
 module.exports = MainModel;

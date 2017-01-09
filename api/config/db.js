@@ -1,6 +1,9 @@
-const config = require('./index');
+var objection = require('objection');
+var Model = objection.Model;
 
-var knex = require('knex')({
+var config = require('./index');
+
+var knexInit = require('knex')({
     client: 'pg',
     connection: {
         host: config.db.host,
@@ -13,11 +16,13 @@ var knex = require('knex')({
     pool: {
         min: 1,
         max: 10
-    },
+    }
     // debug: true
 });
 
-var plugins = ['registry', 'visibility'];
+// Give the connection to objection.
+Model.knex(knexInit);
 
-module.exports.bookshelf = require('bookshelf')(knex).plugin(plugins);
+
+module.exports = Model;
 

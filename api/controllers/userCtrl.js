@@ -29,7 +29,7 @@ router.get('/:id/getAllPubPosts',       getAllPubPosts());
 /**
  * base routes
  */
-router.get('/getAllUsers',              getAllUsers());
+router.get('/all',                      getAllUsers());
 router.get('/:id',                      getUser());
 router.post('/',                        auth.hashPassword(), makeNewUser());
 router.put('/:id',                      auth.checkToken(), sec.checkAccessById(), auth.hashPassword(), update());

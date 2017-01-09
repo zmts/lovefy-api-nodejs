@@ -1,34 +1,37 @@
 'use strict';
 
-var bookshelf = require('../config/db').bookshelf;
+var Model = require('../config/db');
 
 /**
  * description: Main parent model
  * extends other models by own basic methods
  */
 
-var MainModel = bookshelf.Model.extend({},
-    {
-        getAll: function () {
-            return this.forge().orderBy('id').fetchAll({require: true});
-        },
+function MainModel() {
+    Model.apply(this, arguments);
+}
 
-        create: function (data) {
-            return this.forge(data).save()
-        },
+Model.extend(MainModel);
 
-        getById: function (id) {
-            return this.forge().where('id', id).fetch({require: true});
-        },
+MainModel.getAll = function () {
+    return this.query();
+};
 
-        update: function (id, data) {
-            return this.forge({id: id}).save(data);
-        },
+MainModel.create = function (data) {
+    return this.query().insert(data);
+};
 
-        remove: function (id) {
-            return this.forge({id: id}).destroy();
-        }
-    }
-);
+MainModel.getById =  function (id) {
+    return this.query().where({id: id}); // todo
+};
 
-module.exports = bookshelf.model('MainModel', MainModel);
+MainModel.update = function (id, data) {
+    return this.query().patch(data).where({id: id}); // todo
+};
+
+MainModel.remove = function (id) {
+    // return this // todo
+};
+
+module.exports = MainModel;
+

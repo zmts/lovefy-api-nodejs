@@ -13,8 +13,14 @@ function MainModel() {
 
 Model.extend(MainModel);
 
-MainModel.getAll = function () { // todo handle empty response
-    return this.query();
+MainModel.getAll = function () {
+    return this.query()
+        .then(function (data) {
+            if (data) { return data }
+            throw('empty response')
+        }).catch(function (error) {
+            throw(error)
+        });
 };
 
 MainModel.create = function (data) {
@@ -22,7 +28,13 @@ MainModel.create = function (data) {
 };
 
 MainModel.getById =  function (id) {
-    return this.query().findById(id);
+    return this.query().findById(id)
+        .then(function (data) {
+            if (data) { return data }
+            throw('empty response')
+        }).catch(function (error) {
+            throw(error)
+        });
 };
 
 MainModel.update = function (id, data) {

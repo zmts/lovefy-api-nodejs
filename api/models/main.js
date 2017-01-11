@@ -16,9 +16,8 @@ Model.extend(MainModel);
 MainModel.getAll = function () {
     return this.query()
         .then(function (data) {
-            if (data.length === 0) throw {message: 'Empty response'}
-            if (data) { return data }
-            throw {message: 'Empty response'}
+            if (!data.length) throw {message: 'Empty response'};
+            return data;
         }).catch(function (error) {
             throw error;
         });
@@ -31,8 +30,8 @@ MainModel.create = function (data) {
 MainModel.getById =  function (id) {
     return this.query().findById(id)
         .then(function (data) {
-            if (data) { return data }
-            throw {message: 'Empty response'}
+            if (!data) throw {message: 'Empty response'};
+            return data;
         }).catch(function (error) {
             throw error;
         });

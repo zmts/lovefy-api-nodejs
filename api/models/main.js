@@ -16,10 +16,11 @@ Model.extend(MainModel);
 MainModel.getAll = function () {
     return this.query()
         .then(function (data) {
+            if (data.length === 0) throw {message: 'Empty response'}
             if (data) { return data }
-            throw('empty response')
+            throw {message: 'Empty response'}
         }).catch(function (error) {
-            throw(error)
+            throw error;
         });
 };
 
@@ -31,9 +32,9 @@ MainModel.getById =  function (id) {
     return this.query().findById(id)
         .then(function (data) {
             if (data) { return data }
-            throw('empty response')
+            throw {message: 'Empty response'}
         }).catch(function (error) {
-            throw(error)
+            throw error;
         });
 };
 

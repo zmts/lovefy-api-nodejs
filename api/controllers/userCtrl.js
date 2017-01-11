@@ -144,14 +144,11 @@ function update() {
         User.getById(req.params.id)
             .then(function (user) {
                 delete req.body.helpData;
-                User.update(user.id, req.body)
-                    .then(function (updated_user) {
-                        res.json({success: true, data: updated_user});
-                    }).catch(function (error) {
-                        res.status(400).send({success: false, description: error});
-                    });
+                return User.update(user.id, req.body)
+            }).then(function (updated_user) {
+                res.json({success: true, data: updated_user});
             }).catch(function (error) {
-                res.status(404).send({success: false, description: error});
+                res.status(400).send({success: false, description: error});
             });
     }
 }
@@ -167,15 +164,12 @@ function remove() {
     return function (req, res) {
         User.getById(req.params.id)
             .then(function (model) {
-                User.remove(model.id)
-                    .then(function () {
-                        res.json({success: true, description: 'User id ' + model.id + ' was removed'});
-                    }).catch(function (error) {
-                        res.status(400).send({success: false, description: error});
-                    });
+                return User.remove(model.id);
+            }).then(function () {
+                res.json({success: true, description: 'User with id '+ req.params.id +' was removed'});
             }).catch(function (error) {
-                res.status(404).send({success: false, description: error});
-            });
+                res.status(400).send({success: false, description: error});
+            })
     }
 }
 

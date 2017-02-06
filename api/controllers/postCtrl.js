@@ -14,47 +14,44 @@ var sec = require('../middleware/security');
 /**
  * base routes
  */
-router.get('/getAllMix',        auth.checkToken(), sec.checkSUAccess(), getAllMix());
-router.get('/getAllPub',        getAllPub());
-router.post('/',                auth.checkToken(), sec.checkItemCreateAccess(Post), makeNewPost());
-router.get('/:id',              auth.checkToken(), sec.checkItemAccess(Post), getPost());
-router.put('/:id',              auth.checkToken(), sec.checkItemAccess(Post), update());
-router.delete('/:id',           auth.checkToken(), sec.checkItemAccess(Post), remove());
+router.post('/',                /* auth.checkToken(), sec.checkItemCreateAccess(Post),*/ makeNewPost());
+
+router.get('/',                 auth.checkToken(), getAll());
+router.get('/:id',              /*auth.checkToken(), sec.checkItemAccess(Post),*/ getPost());
+
+router.put('/:id',              /*auth.checkToken(), sec.checkItemAccess(Post),*/ update());
+router.delete('/:id',           /*auth.checkToken(), sec.checkItemAccess(Post),*/ remove());
 
 /**
  * ------------------------------
  * description: get all Posts of All users(public and private)
  * ------------------------------
- * url: post/getAllMix
+ * url: post/
  * method: GET
  */
-function getAllMix() {
+function getAll() {
     return function (req, res) {
-        Post.getAll()
-            .then(function (list) {
-                res.json({success: true, data: list});
-            }).catch(function (error) {
-                res.status(404).send({success: false, description: error});
-            });
+        if (req.query.private) { return getAllMix(req, res) }
+        getAllPub(req, res)
     }
 }
 
-/**
- * ------------------------------
- * description: get all public Posts
- * ------------------------------
- * url: post/getAllPub
- * method: GET
- */
-function getAllPub() {
-    return function (req, res) {
-        Post.getAllPub()
-            .then(function (list) {
-                res.json({success: true, data: list});
-            }).catch(function (error) {
-                res.status(400).send({success: false, description: error});
-            });
-    }
+function getAllMix(req, res) {
+    Post.getAll()
+        .then(function (list) {
+            res.json({success: true, data: list});
+        }).catch(function (error) {
+            res.status(404).send({success: false, description: error});
+        });
+}
+
+function getAllPub(req, res) {
+    Post.getAllPub()
+        .then(function (list) {
+            res.json({success: true, data: list});
+        }).catch(function (error) {
+            res.status(400).send({success: false, description: error});
+        });
 }
 
 /**

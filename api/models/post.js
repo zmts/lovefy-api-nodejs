@@ -1,44 +1,45 @@
-// 'use strict';
-//
-// var Joi = require('joi');
-//
-// // var bookshelf = require('../config/db').bookshelf;
-// var MainModel = require('./main');
-//
-// var validationSchema = Joi.object().keys({
-//     id: Joi.number().integer(),
-//     user_id: Joi.number().integer().required(),
-//     title: Joi.string().min(3).max(50).required(),
-//     content: Joi.string().min(3).max(5000).required(),
-//     private: Joi.boolean(),
-//     created_at: Joi.date(),
-//     updated_at: Joi.date()
-// });
-//
-// var Post = MainModel.extend({
-//     tableName: 'posts',
-//     hasTimestamps: true,
-//
-//     initialize: function () {
-//         this.on('saving', this.validate);
-//         this.on('creating', this.validate);
-//     },
-//
-//     validate: function () {
-//         return Joi.validate(this.serialize(), validationSchema, function (error, value) {
-//             if (error) { throw ({success: false, message: error.name, details: error.details}) }
-//         });
-//     }
-//
-// },  {
-//         getAllPub: function () {
-//             return this
-//                 .forge()
-//                 .where({'private': false})
-//                 .orderBy('id')
-//                 .fetchAll({require: true});
-//         }
-//     }
-// );
-//
-// module.exports = bookshelf.model('Post', Post);
+'use strict';
+
+var MainModel = require('./main');
+
+function Post() {
+    MainModel.apply(this, arguments);
+}
+
+Post.tableName = 'posts';
+MainModel.extend(Post);
+
+Post.jsonSchema = {
+    type: 'object',
+    required: ['user_id', 'title', 'content'],
+    additionalProperties: false,
+    properties: {
+        id: {type: 'integer'},
+        user_id: {type: 'integer'},
+        title: {type: 'string', minLength: 4, maxLength: 30},
+        content: {type: 'string'},
+        private: {type: 'boolean'},
+        created_at: {type: 'string', format:'date-time'},
+        updated_at: {type: 'string', format:'date-time'}
+    }
+};
+
+Post.prototype.$beforeInsert = function () {
+    // this.$validate();
+};
+
+Post.prototype.$beforeUpdate = function () {
+    this.updated_at = new Date().toISOString();
+};
+
+Post.getAllPub = function () {
+    return this.query().where({private: false})
+        .then(function (data) {
+            if (!data) throw {message: 'Empty response'};
+            return data;
+        }).catch(function (error) {
+            throw error;
+        });
+};
+
+module.exports = Post;

@@ -14,44 +14,52 @@ var sec = require('../middleware/security');
 /**
  * base routes
  */
-router.post('/',                /* auth.checkToken(), sec.checkItemCreateAccess(Post),*/ makeNewPost());
 
-router.get('/',                 auth.checkToken(), getAll());
+router.get('/all',              auth.checkToken(), sec.checkSUAccess(), getAllMix());
+router.get('/public',           getAllPub());
 router.get('/:id',              /*auth.checkToken(), sec.checkItemAccess(Post),*/ getPost());
 
+router.post('/',                /* auth.checkToken(), sec.checkItemCreateAccess(Post),*/ newPost());
 router.put('/:id',              /*auth.checkToken(), sec.checkItemAccess(Post),*/ update());
 router.delete('/:id',           /*auth.checkToken(), sec.checkItemAccess(Post),*/ remove());
 
 /**
  * ------------------------------
  * description: get all Posts of All users(public and private)
+ * have access only SU
  * ------------------------------
- * url: post/
+ * url: post/all
  * method: GET
  */
-function getAll() {
+function getAllMix() {
     return function (req, res) {
-        if (req.query.private) { return getAllMix(req, res) }
-        getAllPub(req, res)
+        Post.getAll()
+            .then(function (list) {
+                res.json({success: true, data: list});
+            })
+            .catch(function (error) {
+                res.status(404).send({success: false, description: error});
+            });
     }
 }
 
-function getAllMix(req, res) {
-    Post.getAll()
-        .then(function (list) {
-            res.json({success: true, data: list});
-        }).catch(function (error) {
-            res.status(404).send({success: false, description: error});
-        });
-}
-
-function getAllPub(req, res) {
-    Post.getAllPub()
-        .then(function (list) {
-            res.json({success: true, data: list});
-        }).catch(function (error) {
-            res.status(400).send({success: false, description: error});
-        });
+/**
+ * ------------------------------
+ * description: get all public Posts
+ * ------------------------------
+ * url: post/public
+ * method: GET
+ */
+function getAllPub() {
+    return function (req, res) {
+        Post.getAllPub()
+            .then(function (list) {
+                res.json({success: true, data: list});
+            })
+            .catch(function (error) {
+                res.status(400).send({success: false, description: error});
+            });
+    }
 }
 
 /**
@@ -62,7 +70,7 @@ function getAllPub(req, res) {
  * method: POST
  * request: {"user_id": "int", "title": "string", "content": "string"}
  */
-function makeNewPost() {
+function newPost() {
     return function (req, res) {
         delete req.body.helpData;
         Post.create(req.body)

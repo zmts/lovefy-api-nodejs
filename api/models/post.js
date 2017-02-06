@@ -16,15 +16,15 @@ Post.jsonSchema = {
     properties: {
         id: {type: 'integer'},
         user_id: {type: 'integer'},
-        title: {type: 'string', minLength: 4, maxLength: 30},
-        content: {type: 'string'},
+        title: {type: 'string', minLength: 10, maxLength: 50},
+        content: {type: 'string', minLength: 10, maxLength: 1000},
         private: {type: 'boolean'},
         created_at: {type: 'string', format:'date-time'},
         updated_at: {type: 'string', format:'date-time'}
     }
 };
 
-Post.prototype.$beforeInsert = function () {
+Post.prototype.$beforeInsert = function (json) {
     // this.$validate();
 };
 

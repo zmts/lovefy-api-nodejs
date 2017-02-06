@@ -42,18 +42,31 @@ if (app.get('env') === 'development') {
         res.status(error.status || 500).send({
             success: false,
             description: error.message,
+            errortype: 'development/regular',
             path: 'app.js'
         });
     });
 }
 
-// production error handler
+// production error handler // todo >> send email if error
 app.use(function (error, req, res, next) {
     res.status(error.status || 500).send({
         success: false,
         description: error.message,
+        errortype: 'production/regular',
         path: 'app.js'
     });
+});
+
+// production uncaughtException error handler // todo >> send email if error
+process.on('uncaughtException', function(error) {
+    res.status(error.status || 500).send({
+        success: false,
+        description: error.message,
+        errortype: 'production/uncaughtException',
+        path: 'app.js'
+    });
+    process.exit(1);
 });
 
 module.exports = app;

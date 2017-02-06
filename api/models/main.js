@@ -27,7 +27,7 @@ MainModel.create = function (data) {
     return this.query().insert(data);
 };
 
-MainModel.getById =  function (id) {
+MainModel.getById = function (id) {
     return this.query().findById(id)
         .then(function (data) {
             if (!data) throw {message: 'Empty response'};

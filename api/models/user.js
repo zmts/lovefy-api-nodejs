@@ -39,12 +39,26 @@ User.prototype.$beforeUpdate = function () {
     this.updated_at = new Date().toISOString();
 };
 
-// User.getByEmail = function (email) { // todo
-//     return this.query().where({email: email});
-// };
+User.getByEmail = function (email) {
+    return this.query().where({email: email})
+        .then(function (data) {
+            if (!data.length) throw {message: 'Empty response'};
+            return data[0]; // email field is unique and should pass only one first item
+        })
+        .catch(function (error) {
+            throw error.message || error;
+        });
+};
 
-// User.getByName = function (name) { // todo
-//     return this.query().where({name: name});
-// };
+User.getByName = function (name) {
+    return this.query().where({name: name})
+        .then(function (data) {
+            if (!data.length) throw {message: 'Empty response'};
+            return data;
+        })
+        .catch(function (error) {
+            throw error.message || error;
+        });
+};
 
 module.exports = User;

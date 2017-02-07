@@ -18,8 +18,9 @@ MainModel.getAll = function () {
         .then(function (data) {
             if (!data.length) throw {message: 'Empty response'};
             return data;
-        }).catch(function (error) {
-            throw error;
+        })
+        .catch(function (error) {
+            throw error.message || error;
         });
 };
 
@@ -32,8 +33,9 @@ MainModel.getById = function (id) {
         .then(function (data) {
             if (!data) throw {message: 'Empty response'};
             return data;
-        }).catch(function (error) {
-            throw error;
+        })
+        .catch(function (error) {
+            throw error.message || error;
         });
 };
 

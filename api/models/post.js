@@ -38,7 +38,7 @@ Post.getAllPub = function () {
             if (!data) throw {message: 'Empty response'};
             return data;
         }).catch(function (error) {
-            throw error;
+            throw error.message || error;
         });
 };
 

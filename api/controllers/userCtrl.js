@@ -17,8 +17,8 @@ var validateReq = require('../middleware/validateReq');
  * other routes
  */
 // router.post('/:id/changeUserRole',      sec.checkSUAccess(), changeUserRole());
-// router.post('/checkNameAvailability',   checkNameAvailability());
-// router.post('/checkEmailAvailability',  checkEmailAvailability());
+router.post('/checkNameAvailability',   checkNameAvailability());
+router.post('/checkEmailAvailability',  checkEmailAvailability());
 
 /**
  * related routes
@@ -173,45 +173,45 @@ function remove() {
     }
 }
 
-// /**
-//  * ------------------------------
-//  * description: check User name availability
-//  * ------------------------------
-//  * url: user/checkNameAvailability
-//  * method: POST
-//  * request: {"name": "string"}
-//  * response: true if found, false if not found
-//  */
-// function checkNameAvailability() {
-//     return function (req, res) {
-//         User.getByName(req.body.name)
-//             .then(function (user) {
-//                 res.json({success: true});
-//             }).catch(function (error) {
-//                 res.status(404).send({success: false, description: error});
-//             });
-//     }
-// }
+/**
+ * ------------------------------
+ * description: check User name availability
+ * ------------------------------
+ * url: user/checkNameAvailability
+ * method: POST
+ * request: {"name": "string"}
+ * response: true if found, false if not found
+ */
+function checkNameAvailability() {
+    return function (req, res) {
+        User.getByName(req.body.name)
+            .then(function (user) {
+                res.json({success: true, data: user});
+            }).catch(function (error) {
+                res.status(404).send({success: false, description: error});
+            });
+    }
+}
 
-// /**
-//  * ------------------------------
-//  * description: check User email availability
-//  * ------------------------------
-//  * url: user/checkEmailAvailability
-//  * method: POST
-//  * request: {"email": "string"}
-//  * response: true if found, false if not found
-//  */
-// function checkEmailAvailability() {
-//     return function (req, res) {
-//         User.getByEmail(req.body.email)
-//             .then(function (user) {
-//                 res.json({success: true, data: user});
-//             }).catch(function (error) {
-//                 res.status(404).send({success: false, description: error});
-//             });
-//     }
-// }
+/**
+ * ------------------------------
+ * description: check User email availability
+ * ------------------------------
+ * url: user/checkEmailAvailability
+ * method: POST
+ * request: {"email": "string"}
+ * response: true if found, false if not found
+ */
+function checkEmailAvailability() {
+    return function (req, res) {
+        User.getByEmail(req.body.email)
+            .then(function (user) {
+                res.json({success: true, data: user});
+            }).catch(function (error) {
+                res.status(404).send({success: false, description: error});
+            });
+    }
+}
 
 // function changeUserRole() {
 //     return function (req, res) {

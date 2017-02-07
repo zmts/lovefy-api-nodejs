@@ -27,14 +27,14 @@ module.exports.makeToken = function () {
         User.getByEmail(req.body.email)
             .then(function (user) {
                 var playload = {
-                    username: user.get('name'),
-                    userRole: user.get('role')
+                    username: user.name,
+                    userRole: user.role
                 };
 
                 var options = {
                     algorithm: 'HS512',
                     expiresIn: '15m',
-                    subject: user.get('id').toString()
+                    subject: user.id.toString()
                 };
 
                 jwt.sign(playload, SECRET, options, function (error, token) {
@@ -116,7 +116,7 @@ module.exports.checkPassword = function () {
     return function (req, res, next) {
         User.getByEmail(req.body.email)
             .then(function (user) {
-                bcrypt.compare(req.body.password, user.get('password_hash'), function(error, result) {
+                bcrypt.compare(req.body.password, user.password_hash, function(error, result) {
                     if (result) { return next() }
                     res.status(403).json({success: false, description: 'Invalid password'})
                 });

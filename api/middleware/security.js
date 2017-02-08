@@ -90,11 +90,12 @@ module.exports.checkItemCreateAccess = function () {
 };
 
 // module.exports.hasAccess = function (roles, modelName, level) {
-//     roles = roles || [];
-//     modelName = modelName || null;
-//     level = level || ['c','r','u','d'];
-//     if (roles) {
-//         return function (req, resp, next) {
+//     return function (req, res, next) {
+//         roles = roles && roles.length ? roles : null;
+//         modelName = modelName || null;
+//         level = level || ['c','r','u','d'];
+//
+//         if (roles) {
 //             if ( roles.indexOf(req.body.helpData.userRole) >= 0 ) return next();
 //             if ( +req.body.helpData.userId === +req.params.id ) return next();
 //             res.status(403).send({
@@ -102,23 +103,23 @@ module.exports.checkItemCreateAccess = function () {
 //                 description: 'Forbidden. User(' + req.body.helpData.userId + ') dont have permissions to make actions at id #' + req.params.id
 //             });
 //         }
-//     }
-//     if (modelName) {
-//         modelName.getById(req.params.id)
-//             .then(function (model) {
-//                 if ( !model.private ) return next();
-//                 if ( ADMINROLES.indexOf( req.body.helpData.userRole ) >= 0) return next();
-//                 if ( EDITORROLES.indexOf( req.body.helpData.userRole ) >= 0) return next();
-//                 if ( +req.body.helpData.userId === +model.user_id ) return next(); // check Ownership
-//                 res.status(403).send({
-//                     success: false,
-//                     description: 'Forbidden. User(' + req.body.helpData.userId + ') dont have permissions to make actions at id #' + model.user_id
-//                 });
-//             })
-//             .catch(function (error) {
-//                 res.status(error.statusCode || 404).send({success: false, description: error.message || error});
-//             });
-//     }
 //
+//         if (modelName) {
+//             modelName.getById(req.params.id)
+//                 .then(function (model) {
+//                     if ( !model.private ) return next();
+//                     if ( ADMINROLES.indexOf( req.body.helpData.userRole ) >= 0) return next();
+//                     if ( EDITORROLES.indexOf( req.body.helpData.userRole ) >= 0) return next();
+//                     if ( +req.body.helpData.userId === +model.user_id ) return next(); // check Ownership
+//                     res.status(403).send({
+//                         success: false,
+//                         description: 'Forbidden. User(' + req.body.helpData.userId + ') dont have permissions to make actions at id #' + model.user_id
+//                     });
+//                 })
+//                 .catch(function (error) {
+//                     res.status(error.statusCode || 404).send({success: false, description: error.message || error});
+//                 });
+//         }
+//     }
 // };
 

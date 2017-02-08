@@ -19,7 +19,7 @@ router.get('/all',              auth.checkToken(), sec.checkSUAccess(), getAllMi
 router.get('/public',           getAllPub());
 router.get('/:id',              auth.checkToken(), sec.checkItemAccess(Post), getPost());
 
-router.post('/',                /* auth.checkToken(), sec.checkItemCreateAccess(Post),*/ newPost());
+router.post('/',                auth.checkToken(), sec.checkItemCreateAccess(Post), newPost());
 router.put('/:id',              /*auth.checkToken(), sec.checkItemAccess(Post),*/ update());
 router.delete('/:id',           /*auth.checkToken(), sec.checkItemAccess(Post),*/ remove());
 

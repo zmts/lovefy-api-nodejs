@@ -10,7 +10,7 @@ var sec = require('../middleware/security');
 var validateReq = require('../middleware/validateReq');
 
 /**
- * baseUrl: user/
+ * baseUrl: users/
  */
 
 /**
@@ -23,23 +23,23 @@ router.post('/checkEmailAvailability',  checkEmailAvailability());
 /**
  * related routes
  */
-// router.get('/:id/getAllMixPosts',       auth.checkToken(), sec.checkAccessById(), getAllMixPosts());
-// router.get('/:id/getAllPubPosts',       getAllPubPosts());
+router.get('/:id/posts/all',          auth.checkToken(), sec.checkAccessById(), getMixPostsById());
+router.get('/:id/posts/public',       getPubPostsById());
 
 /**
  * base routes
  */
 router.get('/all',                      getAllUsers());
 router.get('/:id',                      getUser());
-router.post('/',                        auth.hashPassword(), makeNewUser());
-router.put('/:id',                      update()); // auth.checkToken(), sec.checkAccessById(), auth.hashPassword(),
-router.delete('/:id',                   remove()); // auth.checkToken(), sec.checkAccessById(),
+router.post('/',                        auth.hashPassword(), newUser());
+router.put('/:id',                      auth.checkToken(), sec.checkAccessById(), auth.hashPassword(), update());
+router.delete('/:id',                   auth.checkToken(), sec.checkAccessById(), remove());
 
 /**
  * ------------------------------
  * description: get all Users
  * ------------------------------
- * url: user/all
+ * url: users/all
  * method: GET
  */
 function getAllUsers() {
@@ -47,67 +47,77 @@ function getAllUsers() {
         User.getAll()
             .then(function (list) {
                 res.json({success: true, data: list});
-            }).catch(function (error) {
-                res.status(404).send({success: false, description: error});
+            })
+            .catch(function (error) {
+                res.status(error.statusCode || 404).send({success: false, description: error.message || error});
             });
     }
 }
 
-// /**
-//  * ------------------------------
-//  * description: show list of mix(PUBLIC and PRIVATE) Posts of current User
-//  * Id takes from TOKEN in AUTH middleware(checkToken method)
-//  * ------------------------------
-//  * url: user/getAllMixPosts
-//  * headers: token
-//  * method: GET
-//  */
-// function getAllMixPosts() {
-//     return function (req, res) {
-//         User.getAllMixPosts(req.body.helpData.userId)
-//             .then(function (list) {
-//                 res.json({success: true, data: list.related('posts')});
-//             }).catch(function (error) {
-//                 res.status(404).send({success: false, description: error});
-//             });
-//     }
-// }
+/**
+ * ------------------------------
+ * description: show list of mix(PUBLIC and PRIVATE) Posts by user ID
+ * has access: OWNER and ADMINROLES
+ * ------------------------------
+ * url: users/user_id/posts/all
+ * headers: token
+ * method: GET
+ */
+function getMixPostsById() {
+    return function (req, res) {
+        User.getById(req.params.id)
+            .then(function (user) {
+                return User.getMixPostsById(user.id);
+            })
+            .then(function (list) {
+                res.json({success: true, data: list});
+            })
+            .catch(function (error) {
+                res.status(error.statusCode || 404).send({success: false, description: error.message || error});
+            });
+    }
+}
 
-// /**
-//  * ------------------------------
-//  * description: show list of all PUBLIC Posts of current User
-//  * ------------------------------
-//  * url: user/user_id/getAllPublicPosts
-//  * method: GET
-//  */
-// function getAllPubPosts() {
-//     return function (req, res) {
-//         User.getAllPubPosts(req.params.id)
-//             .then(function (list) {
-//                 res.json({success: true, data: list.related('posts')});
-//             }).catch(function (error) {
-//                 res.status(404).send({success: false, description: error});
-//             });
-//     }
-// }
+/**
+ * ------------------------------
+ * description: show list of all PUBLIC Posts of current User
+ * ------------------------------
+ * url: users/user_id/posts/public
+ * method: GET
+ */
+function getPubPostsById() {
+    return function (req, res) {
+        User.getById(req.params.id)
+            .then(function (user) {
+                return User.getPubPostsById(user.id);
+            })
+            .then(function (list) {
+                res.json({success: true, data: list});
+            })
+            .catch(function (error) {
+                res.status(error.statusCode || 404).send({success: false, description: error.message || error});
+            });
+    }
+}
 
 /**
  * ------------------------------
  * description: create new User(Registration)
  * ------------------------------
- * url: user/
+ * url: users/
  * method: POST
  * request: {"name": "string", "email": "string", "password": "string"}
  * "password" field from request transfers and saves to DB as "password_hash"
  */
-function makeNewUser() {
+function newUser() {
     return function (req, res) {
         delete req.body.helpData;
         User.create(req.body)
             .then(function (user) {
                 res.json(user);
-            }).catch(function (error) {
-                res.status(400).send({success: false, description: error});
+            })
+            .catch(function (error) {
+                res.status(error.statusCode || 404).send({success: false, description: error.message || error});
             });
     }
 }
@@ -116,7 +126,7 @@ function makeNewUser() {
  * ------------------------------
  * description: get User by id
  * ------------------------------
- * url: user/:id
+ * url: users/:id
  * method: POST
  */
 function getUser() {
@@ -124,8 +134,9 @@ function getUser() {
         User.getById(req.params.id)
             .then(function (user) {
                 res.json({success: true, data: user});
-            }).catch(function (error) {
-                res.status(404).send({success: false, description: error});
+            })
+            .catch(function (error) {
+                res.status(error.statusCode || 404).send({success: false, description: error.message || error});
             });
     }
 }
@@ -134,7 +145,7 @@ function getUser() {
  * ------------------------------
  * description: update User by id
  * ------------------------------
- * url: user/:id
+ * url: users/:id
  * method: PUT
  * request: {"name": "string", "email": "string", "password": "string"}
  * "password" field from request transfers and saves to DB as "password_hash"
@@ -145,10 +156,12 @@ function update() {
             .then(function (user) {
                 delete req.body.helpData;
                 return User.update(user.id, req.body)
-            }).then(function (updated_user) {
+            })
+            .then(function (updated_user) {
                 res.json({success: true, data: updated_user});
-            }).catch(function (error) {
-                res.status(404).send({success: false, description: error});
+            })
+            .catch(function (error) {
+                res.status(error.statusCode || 404).send({success: false, description: error.message || error});
             });
     }
 }
@@ -157,7 +170,7 @@ function update() {
  * ------------------------------
  * description: remove User from db by id
  * ------------------------------
- * url: user/:id
+ * url: users/:id
  * method: DELETE
  */
 function remove() {
@@ -165,10 +178,12 @@ function remove() {
         User.getById(req.params.id)
             .then(function (model) {
                 return User.remove(model.id);
-            }).then(function () {
+            })
+            .then(function () {
                 res.json({success: true, description: 'User with id '+ req.params.id +' was removed'});
-            }).catch(function (error) {
-                res.status(404).send({success: false, description: error});
+            })
+            .catch(function (error) {
+                res.status(error.statusCode || 404).send({success: false, description: error.message || error});
             })
     }
 }
@@ -177,7 +192,7 @@ function remove() {
  * ------------------------------
  * description: check User name availability
  * ------------------------------
- * url: user/checkNameAvailability
+ * url: users/checkNameAvailability
  * method: POST
  * request: {"name": "string"}
  * response: true if found, false if not found
@@ -187,8 +202,9 @@ function checkNameAvailability() {
         User.getByName(req.body.name)
             .then(function (user) {
                 res.json({success: true, data: user});
-            }).catch(function (error) {
-                res.status(404).send({success: false, description: error});
+            })
+            .catch(function (error) {
+                res.status(error.statusCode || 404).send({success: false, description: error.message || error});
             });
     }
 }
@@ -197,7 +213,7 @@ function checkNameAvailability() {
  * ------------------------------
  * description: check User email availability
  * ------------------------------
- * url: user/checkEmailAvailability
+ * url: users/checkEmailAvailability
  * method: POST
  * request: {"email": "string"}
  * response: true if found, false if not found
@@ -207,8 +223,9 @@ function checkEmailAvailability() {
         User.getByEmail(req.body.email)
             .then(function (user) {
                 res.json({success: true, data: user});
-            }).catch(function (error) {
-                res.status(404).send({success: false, description: error});
+            })
+            .catch(function (error) {
+                res.status(error.statusCode || 404).send({success: false, description: error.message || error});
             });
     }
 }

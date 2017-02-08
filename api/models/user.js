@@ -16,11 +16,22 @@ User.jsonSchema = {
     properties: {
         id: {type: 'integer'},
         name: {type: 'string', minLength: 4, maxLength: 30},
-        email: {type: 'string', format:'email', minLength: 5, maxLength: 30},
+        email: {type: 'string', format:'email', minLength: 5, maxLength: 50},
         password_hash: {type: 'string'},
         role: {type: 'string'},
-        created_at: {type: 'string', format:'date-time'},
-        updated_at: {type: 'string', format:'date-time'}
+        created_at: {type: 'string', format: 'date-time'},
+        updated_at: {type: 'string', format: 'date-time'}
+    }
+};
+
+User.relationMappings = {
+    posts:{
+        relation: MainModel.HasManyRelation,
+        modelClass: __dirname + '/post',
+        join: {
+            from: 'users.id',
+            to: 'posts.user_id'
+        }
     }
 };
 
@@ -55,6 +66,35 @@ User.getByName = function (name) {
         .then(function (data) {
             if (!data.length) throw {message: 'Empty response'};
             return data;
+        })
+        .catch(function (error) {
+            throw error.message || error;
+        });
+};
+
+User.getMixPostsById = function (id) {
+    return this.query()
+        .where({id: id})
+        .eager('posts')
+        .then(function (data) {
+            if (!data[0].posts.length) throw {message: 'Empty response'};
+            return data[0].posts;
+        })
+        .catch(function (error) {
+            throw error.message || error;
+        });
+};
+
+User.getPubPostsById = function (id) {
+    return this.query()
+        .where({id: id})
+        .eager('posts')
+        .modifyEager('posts', function(builder) {
+            builder.where({private: false});
+        })
+        .then(function (data) {
+            if (!data[0].posts.length) throw {message: 'Empty response'};
+            return data[0].posts;
         })
         .catch(function (error) {
             throw error.message || error;

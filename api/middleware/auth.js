@@ -8,14 +8,14 @@ var SECRET = require('../config').token.secret;
 var ENCRYPTPASSWORD = require('../config').token.encryptpassword;
 var User = require('../models/user');
 
-function _encryptToken(str){
+function _encryptToken(str) {
     var cipher = crypto.createCipher('aes-256-ctr', ENCRYPTPASSWORD);
     var crypted = cipher.update(str,'utf8','hex');
     crypted += cipher.final('hex');
     return crypted;
 }
 
-function _decryptToken(str){
+function _decryptToken(str) {
     var decipher = crypto.createDecipher('aes-256-ctr', ENCRYPTPASSWORD);
     var dec = decipher.update(str, 'hex', 'utf8');
     dec += decipher.final('utf8');
@@ -42,9 +42,10 @@ module.exports.makeToken = function () {
                     res.status(400).json({success: false, description: error})
                 });
 
-            }).catch(function (error) {
-            res.status(404).send({success: false, description: error});
-        });
+            })
+            .catch(function (error) {
+                res.status(404).send({success: false, description: error});
+            });
     }
 };
 
@@ -61,7 +62,17 @@ module.exports.makeToken = function () {
 module.exports.checkToken = function () {
     return function (req, res, next) {
         var token = req.body.token || req.headers['token'];
-        token = _decryptToken(token);
+
+        if (token) {
+            token = _decryptToken(token);
+        } else {
+            req.body.helpData = {
+                userId: 'anonymous',
+                userRole: 'anonymous'
+            };
+            return next();
+        }
+
         jwt.verify(token, SECRET, function (error, decoded) {
             if (decoded) {
                 req.body.helpData = {
@@ -70,14 +81,7 @@ module.exports.checkToken = function () {
                 };
                 return next();
             }
-            if (error.message === 'jwt must be provided') { // if no token >> user is anonymous
-                req.body.helpData = {
-                    userId: 'anonymous',
-                    userRole: 'anonymous'
-                };
-                return next();
-            }
-            res.status(401).json({success: false, description: error});
+            res.status(error.statusCode || 401).send({success: false, description: error});
         });
     }
 };
@@ -100,7 +104,7 @@ module.exports.hashPassword = function () {
             bcrypt.genSalt(10, function (error, salt) {
                 bcrypt.hash(req.body.password, salt, function (error, hash) {
                     if (error) { return res.status(400).json({success: false, description: error}) }
-                    req.body.password_hash = hash; // transfers and saves to DB
+                    req.body.password_hash = hash; // 'password_hash' transfers and saves to DB
                     delete req.body.password;
                     next();
                 })

@@ -8,7 +8,7 @@ var auth = require('../middleware/auth');
 var sec = require('../middleware/security');
 
 /**
- * baseUrl: post/
+ * baseUrl: posts/
  */
 
 /**
@@ -17,7 +17,7 @@ var sec = require('../middleware/security');
 
 router.get('/all',              auth.checkToken(), sec.checkSUAccess(), getAllMix());
 router.get('/public',           getAllPub());
-router.get('/:id',              /*auth.checkToken(), sec.checkItemAccess(Post),*/ getPost());
+router.get('/:id',              auth.checkToken(), sec.checkItemAccess(Post), getPost());
 
 router.post('/',                /* auth.checkToken(), sec.checkItemCreateAccess(Post),*/ newPost());
 router.put('/:id',              /*auth.checkToken(), sec.checkItemAccess(Post),*/ update());
@@ -28,7 +28,7 @@ router.delete('/:id',           /*auth.checkToken(), sec.checkItemAccess(Post),*
  * description: get all Posts of All users(public and private)
  * have access only SU
  * ------------------------------
- * url: post/all
+ * url: posts/all
  * method: GET
  */
 function getAllMix() {
@@ -47,7 +47,7 @@ function getAllMix() {
  * ------------------------------
  * description: get all public Posts
  * ------------------------------
- * url: post/public
+ * url: posts/public
  * method: GET
  */
 function getAllPub() {
@@ -66,7 +66,7 @@ function getAllPub() {
  * ------------------------------
  * description: create Post
  * ------------------------------
- * url: post/
+ * url: posts/
  * method: POST
  * request: {"user_id": "int", "title": "string", "content": "string"}
  */
@@ -76,7 +76,8 @@ function newPost() {
         Post.create(req.body)
             .then(function (post) {
                 res.json({success: true, data: post});
-            }).catch(function (error) {
+            })
+            .catch(function (error) {
                 res.status(400).send({success: false, description: error});
             });
     }
@@ -86,7 +87,7 @@ function newPost() {
  * ------------------------------
  * description: get Post by id
  * ------------------------------
- * url: post/:id
+ * url: posts/:id
  * method: GET
  */
 function getPost() {
@@ -94,7 +95,8 @@ function getPost() {
         Post.getById(req.params.id)
             .then(function (post) {
                 res.json({success: true, data: post})
-            }).catch(function (error) {
+            })
+            .catch(function (error) {
                 res.status(404).send({success: false, description: error});
             });
     }
@@ -104,7 +106,7 @@ function getPost() {
  * ------------------------------
  * description: update Post by id
  * ------------------------------
- * url: post/:id
+ * url: posts/:id
  * method: PUT
  * request: {"title": "string", "content": "string"}
  */
@@ -128,7 +130,7 @@ function update() {
  * ------------------------------
  * description: remove Post from db by id
  * ------------------------------
- * url: post/:id
+ * url: posts/:id
  * method: DELETE
  */
 function remove() {

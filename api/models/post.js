@@ -19,8 +19,8 @@ Post.jsonSchema = {
         title: {type: 'string', minLength: 10, maxLength: 50},
         content: {type: 'string', minLength: 10, maxLength: 1000},
         private: {type: 'boolean'},
-        created_at: {type: 'string', format:'date-time'},
-        updated_at: {type: 'string', format:'date-time'}
+        created_at: {type: 'string', format: 'date-time'},
+        updated_at: {type: 'string', format: 'date-time'}
     }
 };
 
@@ -37,7 +37,8 @@ Post.getAllPub = function () {
         .then(function (data) {
             if (!data) throw {message: 'Empty response'};
             return data;
-        }).catch(function (error) {
+        })
+        .catch(function (error) {
             throw error.message || error;
         });
 };

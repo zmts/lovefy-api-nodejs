@@ -43,7 +43,7 @@ User.prototype.$formatJson = function (json) {
 };
 
 User.prototype.$beforeInsert = function () {
-    this.$validate();
+    // this.$validate();
 };
 
 User.prototype.$beforeUpdate = function () {

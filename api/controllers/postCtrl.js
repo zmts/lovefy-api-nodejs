@@ -173,7 +173,7 @@ function remove() {
                 return Post.remove(model.id);
             })
             .then(function () {
-                res.json({success: true, description: 'Post id ' + model.id + ' was removed'});
+                res.json({success: true, description: 'Post #' + req.params.id + ' was removed'});
             })
             .catch(function (error) {
                 res.status(404).send({success: false, description: error});

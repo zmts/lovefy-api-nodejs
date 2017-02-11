@@ -181,7 +181,7 @@ function remove() {
                 return User.remove(model.id);
             })
             .then(function () {
-                res.json({success: true, description: 'User with id '+ req.params.id +' was removed'});
+                res.json({success: true, description: 'User #'+ req.params.id +' was removed'});
             })
             .catch(function (error) {
                 res.status(error.statusCode || 404).send({success: false, description: error.message || error});

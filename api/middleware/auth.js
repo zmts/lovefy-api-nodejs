@@ -117,7 +117,7 @@ module.exports.hashPassword = function () {
             })
         }
         else {
-            res.status(400).json({success: false, description: 'Password("password_" field) not found'})
+            res.status(400).json({success: false, description: '\'password\' field not found'})
         }
     }
 };

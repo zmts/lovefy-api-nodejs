@@ -81,7 +81,13 @@ module.exports.checkToken = function () {
                 };
                 return next();
             }
-            res.status(error.statusCode || 401).send({success: false, description: error});
+            if (error) {
+                req.body.helpData = {
+                    userId: 'anonymous',
+                    userRole: 'anonymous'
+                };
+                return next();
+            }
         });
     }
 };

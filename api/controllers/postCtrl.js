@@ -12,6 +12,12 @@ var sec = require('../middleware/security');
  */
 
 /**
+ * related routes
+ */
+router.get('/:id/tags',          getTagsById());
+router.put('/:id/tags',          attachTagsToPost());
+
+/**
  * base routes
  */
 
@@ -20,8 +26,35 @@ router.get('/public',           getAllPub());
 router.get('/:id',              auth.checkToken(), sec.checkItemAccess(Post), getPost());
 
 router.post('/',                auth.checkToken(), sec.checkItemCreateAccess(Post), newPost());
-router.put('/:id',              /*auth.checkToken(), sec.checkItemAccess(Post),*/ update());
-router.delete('/:id',           /*auth.checkToken(), sec.checkItemAccess(Post),*/ remove());
+router.put('/:id',              auth.checkToken(), sec.checkItemAccess(Post), update());
+router.delete('/:id',           auth.checkToken(), sec.checkItemAccess(Post), remove());
+
+/**
+ * ------------------------------
+ * description: get Tags by Post id
+ * ------------------------------
+ * url: posts/:id/tags
+ * method: GET
+ */
+function getTagsById() {
+    return function (req, res) {
+        console.log('tagsss');
+    }
+}
+
+/**
+ * ------------------------------
+ * description: attach Tags to Post
+ * ------------------------------
+ * url: posts/:id/tags
+ * method: PUT
+ * request: {tags: [tag_id, tag_id]}
+ */
+function attachTagsToPost() {
+    return function (req, res) {
+        console.log('attachTagsToPost');
+    }
+}
 
 /**
  * ------------------------------
@@ -112,15 +145,15 @@ function getPost() {
  */
 function update() {
     return function (req, res) {
+        delete req.body.helpData;
         Post.getById(req.params.id)
             .then(function (post) {
-                Post.update(post.id, req.body)
-                    .then(function (updated_post) {
-                        res.json({success: true, data: updated_post});
-                    }).catch(function (error) {
-                        res.status(400).send({success: false, description: error});
-                    });
-            }).catch(function (error) {
+                return Post.update(post.id, req.body);
+            })
+            .then(function (updated_post) {
+                res.json({success: true, data: updated_post});
+            })
+            .catch(function (error) {
                 res.status(404).send({success: false, description: error});
             });
     }
@@ -137,13 +170,12 @@ function remove() {
     return function (req, res) {
         Post.getById(req.params.id)
             .then(function (model) {
-                Post.remove(model.id)
-                    .then(function () {
-                        res.json({success: true, description: 'Post id ' + model.id + ' was removed'});
-                    }).catch(function (error) {
-                        res.status(400).send({success: false, description: error});
-                    });
-            }).catch(function (error) {
+                return Post.remove(model.id);
+            })
+            .then(function () {
+                res.json({success: true, description: 'Post id ' + model.id + ' was removed'});
+            })
+            .catch(function (error) {
                 res.status(404).send({success: false, description: error});
             });
     }

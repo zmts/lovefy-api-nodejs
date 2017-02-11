@@ -15,7 +15,7 @@ User.jsonSchema = {
     additionalProperties: false,
     properties: {
         id: {type: 'integer'},
-        name: {type: 'string', minLength: 4, maxLength: 30},
+        name: {type: 'string', minLength: 3, maxLength: 30},
         email: {type: 'string', format:'email', minLength: 5, maxLength: 50},
         password_hash: {type: 'string'},
         role: {type: 'string'},
@@ -43,7 +43,7 @@ User.prototype.$formatJson = function (json) {
 };
 
 User.prototype.$beforeInsert = function () {
-    // this.$validate();
+    this.$validate();
 };
 
 User.prototype.$beforeUpdate = function () {

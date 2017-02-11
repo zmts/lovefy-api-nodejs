@@ -19,7 +19,7 @@ module.exports.checkSUAccess = function () {
         if (req.body.helpData.userRole === SUPERUSER) return next();
         res.status(403).send({
             success: false,
-            description: 'Forbidden. User(' + req.body.helpData.userId + ') dont have permissions to make actions at id #' + req.params.id
+            description: 'Forbidden. userId(' + req.body.helpData.userId + ') to #' + req.params.id
         });
     }
 };
@@ -37,7 +37,7 @@ module.exports.checkAccessById = function () {
         if ( req.body.helpData.userId === req.params.id ) return next();
         res.status(403).send({
             success: false,
-            description: 'Forbidden. User(' + req.body.helpData.userId + ') dont have permissions to make actions at id #' + req.params.id
+            description: 'Forbidden. userId(' + req.body.helpData.userId + ') to #' + req.params.id
         });
     }
 };
@@ -58,10 +58,20 @@ module.exports.checkItemAccess = function (modelName) {
                 if ( !model.private ) return next();
                 if ( ADMINROLES.indexOf( req.body.helpData.userRole ) >= 0) return next();
                 if ( EDITORROLES.indexOf( req.body.helpData.userRole ) >= 0) return next();
-                if ( +req.body.helpData.userId === +model.user_id ) return next(); // check Ownership
+
+                // user cant change 'user_id' field when update item
+                if ( req.method === 'PUT' && +req.body.helpData.userId !== +req.body.user_id) {
+                    return res.status(403).send({
+                        success: false,
+                        description: 'Forbidden. userId(' + req.body.helpData.userId + ') to #' + req.body.user_id
+                    });
+                }
+
+                // owner have access
+                if ( +req.body.helpData.userId === +model.user_id ) return next();
                 res.status(403).send({
                     success: false,
-                    description: 'Forbidden. User(' + req.body.helpData.userId + ') dont have permissions to make actions at id #' + req.params.id
+                    description: 'Forbidden. userId(' + req.body.helpData.userId + ') to #' + req.params.id
                 });
             })
             .catch(function (error) {
@@ -79,47 +89,41 @@ module.exports.checkItemAccess = function (modelName) {
  */
 module.exports.checkItemCreateAccess = function () {
     return function (req, res, next) {
+        console.log(req.body.helpData);
         if ( ADMINROLES.indexOf( req.body.helpData.userRole ) >= 0) return next();
-        if ( EDITORROLES.indexOf( req.body.helpData.userRole ) >= 0) return next();
         if ( +req.body.helpData.userId === +req.body.user_id ) return next(); // check Relationships
         res.status(403).send({
             success: false,
-            description: 'Forbidden. User(' + req.body.helpData.userId + ') dont have permissions to create Items at id #' + req.body.user_id
+            description: 'Forbidden. userId(' + req.body.helpData.userId + ') to #' + req.body.user_id
         });
     }
 };
 
-// module.exports.hasAccess = function (roles, modelName, level) {
+// module.exports.hasAccess = function (roles, modelName) {
 //     return function (req, res, next) {
-//         roles = roles && roles.length ? roles : null;
-//         modelName = modelName || null;
-//         level = level || ['c','r','u','d'];
+//         var roles = roles || ['admin', 'superuser'];
+//         if ( roles.indexOf(req.body.helpData.userRole) || roles.indexOf(req.body.helpData.userId) >= 0 ) {
 //
-//         if (roles) {
-//             if ( roles.indexOf(req.body.helpData.userRole) >= 0 ) return next();
-//             if ( +req.body.helpData.userId === +req.params.id ) return next();
-//             res.status(403).send({
-//                 success: false,
-//                 description: 'Forbidden. User(' + req.body.helpData.userId + ') dont have permissions to make actions at id #' + req.params.id
-//             });
-//         }
-//
-//         if (modelName) {
-//             modelName.getById(req.params.id)
-//                 .then(function (model) {
-//                     if ( !model.private ) return next();
-//                     if ( ADMINROLES.indexOf( req.body.helpData.userRole ) >= 0) return next();
-//                     if ( EDITORROLES.indexOf( req.body.helpData.userRole ) >= 0) return next();
-//                     if ( +req.body.helpData.userId === +model.user_id ) return next(); // check Ownership
+//             switch (req.method) {
+//                 case 'GET':
+//                     next();
+//                     break;
+//                 case 'POST':
+//                     break;
+//                 case 'PUT':
+//                     break;
+//                 case 'DELETE':
+//                     break;
+//                 default:
 //                     res.status(403).send({
 //                         success: false,
-//                         description: 'Forbidden. User(' + req.body.helpData.userId + ') dont have permissions to make actions at id #' + model.user_id
+//                         description: 'Forbidden. userId(' + req.body.helpData.userId + ') to #' + req.params.id || req.body.user_id
 //                     });
-//                 })
-//                 .catch(function (error) {
-//                     res.status(error.statusCode || 404).send({success: false, description: error.message || error});
-//                 });
+//                     break;
+//             }
+//
 //         }
 //     }
 // };
+
 

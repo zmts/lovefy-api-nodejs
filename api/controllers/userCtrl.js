@@ -31,6 +31,7 @@ router.get('/:id/posts/public',       getPubPostsById());
  */
 router.get('/all',                      getAllUsers());
 router.get('/:id',                      getUser());
+
 router.post('/',                        auth.hashPassword(), newUser());
 router.put('/:id',                      auth.checkToken(), sec.checkAccessById(), auth.hashPassword(), update());
 router.delete('/:id',                   auth.checkToken(), sec.checkAccessById(), remove());

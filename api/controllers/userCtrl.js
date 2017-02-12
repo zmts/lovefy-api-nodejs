@@ -23,7 +23,7 @@ router.post('/checkEmailAvailability',  checkEmailAvailability());
 /**
  * related routes
  */
-router.get('/:id/posts/all',          auth.checkToken(), sec.checkAccessById(), getMixPostsById());
+router.get('/:id/posts/all',          auth.checkToken(), sec.checkUserProfileAccess(), getMixPostsById());
 router.get('/:id/posts/public',       getPubPostsById());
 
 /**
@@ -33,8 +33,8 @@ router.get('/all',                      getAllUsers());
 router.get('/:id',                      getUser());
 
 router.post('/',                        auth.hashPassword(), newUser());
-router.put('/:id',                      auth.checkToken(), sec.checkAccessById(), auth.hashPassword(), update());
-router.delete('/:id',                   auth.checkToken(), sec.checkAccessById(), remove());
+router.put('/:id',                      auth.checkToken(), sec.checkUserProfileAccess(), auth.hashPassword(), update());
+router.delete('/:id',                   auth.checkToken(), sec.checkUserProfileAccess(), remove());
 
 /**
  * ------------------------------
@@ -83,7 +83,7 @@ function getMixPostsById() {
  * ------------------------------
  * description: show list of all PUBLIC Posts of current User
  * ------------------------------
- * url: users/user_id/posts/public
+ * url: users/:user_id/posts/public
  * method: GET
  */
 function getPubPostsById() {

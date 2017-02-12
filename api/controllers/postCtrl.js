@@ -23,11 +23,11 @@ router.put('/:id/tags',          attachTagsToPost());
 
 router.get('/all',              auth.checkToken(), sec.checkSUAccess(), getAllMix());
 router.get('/public',           getAllPub());
-router.get('/:id',              auth.checkToken(), sec.checkItemAccess(Post), getPost());
+router.get('/:id',              auth.checkToken(), sec.grantItem.read(Post), getPost());
 
-router.post('/',                auth.checkToken(), sec.checkItemCreateAccess(Post), newPost());
-router.put('/:id',              auth.checkToken(), sec.checkItemAccess(Post), update());
-router.delete('/:id',           auth.checkToken(), sec.checkItemAccess(Post), remove());
+router.post('/',                auth.checkToken(), sec.grantItem.create(), newPost());
+router.put('/:id',              auth.checkToken(), sec.grantItem.update(Post), update());
+router.delete('/:id',           auth.checkToken(), sec.grantItem.remove(Post), remove());
 
 /**
  * ------------------------------

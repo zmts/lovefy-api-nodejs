@@ -3,13 +3,25 @@
 var SUPERUSER = require('../config').roles.superuser;
 var ADMINROLES = require('../config').roles.adminRoles;
 var EDITORROLES = require('../config').roles.editorRoles;
-var USER = require('../config').roles.user;
-
-var User = require('../models/user');
 
 /**
  * ------------------------------
- * description: check SUPERUSER permissions
+ * description: check Authorization status
+ * ------------------------------
+ */
+module.exports.isAuth = function () {
+    return function (req, res, next) {
+        if ( +req.body.helpData.userId ) return next();
+        res.status(403).send({
+            success: false,
+            description: 'Forbidden. User is not authorized to access this resource'
+        });
+    }
+};
+
+/**
+ * ------------------------------
+ * description: check SUPERUSER permission
  * ------------------------------
  * have full access: SUPERUSER
  * @required: 'auth.checkToken' middleware
@@ -26,12 +38,13 @@ module.exports.checkSUAccess = function () {
 
 /**
  * ------------------------------
- * description: grant access if ID from token === ID from params
+ * description: grant access ot User profile
+ * if ID from token === ID from params
  * ------------------------------
  * have full access: ADMINROLES, OWNER
  * @required: 'auth.checkToken' middleware
  */
-module.exports.checkAccessById = function () {
+module.exports.checkUserProfileAccess = function () {
     return function (req, res, next) {
         if ( ADMINROLES.indexOf( req.body.helpData.userRole ) >= 0 ) return next();
         if ( req.body.helpData.userId === req.params.id ) return next();
@@ -44,86 +57,94 @@ module.exports.checkAccessById = function () {
 
 /**
  * ------------------------------
- * description: check access for Item model
+ * description: grant access for Item model
  * ------------------------------
  * can read, update, remove: ADMINROLES, EDITORROLES, OWNER
  * can read only public items: ANONYMOUS
  * @param {object} modelName - model that we want to modify
  * @required: 'auth.checkToken' middleware
  */
-module.exports.checkItemAccess = function (modelName) {
-    return function (req, res, next) {
-        modelName.getById(req.params.id)
-            .then(function (model) {
-                if ( !model.private ) return next();
-                if ( ADMINROLES.indexOf( req.body.helpData.userRole ) >= 0) return next();
-                if ( EDITORROLES.indexOf( req.body.helpData.userRole ) >= 0) return next();
+module.exports.grantItem = {
 
-                // user cant change 'user_id' field when update item
-                if ( req.method === 'PUT' && +req.body.helpData.userId !== +req.body.user_id) {
-                    return res.status(403).send({
-                        success: false,
-                        description: 'Forbidden. userId(' + req.body.helpData.userId + ') to #' + req.body.user_id
+    read: function (modelName) {
+        return function (req, res, next) {
+            if ( req.method === 'GET' ) {
+                modelName.getById(req.params.id)
+                    .then(function (model) {
+                        if ( !model.private ) return next();
+                        if ( ADMINROLES.indexOf( req.body.helpData.userRole ) >= 0 ) return next();
+                        if ( +req.body.helpData.userId === +model.user_id ) return next(); // check owner access
+                        res.status(403).send({
+                            success: false,
+                            description: 'Forbidden. userId(' + req.body.helpData.userId + ') to #' + req.params.id
+                        });
+                    })
+                    .catch(function (error) {
+                        res.status(404).send({success: false, description: error});
                     });
-                }
+            }
+        }
+    },
 
-                // owner have access
-                if ( +req.body.helpData.userId === +model.user_id ) return next();
+    create: function () {
+        return function (req, res, next) {
+            if ( req.method === 'POST' ) {
+                if ( ADMINROLES.indexOf( req.body.helpData.userRole ) >= 0 ) return next();
+                if ( +req.body.helpData.userId === +req.body.user_id ) return next(); // check owner access
                 res.status(403).send({
                     success: false,
-                    description: 'Forbidden. userId(' + req.body.helpData.userId + ') to #' + req.params.id
+                    description: 'Forbidden. userId(' + req.body.helpData.userId + ') to #' + req.body.user_id
                 });
-            })
-            .catch(function (error) {
-                res.status(404).send({success: false, description: error});
-            });
+            }
+        }
+    },
+
+    update: function (modelName) {
+        return function (req, res, next) {
+            if ( req.method === 'PUT' ) {
+                modelName.getById(req.params.id)
+                    .then(function (model) {
+                        if ( ADMINROLES.indexOf( req.body.helpData.userRole ) >= 0 ) return next();
+                        // check owner access // forbid to User change Item 'user_id'
+                        if ( +req.body.helpData.userId === (+model.user_id && +req.body.user_id) ) return next();
+                        // handle error if User not Item owner
+                        else if ( +req.body.helpData.userId !== +model.user_id ) {
+                            res.status(403).send({
+                                success: false,
+                                description: 'Forbidden. userId(' + req.body.helpData.userId + ') to item#' + req.params.id
+                            });
+                        }
+                        // handle error if User try change Item user_id
+                        else if ( +req.body.helpData.userId !== +req.body.user_id ) {
+                            res.status(403).send({
+                                success: false,
+                                description: 'Forbidden change \'user_id\'. For item#' + req.params.id + ' \'user_id\' must be #' + req.body.helpData.userId
+                            });
+                        }
+                    })
+                    .catch(function (error) {
+                        res.status(404).send({success: false, description: error});
+                    });
+            }
+        }
+    },
+
+    remove: function (modelName) {
+        return function (req, res, next) {
+            if ( req.method === 'DELETE' ) {
+                modelName.getById(req.params.id)
+                    .then(function (model) {
+                        if ( ADMINROLES.indexOf( req.body.helpData.userRole ) >= 0 ) return next();
+                        if ( +req.body.helpData.userId === +model.user_id ) return next(); // check owner access
+                        res.status(403).send({
+                            success: false,
+                            description: 'Forbidden. userId(' + req.body.helpData.userId + ') to #' + req.params.id
+                        });
+                    })
+                    .catch(function (error) {
+                        res.status(404).send({success: false, description: error});
+                    });
+            }
+        }
     }
 };
-
-/**
- * ------------------------------
- * description: check access for create new Item model
- * ------------------------------
- * can create new item: ADMINROLES, EDITORROLES, OWNER
- * @required: 'auth.checkToken' middleware
- */
-module.exports.checkItemCreateAccess = function () {
-    return function (req, res, next) {
-        console.log(req.body.helpData);
-        if ( ADMINROLES.indexOf( req.body.helpData.userRole ) >= 0) return next();
-        if ( +req.body.helpData.userId === +req.body.user_id ) return next(); // check Relationships
-        res.status(403).send({
-            success: false,
-            description: 'Forbidden. userId(' + req.body.helpData.userId + ') to #' + req.body.user_id
-        });
-    }
-};
-
-// module.exports.hasAccess = function (roles, modelName) {
-//     return function (req, res, next) {
-//         var roles = roles || ['admin', 'superuser'];
-//         if ( roles.indexOf(req.body.helpData.userRole) || roles.indexOf(req.body.helpData.userId) >= 0 ) {
-//
-//             switch (req.method) {
-//                 case 'GET':
-//                     next();
-//                     break;
-//                 case 'POST':
-//                     break;
-//                 case 'PUT':
-//                     break;
-//                 case 'DELETE':
-//                     break;
-//                 default:
-//                     res.status(403).send({
-//                         success: false,
-//                         description: 'Forbidden. userId(' + req.body.helpData.userId + ') to #' + req.params.id || req.body.user_id
-//                     });
-//                     break;
-//             }
-//
-//         }
-//     }
-// };
-
-

@@ -57,14 +57,14 @@ module.exports.checkUserProfileAccess = function () {
 
 /**
  * ------------------------------
- * description: grant access for Item model
+ * description: check access for Item model
  * ------------------------------
  * can read, update, remove: ADMINROLES, EDITORROLES, OWNER
  * can read only public items: ANONYMOUS
  * @param {object} modelName - model that we want to modify
  * @required: 'auth.checkToken' middleware
  */
-module.exports.grantItem = {
+module.exports.checkItemAccess = {
 
     read: function (modelName) {
         return function (req, res, next) {

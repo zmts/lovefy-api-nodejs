@@ -38,7 +38,7 @@ module.exports.checkSUAccess = function () {
 
 /**
  * ------------------------------
- * description: grant access ot User profile
+ * description: check access to User profile
  * if ID from token === ID from params
  * ------------------------------
  * have full access: ADMINROLES, OWNER

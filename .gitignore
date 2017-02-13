@@ -2,6 +2,7 @@ node_modules/
 bower_components/
 tmp/
 .tmp/
+_tmp/
 tmp_files/
 .DS_Store
 .idea

@@ -65,6 +65,24 @@ module.exports.checkToken = function () {
 
         if (token) {
             token = _decryptToken(token);
+
+            jwt.verify(token, SECRET, function (error, decoded) {
+                if (decoded) {
+                    req.body.helpData = {
+                        userId: decoded.sub,
+                        userRole: decoded.userRole
+                    };
+                    return next();
+                }
+                if (error) {
+                    req.body.helpData = {
+                        userId: 'anonymous',
+                        userRole: 'anonymous'
+                    };
+                    return next();
+                }
+            });
+
         } else {
             req.body.helpData = {
                 userId: 'anonymous',
@@ -72,23 +90,6 @@ module.exports.checkToken = function () {
             };
             return next();
         }
-
-        jwt.verify(token, SECRET, function (error, decoded) {
-            if (decoded) {
-                req.body.helpData = {
-                    userId: decoded.sub,
-                    userRole: decoded.userRole
-                };
-                return next();
-            }
-            if (error) {
-                req.body.helpData = {
-                    userId: 'anonymous',
-                    userRole: 'anonymous'
-                };
-                return next();
-            }
-        });
     }
 };
 

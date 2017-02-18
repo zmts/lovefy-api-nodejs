@@ -20,7 +20,6 @@ router.put('/:id/tags',          attachTagsToPost());
 /**
  * base routes
  */
-
 router.get('/all',              auth.checkToken(), sec.checkSUAccess(), getAllMix());
 router.get('/public',           getAllPub());
 router.get('/:id',              auth.checkToken(), sec.checkItemAccess.read(Post), getPost());
@@ -66,7 +65,7 @@ function attachTagsToPost() {
  */
 function getAllMix() {
     return function (req, res) {
-        Post.getAll()
+        Post.getAllMix()
             .then(function (list) {
                 res.json({success: true, data: list});
             })

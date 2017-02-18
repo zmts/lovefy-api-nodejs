@@ -12,20 +12,47 @@ var auth = require('../middleware/auth');
  */
 
 /**
+ * other routes
+ */
+router.post('/getTagByName',    getTagByName());
+
+/**
  * related routes
  */
+router.get('/:id/posts/all',    getMixPostsByTagId());
+router.get('/:id/posts/public', getPublicPostsByTagId());
 
 /**
  * base routes
  */
-
 router.get('/all',              getAll());
-router.get('/:id',              getTagById());
-
 router.post('/',                newTag());
 router.put('/:id',              update());
 router.delete('/:id',           remove());
 
+function getMixPostsByTagId() {
+    return function (req, res) {
+        Tag.getMixPostsByTagId(req.params.id)
+            .then(function (list) {
+                res.json({success: true, data: list});
+            })
+            .catch(function (error) {
+                res.status(404).send({success: false, description: error});
+            });
+    }
+}
+
+function getPublicPostsByTagId() {
+    return function (req, res) {
+        Tag.getPublicPostsByTagId(req.params.id)
+            .then(function (list) {
+                res.json({success: true, data: list});
+            })
+            .catch(function (error) {
+                res.status(404).send({success: false, description: error});
+            });
+    }
+}
 
 /**
  * ------------------------------
@@ -70,14 +97,15 @@ function newTag() {
  * ------------------------------
  * description: get Tag by id
  * ------------------------------
- * url: tags/:id
- * method: GET
+ * url: tags/getTagByName
+ * method: POST
+ * request: {"name": "string"}
  */
-function getTagById() {
+function getTagByName() {
     return function (req, res) {
-        Tag.getById(req.params.id)
-            .then(function (post) {
-                res.json({success: true, data: post})
+        Tag.getByName(req.body.name)
+            .then(function (tag) {
+                res.json({success: true, data: tag})
             })
             .catch(function (error) {
                 res.status(404).send({success: false, description: error});

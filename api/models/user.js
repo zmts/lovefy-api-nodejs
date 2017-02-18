@@ -35,6 +35,12 @@ User.relationMappings = {
     }
 };
 
+/**
+ * ------------------------------
+ * hooks
+ * ------------------------------
+ */
+
 User.prototype.$formatJson = function (json) {
     json = MainModel.prototype.$formatJson.call(this, json);
     delete json.password_hash;
@@ -49,6 +55,12 @@ User.prototype.$beforeInsert = function () {
 User.prototype.$beforeUpdate = function () {
     this.updated_at = new Date().toISOString();
 };
+
+/**
+ * ------------------------------
+ * methods
+ * ------------------------------
+ */
 
 User.getByEmail = function (email) {
     return this.query().where({email: email})

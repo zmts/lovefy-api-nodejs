@@ -21,6 +21,23 @@ module.exports.isAuth = function () {
 
 /**
  * ------------------------------
+ * description: check Owner status
+ * and grant access to read public or full items list
+ * ------------------------------
+ */
+module.exports.checkOwner = function () {
+    return function (req, res, next) {
+        if ( ADMINROLES.indexOf( req.body.helpData.userRole ) >= 0 ) {
+            req.body.helpData.isOwner = true;
+            return next();
+        }
+        req.body.helpData.isOwner = +req.body.helpData.userId === +req.params.id ? true : false;
+        next();
+    }
+};
+
+/**
+ * ------------------------------
  * description: check SUPERUSER permission
  * ------------------------------
  * have full access: SUPERUSER

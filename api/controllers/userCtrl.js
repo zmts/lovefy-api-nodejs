@@ -23,8 +23,7 @@ router.post('/checkEmailAvailability',  checkEmailAvailability());
 /**
  * related routes
  */
-router.get('/:id/posts/all',          auth.checkToken(), sec.checkUserProfileAccess(), getMixPostsById());
-router.get('/:id/posts/public',       getPubPostsById());
+router.get('/:id/posts/',             auth.checkToken(), sec.checkOwner(), getPostsById());
 
 /**
  * base routes
@@ -57,39 +56,19 @@ function getAllUsers() {
 
 /**
  * ------------------------------
- * description: show list of mix(PUBLIC and PRIVATE) Posts by user ID
- * has access: OWNER and ADMINROLES
+ * description: show Posts list by user ID
+ * if user is Owner response with public and private posts list
+ * else response only with public posts
  * ------------------------------
- * url: users/user_id/posts/all
+ * url: users/user_id/posts/
  * headers: token
  * method: GET
  */
-function getMixPostsById() {
+function getPostsById() {
     return function (req, res) {
         User.getById(req.params.id)
             .then(function (user) {
-                return User.getMixPostsById(user.id);
-            })
-            .then(function (list) {
-                res.json({success: true, data: list});
-            })
-            .catch(function (error) {
-                res.status(error.statusCode || 404).send({success: false, description: error.message || error});
-            });
-    }
-}
-
-/**
- * ------------------------------
- * description: show list of all PUBLIC Posts of current User
- * ------------------------------
- * url: users/:user_id/posts/public
- * method: GET
- */
-function getPubPostsById() {
-    return function (req, res) {
-        User.getById(req.params.id)
-            .then(function (user) {
+                if ( req.body.helpData.isOwner ) return User.getMixPostsById(user.id);
                 return User.getPubPostsById(user.id);
             })
             .then(function (list) {

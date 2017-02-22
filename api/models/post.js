@@ -64,7 +64,7 @@ Post.prototype.$beforeUpdate = function () {
 
 function _checkExistingTags (data, tag_id) {
     return _.find(data.tags, function(item) { 
-        return +item.id === +tag_id
+        return +item.id === +tag_id;
     })
 }
 

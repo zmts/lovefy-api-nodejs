@@ -14,8 +14,8 @@ var sec = require('../middleware/security');
 /**
  * related routes
  */
-router.get('/:id/tags',          getTagsById());
-router.put('/:id/tags',          attachTagsToPost());
+router.get('/:id/tags',                 getTagsById());
+router.post('/:id/attachTag/:tag_id',   attachTagToPost());
 
 /**
  * base routes
@@ -43,15 +43,24 @@ function getTagsById() {
 
 /**
  * ------------------------------
- * description: attach Tags to Post
+ * description: attach Tag to Post
  * ------------------------------
  * url: posts/:id/tags
  * method: PUT
  * request: {tags: [tag_id, tag_id]}
  */
-function attachTagsToPost() {
+function attachTagToPost() { 
     return function (req, res) {
-        console.log('attachTagsToPost');
+        Post.checkTagByIdInPost(req.params.id, req.params.tag_id)
+            .then(function () {
+                return Post.attachTagToPost(req.params.id, req.params.tag_id)
+            })
+            .then(function (post) {
+                res.json({success: true, data: post});
+            })
+            .catch(function (error) {
+                res.status(404).send({success: false, description: error});
+            })
     }
 }
 

@@ -1,5 +1,7 @@
 'use strict';
 
+var _ = require('lodash');
+
 var MainModel = require('./main');
 
 function Post() {
@@ -56,6 +58,18 @@ Post.prototype.$beforeUpdate = function () {
 
 /**
  * ------------------------------
+ * helpers
+ * ------------------------------
+ */
+
+function _checkExistingTags (data, tag_id) {
+    return _.find(data.tags, function(item) { 
+        return +item.id === +tag_id
+    })
+}
+
+/**
+ * ------------------------------
  * methods
  * ------------------------------
  */
@@ -92,6 +106,31 @@ Post.getAllMix = function () {
         .then(function (data) {
             if (!data.length) throw {message: 'Empty response'};
             return data;
+        })
+        .catch(function (error) {
+            throw error.message || error;
+        });
+};
+
+Post.attachTagToPost = function (post_id, tag_id) {
+    return this.query()
+        .findById(post_id)
+        .then(function (post) {
+            return post.$relatedQuery('tags').relate(tag_id);
+        })
+        .catch(function (error) {
+            throw error.message || error;
+        });
+};
+
+Post.checkTagByIdInPost = function (post_id, tag_id) {
+    return this.query()
+        .findById(post_id)
+        .eager('tags')
+        .then(function (data) {
+            if (!data) throw {message: 'Empty response'};
+            if ( _checkExistingTags(data, tag_id) ) throw {message: 'Tag already present in this post'};
+            return {description: 'This tag is not present in this post'};
         })
         .catch(function (error) {
             throw error.message || error;

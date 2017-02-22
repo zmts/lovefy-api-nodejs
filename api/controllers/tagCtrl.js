@@ -104,8 +104,8 @@ function newTag() {
 function findByString() {
     return function (req, res) {
         Tag.findByString(req.body.name)
-            .then(function (tag) {
-                res.json({success: true, data: tag})
+            .then(function (list) {
+                res.json({success: true, data: list})
             })
             .catch(function (error) {
                 res.status(404).send({success: false, description: error});

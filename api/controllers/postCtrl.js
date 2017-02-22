@@ -45,9 +45,8 @@ function getTagsById() {
  * ------------------------------
  * description: attach Tag to Post
  * ------------------------------
- * url: posts/:id/tags
+ * url: posts/:post_id/attachTag/:tag_id
  * method: PUT
- * request: {tags: [tag_id, tag_id]}
  */
 function attachTagToPost() { 
     return function (req, res) {

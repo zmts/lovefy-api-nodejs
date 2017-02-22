@@ -14,7 +14,7 @@ var auth = require('../middleware/auth');
 /**
  * other routes
  */
-router.post('/getTagByName',    getTagByName());
+router.post('/findByString',    findByString());
 
 /**
  * related routes
@@ -97,13 +97,13 @@ function newTag() {
  * ------------------------------
  * description: get Tag by id
  * ------------------------------
- * url: tags/getTagByName
+ * url: tags/findByString
  * method: POST
  * request: {"name": "string"}
  */
-function getTagByName() {
+function findByString() {
     return function (req, res) {
-        Tag.getByName(req.body.name)
+        Tag.findByString(req.body.name)
             .then(function (tag) {
                 res.json({success: true, data: tag})
             })

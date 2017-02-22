@@ -63,9 +63,10 @@ Tag.prototype.$beforeUpdate = function () {
  * ------------------------------
  */
 
-Tag.getByName = function (name) {
+Tag.findByString = function (str) {
     return this.query()
-        .where({name: name})
+        .where('name', 'like', `%${str}%`)
+        .limit(10)
         .then(function (data) {
             if (!data.length) throw {message: 'Empty response'};
             return data;

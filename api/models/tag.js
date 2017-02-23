@@ -105,4 +105,17 @@ Tag.getMixPostsByTagId = function (tagId) {
         });
 };
 
+Tag.getByIdOrCreate = function (tag_id, body) {
+    var that = this;
+    return this.query()
+        .findById(tag_id)
+        .then(function (tag) {
+            if (!tag) return that.create(body);
+            return tag;
+        })
+        .catch(function (error) {
+            throw error.message || error;
+        });
+}
+
 module.exports = Tag;

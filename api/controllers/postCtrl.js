@@ -4,6 +4,7 @@ var express = require('express');
 var router = express.Router();
 
 var Post = require('../models/post');
+var Tag = require('../models/tag');
 var auth = require('../middleware/auth');
 var sec = require('../middleware/security');
 
@@ -14,7 +15,7 @@ var sec = require('../middleware/security');
 /**
  * related routes
  */
-router.get('/:id/tags',                 getTagsById());
+// router.get('/:id/tags',                 getTagsById());
 router.post('/:id/attachTag/:tag_id',   attachTagToPost());
 
 /**
@@ -35,11 +36,11 @@ router.delete('/:id',           auth.checkToken(), sec.checkItemAccess.remove(Po
  * url: posts/:id/tags
  * method: GET
  */
-function getTagsById() {
-    return function (req, res) {
-        console.log('tagsss');
-    }
-}
+// function getTagsById() {
+//     return function (req, res) {
+//         console.log('tagsss');
+//     }
+// }
 
 /**
  * ------------------------------
@@ -51,17 +52,20 @@ function getTagsById() {
  */
 function attachTagToPost() { 
     return function (req, res) {
-        Post.checkTagByIdInPost(req.params.id, req.params.tag_id)
+        Post.checkTagByIdInPost(req.params.id, req.params.tag_id) // todo: params to body
             .then(function () {
-                return Post.attachTagToPost(req.params.id, req.params.tag_id)
+                return Tag.getByIdOrCreate(req.params.tag_id, req.body);
+            })
+            .then(function (tag) {
+                return Post.attachTagToPost(req.params.id, tag.id);
             })
             .then(function (post) {
                 res.json({success: true, data: post});
             })
             .catch(function (error) {
                 res.status(error.statusCode || 403).send({success: false, description: error});
-            })
-    }
+            });
+    };
 }
 
 /**
@@ -81,7 +85,7 @@ function getAllMix() {
             .catch(function (error) {
                 res.status(error.statusCode || 404).send({success: false, description: error});
             });
-    }
+    };
 }
 
 /**
@@ -101,7 +105,7 @@ function getAllPub() {
             .catch(function (error) {
                 res.status(error.statusCode || 404).send({success: false, description: error});
             });
-    }
+    };
 }
 
 /**
@@ -123,7 +127,7 @@ function newPost() {
             .catch(function (error) {
                 res.status(error.statusCode || 404).send({success: false, description: error});
             });
-    }
+    };
 }
 
 /**
@@ -143,7 +147,7 @@ function getPost() {
             .catch(function (error) {
                 res.status(error.statusCode || 404).send({success: false, description: error});
             });
-    }
+    };
 }
 
 /**
@@ -168,7 +172,7 @@ function update() {
             .catch(function (error) {
                 res.status(error.statusCode || 404).send({success: false, description: error});
             });
-    }
+    };
 }
 
 /**
@@ -191,7 +195,7 @@ function remove() {
             .catch(function (error) {
                 res.status(error.statusCode || 404).send({success: false, description: error});
             });
-    }
+    };
 }
 
 module.exports = router;

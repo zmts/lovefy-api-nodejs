@@ -4,11 +4,11 @@ var express = require('express');
 var router = express.Router();
 
 var Tag = require('../models/tag');
-var auth = require('../middleware/auth');
+// var auth = require('../middleware/auth');
 
 
 /**
- * baseUrl: tags/
+ * BASE_URL: tags/
  */
 
 /**
@@ -26,9 +26,22 @@ router.get('/:id/posts/public', getPublicPostsByTagId());
  * base routes
  */
 router.get('/all',              getAll());
+router.get('/:id',              getTag());
 router.post('/',                newTag());
 router.put('/:id',              update());
 router.delete('/:id',           remove());
+
+function getTag () {
+    return function (req, res) {
+        Tag.getById(req.params.id)
+            .then(function (model) {
+                res.json({success: true, data: model});
+            })
+            .catch(function (error) {
+                res.status(error.statusCode || 404).send({success: false, description: error});
+            });
+    };
+}
 
 function getMixPostsByTagId() {
     return function (req, res) {
@@ -39,7 +52,7 @@ function getMixPostsByTagId() {
             .catch(function (error) {
                 res.status(404).send({success: false, description: error});
             });
-    }
+    };
 }
 
 function getPublicPostsByTagId() {
@@ -51,7 +64,7 @@ function getPublicPostsByTagId() {
             .catch(function (error) {
                 res.status(404).send({success: false, description: error});
             });
-    }
+    };
 }
 
 /**
@@ -70,7 +83,7 @@ function getAll() {
             .catch(function (error) {
                 res.status(404).send({success: false, description: error});
             });
-    }
+    };
 }
 
 /**
@@ -90,7 +103,7 @@ function newTag() {
             .catch(function (error) {
                 res.status(400).send({success: false, description: error});
             });
-    }
+    };
 }
 
 /**
@@ -105,12 +118,12 @@ function findByString() {
     return function (req, res) {
         Tag.findByString(req.body.name)
             .then(function (list) {
-                res.json({success: true, data: list})
+                res.json({success: true, data: list});
             })
             .catch(function (error) {
                 res.status(404).send({success: false, description: error});
             });
-    }
+    };
 }
 
 /**
@@ -133,7 +146,7 @@ function update() {
             .catch(function (error) {
                 res.status(404).send({success: false, description: error});
             });
-    }
+    };
 }
 
 /**
@@ -155,7 +168,7 @@ function remove() {
             .catch(function (error) {
                 res.status(404).send({success: false, description: error});
             });
-    }
+    };
 }
 
 module.exports = router;

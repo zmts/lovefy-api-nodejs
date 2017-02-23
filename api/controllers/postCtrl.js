@@ -8,7 +8,7 @@ var auth = require('../middleware/auth');
 var sec = require('../middleware/security');
 
 /**
- * baseUrl: posts/
+ * BASE_URL: posts/
  */
 
 /**
@@ -45,8 +45,9 @@ function getTagsById() {
  * ------------------------------
  * description: attach Tag to Post
  * ------------------------------
+ * access: owner, SU, ADMINROLES
  * url: posts/:post_id/attachTag/:tag_id
- * method: PUT
+ * method: POST
  */
 function attachTagToPost() { 
     return function (req, res) {
@@ -58,7 +59,7 @@ function attachTagToPost() {
                 res.json({success: true, data: post});
             })
             .catch(function (error) {
-                res.status(404).send({success: false, description: error});
+                res.status(error.statusCode || 403).send({success: false, description: error});
             })
     }
 }
@@ -66,8 +67,8 @@ function attachTagToPost() {
 /**
  * ------------------------------
  * description: get all Posts of All users(public and private)
- * have access only SU
  * ------------------------------
+ * access: only SU
  * url: posts/all
  * method: GET
  */
@@ -78,15 +79,16 @@ function getAllMix() {
                 res.json({success: true, data: list});
             })
             .catch(function (error) {
-                res.status(404).send({success: false, description: error});
+                res.status(error.statusCode || 404).send({success: false, description: error});
             });
     }
 }
 
 /**
  * ------------------------------
- * description: get all public Posts
+ * description: get all public Posts of All Users
  * ------------------------------
+ * access: public
  * url: posts/public
  * method: GET
  */
@@ -97,7 +99,7 @@ function getAllPub() {
                 res.json({success: true, data: list});
             })
             .catch(function (error) {
-                res.status(400).send({success: false, description: error});
+                res.status(error.statusCode || 404).send({success: false, description: error});
             });
     }
 }
@@ -106,6 +108,7 @@ function getAllPub() {
  * ------------------------------
  * description: create Post
  * ------------------------------
+ * access: owner, SU, ADMINROLES
  * url: posts/
  * method: POST
  * request: {"user_id": "int", "title": "string", "content": "string"}
@@ -118,7 +121,7 @@ function newPost() {
                 res.json({success: true, data: post});
             })
             .catch(function (error) {
-                res.status(400).send({success: false, description: error});
+                res.status(error.statusCode || 404).send({success: false, description: error});
             });
     }
 }
@@ -127,6 +130,7 @@ function newPost() {
  * ------------------------------
  * description: get Post by id
  * ------------------------------
+ * access: privete posts accessible for owner, SU, ADMINROLES
  * url: posts/:id
  * method: GET
  */
@@ -137,7 +141,7 @@ function getPost() {
                 res.json({success: true, data: post})
             })
             .catch(function (error) {
-                res.status(404).send({success: false, description: error});
+                res.status(error.statusCode || 404).send({success: false, description: error});
             });
     }
 }
@@ -146,6 +150,7 @@ function getPost() {
  * ------------------------------
  * description: update Post by id
  * ------------------------------
+ * access: owner, SU, ADMINROLES
  * url: posts/:id
  * method: PUT
  * request: {"title": "string", "content": "string"}
@@ -161,7 +166,7 @@ function update() {
                 res.json({success: true, data: updated_post});
             })
             .catch(function (error) {
-                res.status(404).send({success: false, description: error});
+                res.status(error.statusCode || 404).send({success: false, description: error});
             });
     }
 }
@@ -170,6 +175,7 @@ function update() {
  * ------------------------------
  * description: remove Post from db by id
  * ------------------------------
+ * access: owner, SU, ADMINROLES
  * url: posts/:id
  * method: DELETE
  */
@@ -183,7 +189,7 @@ function remove() {
                 res.json({success: true, description: 'Post #' + req.params.id + ' was removed'});
             })
             .catch(function (error) {
-                res.status(404).send({success: false, description: error});
+                res.status(error.statusCode || 404).send({success: false, description: error});
             });
     }
 }

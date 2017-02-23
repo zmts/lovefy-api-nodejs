@@ -123,14 +123,19 @@ Post.attachTagToPost = function (post_id, tag_id) {
         });
 };
 
+/**
+ * ------------------------------
+ * description: if tag already exist in post model >> throw error message
+ * ------------------------------
+ */
 Post.checkTagByIdInPost = function (post_id, tag_id) {
     return this.query()
         .findById(post_id)
         .eager('tags')
         .then(function (data) {
             if (!data) throw {message: 'Empty response'};
-            if ( _checkExistingTags(data, tag_id) ) throw {message: 'Tag already present in this post'};
-            return {description: 'This tag is not present in this post'};
+            if ( _checkExistingTags(data, tag_id) ) throw {message: 'Tag already presents in post'};
+            return;
         })
         .catch(function (error) {
             throw error.message || error;

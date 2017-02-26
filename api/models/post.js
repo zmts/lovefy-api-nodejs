@@ -123,6 +123,17 @@ Post.attachTagToPost = function (post_id, tag_id) {
         });
 };
 
+Post.detachTagFromPost = function (post_id, tag_id) {
+    return this.query()
+        .findById(post_id)
+        .then(function (post) {
+            return post.$relatedQuery('tags').unrelate().where({'tag_id': tag_id});
+        })
+        .catch(function (error) {
+            throw error.message || error;
+        });
+};
+
 /**
  * ------------------------------
  * description: if tag already exist in post model >> throw error message

@@ -100,7 +100,7 @@ module.exports.checkItemAccess = {
                         res.status(404).send({success: false, description: error});
                     });
             }
-        }
+        };
     },
 
     create: function () {
@@ -113,7 +113,7 @@ module.exports.checkItemAccess = {
                     description: 'Forbidden. userId(' + req.body.helpData.userId + ') to #' + req.body.user_id
                 });
             }
-        }
+        };
     },
 
     update: function (modelName) {
@@ -143,7 +143,7 @@ module.exports.checkItemAccess = {
                         res.status(404).send({success: false, description: error});
                     });
             }
-        }
+        };
     },
 
     remove: function (modelName) {
@@ -162,6 +162,25 @@ module.exports.checkItemAccess = {
                         res.status(404).send({success: false, description: error});
                     });
             }
-        }
+        };
+    },
+
+    tag: function (modelName) {
+        return function (req, res, next) {
+            if ( req.method === 'POST' ) {
+                modelName.getById(req.params.id)
+                    .then(function (model) {
+                        if ( ADMINROLES.indexOf( req.body.helpData.userRole ) >= 0 ) return next();
+                        if ( +req.body.helpData.userId === +model.user_id ) return next(); // check owner access
+                        res.status(403).send({
+                            success: false,
+                            description: 'Forbidden. userId(' + req.body.helpData.userId + ') to #' + req.params.id
+                        });
+                    })
+                    .catch(function (error) {
+                        res.status(404).send({success: false, description: error});
+                    });
+            }
+        };
     }
 };

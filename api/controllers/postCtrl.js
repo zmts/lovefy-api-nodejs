@@ -5,62 +5,132 @@ var router = express.Router();
 
 var Post = require('../models/post');
 var Tag = require('../models/tag');
+
 var auth = require('../middleware/auth');
 var sec = require('../middleware/security');
 
 /**
+ * ------------------------------
  * BASE_URL: posts/
+ * ------------------------------
  */
 
 /**
+ * ------------------------------
  * related routes
+ * ------------------------------
  */
-// router.get('/:id/tags',                 getTagsById());
-router.post('/:id/attachTag/:tag_id',   attachTagToPost());
+router.post('/:id/attachTag/',
+    auth.checkToken(),
+    sec.checkItemAccess.tag(Post),
+    createAndAttachTagToPost()
+);
+router.post('/:id/attachTag/:tag_id',
+    auth.checkToken(),
+    sec.checkItemAccess.tag(Post),
+    attachTagToPost()
+);
+router.post('/:id/detachTag/:tag_id',
+    auth.checkToken(),
+    sec.checkItemAccess.tag(Post),
+    detachTagFromPost()
+);
 
 /**
+ * ------------------------------
  * base routes
+ * ------------------------------
  */
-router.get('/all',              auth.checkToken(), sec.checkSUAccess(), getAllMix());
-router.get('/public',           getAllPub());
-router.get('/:id',              auth.checkToken(), sec.checkItemAccess.read(Post), getPost());
-
-router.post('/',                auth.checkToken(), sec.checkItemAccess.create(), newPost());
-router.put('/:id',              auth.checkToken(), sec.checkItemAccess.update(Post), update());
-router.delete('/:id',           auth.checkToken(), sec.checkItemAccess.remove(Post), remove());
+router.get('/all', 
+    auth.checkToken(),
+    sec.checkSUAccess(),
+    getAllMix()
+);
+router.get('/public',
+    getAllPub()
+);
+router.get('/:id',
+    auth.checkToken(),
+    sec.checkItemAccess.read(Post),
+    getPost()
+);
+router.post('/',
+    auth.checkToken(),
+    sec.checkItemAccess.create(),
+    newPost()
+);
+router.put('/:id',
+    auth.checkToken(),
+    sec.checkItemAccess.update(Post),
+    update()
+);
+router.delete('/:id',
+    auth.checkToken(),
+    sec.checkItemAccess.remove(Post),
+    remove()
+);
 
 /**
  * ------------------------------
- * description: get Tags by Post id
+ * description: create and attach Tag to Post
  * ------------------------------
- * url: posts/:id/tags
- * method: GET
+ * access: owner, SU, ADMINROLES
+ * url: posts/:id/attachTag/
+ * method: POST
+ * request: {"name": "string"}
  */
-// function getTagsById() {
-//     return function (req, res) {
-//         console.log('tagsss');
-//     }
-// }
+function createAndAttachTagToPost() {
+    return function (req, res) {
+        delete req.body.helpData;
+        Tag.create(req.body)
+            .then(function (tag) {
+                return Post.attachTagToPost(req.params.id, tag.id);
+            })
+            .then(function (post) {
+                res.json({success: true, data: post});
+            })
+            .catch(function (error) {
+                res.status(error.statusCode || 403).send({success: false, description: error});
+            });
+    };
+}
 
 /**
  * ------------------------------
  * description: attach Tag to Post
  * ------------------------------
  * access: owner, SU, ADMINROLES
- * url: posts/:post_id/attachTag/:tag_id
+ * url: posts/:id/attachTag/:tag_id
  * method: POST
  */
-function attachTagToPost() { 
+function attachTagToPost() {
     return function (req, res) {
-        Post.checkTagByIdInPost(req.params.id, req.params.tag_id) // todo: params to body
+        Post.checkTagByIdInPost(req.params.id, req.params.tag_id)
             .then(function () {
-                return Tag.getByIdOrCreate(req.params.tag_id, req.body);
-            })
-            .then(function (tag) {
-                return Post.attachTagToPost(req.params.id, tag.id);
+                return Post.attachTagToPost(req.params.id, req.params.tag_id);
             })
             .then(function (post) {
                 res.json({success: true, data: post});
+            })
+            .catch(function (error) {
+                res.status(error.statusCode || 403).send({success: false, description: error});
+            });
+    };
+}
+
+/**
+ * ------------------------------
+ * description: detach Tag From Post
+ * ------------------------------
+ * access: owner, SU, ADMINROLES
+ * url: posts/:id/detachTag/:tag_id
+ * method: POST
+ */
+function detachTagFromPost () {
+    return function (req, res) {
+        Post.detachTagFromPost(req.params.id, req.params.tag_id)
+            .then(function () {
+                res.json({success: true, data: 'Tag#' + req.params.tag_id + ' is detached from ' + 'Post#' + req.params.id});
             })
             .catch(function (error) {
                 res.status(error.statusCode || 403).send({success: false, description: error});
@@ -122,7 +192,7 @@ function newPost() {
         delete req.body.helpData;
         Post.create(req.body)
             .then(function (post) {
-                res.json({success: true, data: post});
+                res.status(201).json({success: true, data: post});
             })
             .catch(function (error) {
                 res.status(error.statusCode || 404).send({success: false, description: error});

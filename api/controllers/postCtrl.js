@@ -212,7 +212,7 @@ function getPost() {
     return function (req, res) {
         Post.getById(req.params.id)
             .then(function (post) {
-                res.json({success: true, data: post})
+                res.json({success: true, data: post});
             })
             .catch(function (error) {
                 res.status(error.statusCode || 404).send({success: false, description: error});

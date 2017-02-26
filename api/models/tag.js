@@ -1,5 +1,7 @@
 'use strict';
 
+var Promise = require('bluebird');
+
 var MainModel = require('./main');
 
 function Tag() {
@@ -64,6 +66,7 @@ Tag.prototype.$beforeUpdate = function () {
  */
 
 Tag.findByString = function (str) {
+    if (!str) return Promise.reject('Query not defined');
     return this.query()
         .where('name', 'like', `%${str}%`)
         .limit(10)

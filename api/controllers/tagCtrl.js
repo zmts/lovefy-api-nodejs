@@ -4,8 +4,8 @@ var express = require('express');
 var router = express.Router();
 
 var Tag = require('../models/tag');
+// var validateReq = require('../middleware/validateReq');
 // var auth = require('../middleware/auth');
-
 
 /**
  * BASE_URL: tags/
@@ -14,7 +14,7 @@ var Tag = require('../models/tag');
 /**
  * other routes
  */
-router.post('/findByString',    findByString());
+router.get('/find',             findByString());
 
 /**
  * related routes
@@ -50,7 +50,7 @@ function getMixPostsByTagId() {
                 res.json({success: true, data: list});
             })
             .catch(function (error) {
-                res.status(404).send({success: false, description: error});
+                res.status(error.statusCode || 404).send({success: false, description: error});
             });
     };
 }
@@ -62,7 +62,7 @@ function getPublicPostsByTagId() {
                 res.json({success: true, data: list});
             })
             .catch(function (error) {
-                res.status(404).send({success: false, description: error});
+                res.status(error.statusCode || 404).send({success: false, description: error});
             });
     };
 }
@@ -81,7 +81,7 @@ function getAll() {
                 res.json({success: true, data: list});
             })
             .catch(function (error) {
-                res.status(404).send({success: false, description: error});
+                res.status(error.statusCode || 404).send({success: false, description: error});
             });
     };
 }
@@ -101,27 +101,26 @@ function newTag() {
                 res.json({success: true, data: tag});
             })
             .catch(function (error) {
-                res.status(400).send({success: false, description: error});
+                res.status(error.statusCode || 400).send({success: false, description: error});
             });
     };
 }
 
 /**
  * ------------------------------
- * description: get Tag by id
+ * description: find tag by substring
  * ------------------------------
- * url: tags/findByString
- * method: POST
- * request: {"name": "string"}
+ * url: tags/find?q=sometagname
+ * method: GET
  */
 function findByString() {
     return function (req, res) {
-        Tag.findByString(req.body.name)
+        Tag.findByString(req.query.q)
             .then(function (list) {
                 res.json({success: true, data: list});
             })
             .catch(function (error) {
-                res.status(404).send({success: false, description: error});
+                res.status(error.statusCode || 404).send({success: false, description: error});
             });
     };
 }
@@ -144,7 +143,7 @@ function update() {
                 res.json({success: true, data: updated_tag});
             })
             .catch(function (error) {
-                res.status(404).send({success: false, description: error});
+                res.status(error.statusCode || 404).send({success: false, description: error});
             });
     };
 }
@@ -166,7 +165,7 @@ function remove() {
                 res.json({success: true, description: 'Tag #' + req.params.id + ' was removed'});
             })
             .catch(function (error) {
-                res.status(404).send({success: false, description: error});
+                res.status(error.statusCode || 404).send({success: false, description: error});
             });
     };
 }

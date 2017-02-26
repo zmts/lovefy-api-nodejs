@@ -39,6 +39,7 @@ app.use(function (req, res) {
 // development error handler
 if (app.get('env') === 'development') {
     app.use(function (error, req, res, next) {
+        console.log('error.stack >>');
         console.log(error.stack);
         res.status(error.status || 500).send({
             success: false,
@@ -51,6 +52,7 @@ if (app.get('env') === 'development') {
 
 // production error handler // todo >> send email if error
 app.use(function (error, req, res, next) {
+    console.log('error.stack >>');
     console.log(error.stack);
     res.status(error.status || 500).send({
         success: false,
@@ -63,6 +65,7 @@ app.use(function (error, req, res, next) {
 // production uncaughtException error handler // todo >> send email if error
 process.on('uncaughtException', function(error) {
     console.error((new Date).toUTCString() + ' uncaughtException:', error.message);
+    console.log('error.stack >>');
     console.error(error.stack);
     process.exit(1);
 });

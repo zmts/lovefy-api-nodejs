@@ -23,7 +23,7 @@ module.exports = {
         port: 5432,
         user: 'zandr',
         password: '',
-        db_name: 'portal_test',
+        db_name: 'lovefi_db',
         charset: 'utf8'
     },
 

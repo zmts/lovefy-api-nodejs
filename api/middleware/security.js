@@ -16,7 +16,7 @@ module.exports.isAuth = function () {
             success: false,
             description: 'Forbidden. User is not authorized to access this resource'
         });
-    }
+    };
 };
 
 /**
@@ -33,7 +33,7 @@ module.exports.checkOwner = function () {
         }
         req.body.helpData.isOwner = +req.body.helpData.userId === +req.params.id ? true : false;
         next();
-    }
+    };
 };
 
 /**
@@ -50,7 +50,7 @@ module.exports.checkSUAccess = function () {
             success: false,
             description: 'Forbidden. userId(' + req.body.helpData.userId + ') to #' + req.params.id
         });
-    }
+    };
 };
 
 /**
@@ -69,7 +69,7 @@ module.exports.checkUserProfileAccess = function () {
             success: false,
             description: 'Forbidden. userId(' + req.body.helpData.userId + ') to #' + req.params.id
         });
-    }
+    };
 };
 
 /**

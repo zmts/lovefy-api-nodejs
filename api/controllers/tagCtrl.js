@@ -8,28 +8,46 @@ var Tag = require('../models/tag');
 // var auth = require('../middleware/auth');
 
 /**
+ * ------------------------------
  * BASE_URL: tags/
+ * ------------------------------
  */
 
 /**
  * other routes
  */
-router.get('/find',             findByString());
+router.get('/find',
+    findByString()
+);
 
 /**
  * related routes
  */
-router.get('/:id/posts/all',    getMixPostsByTagId());
-router.get('/:id/posts/public', getPublicPostsByTagId());
+router.get('/:id/posts/all',
+    getMixPostsByTagId()
+);
+router.get('/:id/posts/public',
+    getPublicPostsByTagId()
+);
 
 /**
  * base routes
  */
-router.get('/all',              getAll());
-router.get('/:id',              getTag());
-router.post('/',                newTag());
-router.put('/:id',              update());
-router.delete('/:id',           remove());
+router.get('/all',
+    getAll()
+);
+router.get('/:id',
+    getTag()
+);
+router.post('/',
+    newTag()
+);
+router.put('/:id',
+    update()
+);
+router.delete('/:id',
+    remove()
+);
 
 function getTag () {
     return function (req, res) {

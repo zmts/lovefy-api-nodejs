@@ -6,10 +6,21 @@ var EDITORROLES = require('../config').roles.editorRoles;
 
 /**
  * ------------------------------
+ * description: helper, check owner status
+ * ------------------------------
+ * owner status may have: ADMINROLES, OWNER
+ */
+function _isOwner(req) {
+    if ( ADMINROLES.indexOf( req.body.helpData.userRole ) >= 0 ) return true; // check admins access
+    if ( +req.body.helpData.userId === +req.params.id ) return true; // check owner access
+}
+
+/**
+ * ------------------------------
  * description: check Authorization status
  * ------------------------------
  */
-module.exports.isAuth = function () {
+module.exports.checkAuth = function () {
     return function (req, res, next) {
         if ( +req.body.helpData.userId ) return next();
         res.status(403).send({
@@ -27,12 +38,8 @@ module.exports.isAuth = function () {
  */
 module.exports.checkOwner = function () {
     return function (req, res, next) {
-        if ( ADMINROLES.indexOf( req.body.helpData.userRole ) >= 0 ) {
-            req.body.helpData.isOwner = true;
-            return next();
-        }
-        req.body.helpData.isOwner = +req.body.helpData.userId === +req.params.id ? true : false;
-        next();
+        _isOwner(req) ? req.body.helpData.isOwner = true : req.body.helpData.isOwner = false;
+        return next();
     };
 };
 
@@ -63,8 +70,7 @@ module.exports.checkSUAccess = function () {
  */
 module.exports.checkUserProfileAccess = function () {
     return function (req, res, next) {
-        if ( ADMINROLES.indexOf( req.body.helpData.userRole ) >= 0 ) return next();
-        if ( req.body.helpData.userId === req.params.id ) return next();
+        if ( _isOwner(req) ) return next();
         res.status(403).send({
             success: false,
             description: 'Forbidden. userId(' + req.body.helpData.userId + ') to #' + req.params.id

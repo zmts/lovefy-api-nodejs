@@ -1,39 +1,65 @@
 'use strict';
 
 var express = require('express');
-var fs = require('fs');
 var router = express.Router();
 
 var User = require('../models/user');
 var auth = require('../middleware/auth');
 var sec = require('../middleware/security');
-var validateReq = require('../middleware/validateReq');
 
 /**
- * baseUrl: users/
+ * ------------------------------
+ * BASE_URL: users/
+ * ------------------------------
  */
 
 /**
  * other routes
  */
-// router.post('/:id/changeUserRole',      sec.checkSUAccess(), changeUserRole());
-router.post('/checkNameAvailability',   checkNameAvailability());
-router.post('/checkEmailAvailability',  checkEmailAvailability());
+// router.post('/:id/changeUserRole',
+//     sec.checkSUAccess(),
+//     changeUserRole()
+// );
+router.post('/checkNameAvailability',
+    checkNameAvailability()
+);
+router.post('/checkEmailAvailability',
+    checkEmailAvailability()
+);
 
 /**
  * related routes
  */
-router.get('/:id/posts/',             auth.checkToken(), sec.checkOwner(), getPostsById());
+router.get('/:id/posts/',
+    auth.checkToken(),
+    sec.checkOwner(),
+    getPostsByUserId()
+);
 
 /**
  * base routes
  */
-router.get('/all',                      getAllUsers());
-router.get('/:id',                      getUser());
-
-router.post('/',                        auth.hashPassword(), newUser());
-router.put('/:id',                      auth.checkToken(), sec.checkUserProfileAccess(), auth.hashPassword(), update());
-router.delete('/:id',                   auth.checkToken(), sec.checkUserProfileAccess(), remove());
+router.get('/all',
+    getAllUsers()
+);
+router.get('/:id',
+    getUser()
+);
+router.post('/',
+    auth.hashPassword(),
+    newUser()
+);
+router.put('/:id',
+    auth.checkToken(),
+    sec.checkUserProfileAccess(),
+    auth.hashPassword(),
+    update()
+);
+router.delete('/:id',
+    auth.checkToken(),
+    sec.checkUserProfileAccess(),
+    remove()
+);
 
 /**
  * ------------------------------
@@ -51,7 +77,7 @@ function getAllUsers() {
             .catch(function (error) {
                 res.status(error.statusCode || 404).send({success: false, description: error.message || error});
             });
-    }
+    };
 }
 
 /**
@@ -64,12 +90,12 @@ function getAllUsers() {
  * headers: token
  * method: GET
  */
-function getPostsById() {
+function getPostsByUserId() {
     return function (req, res) {
         User.getById(req.params.id)
             .then(function (user) {
-                if ( req.body.helpData.isOwner ) return User.getMixPostsById(user.id);
-                return User.getPubPostsById(user.id);
+                if ( req.body.helpData.isOwner ) return User.getMixPostsByUserId(user.id);
+                return User.getPubPostsByUserId(user.id);
             })
             .then(function (list) {
                 res.json({success: true, data: list});
@@ -77,7 +103,7 @@ function getPostsById() {
             .catch(function (error) {
                 res.status(error.statusCode || 404).send({success: false, description: error.message || error});
             });
-    }
+    };
 }
 
 /**
@@ -99,7 +125,7 @@ function newUser() {
             .catch(function (error) {
                 res.status(error.statusCode || 404).send({success: false, description: error.message || error});
             });
-    }
+    };
 }
 
 /**
@@ -118,7 +144,7 @@ function getUser() {
             .catch(function (error) {
                 res.status(error.statusCode || 404).send({success: false, description: error.message || error});
             });
-    }
+    };
 }
 
 /**
@@ -143,7 +169,7 @@ function update() {
             .catch(function (error) {
                 res.status(error.statusCode || 404).send({success: false, description: error.message || error});
             });
-    }
+    };
 }
 
 /**
@@ -164,8 +190,8 @@ function remove() {
             })
             .catch(function (error) {
                 res.status(error.statusCode || 404).send({success: false, description: error.message || error});
-            })
-    }
+            });
+    };
 }
 
 /**
@@ -186,7 +212,7 @@ function checkNameAvailability() {
             .catch(function (error) {
                 res.status(error.statusCode || 404).send({success: false, description: error.message || error});
             });
-    }
+    };
 }
 
 /**
@@ -207,7 +233,7 @@ function checkEmailAvailability() {
             .catch(function (error) {
                 res.status(error.statusCode || 404).send({success: false, description: error.message || error});
             });
-    }
+    };
 }
 
 // function changeUserRole() {

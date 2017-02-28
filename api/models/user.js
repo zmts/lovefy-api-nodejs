@@ -84,7 +84,7 @@ User.getByName = function (name) {
         });
 };
 
-User.getMixPostsById = function (id) {
+User.getMixPostsByUserId = function (id) {
     return this.query()
         .where({id: id})
         .eager('posts')
@@ -97,7 +97,7 @@ User.getMixPostsById = function (id) {
         });
 };
 
-User.getPubPostsById = function (id) {
+User.getPubPostsByUserId = function (id) {
     return this.query()
         .where({id: id})
         .eager('posts')

@@ -38,15 +38,15 @@ module.exports.makeToken = function () {
                 };
 
                 jwt.sign(playload, SECRET, options, function (error, token) {
-                    if (token) { return res.json({ success: true, token: _encryptToken(token)}) }
-                    res.status(400).json({success: false, description: error})
+                    if (token) return res.json({ success: true, token: _encryptToken(token)});
+                    res.status(400).json({success: false, description: error});
                 });
 
             })
             .catch(function (error) {
                 res.status(404).send({success: false, description: error});
             });
-    }
+    };
 };
 
 /**
@@ -90,13 +90,13 @@ module.exports.checkToken = function () {
             };
             return next();
         }
-    }
+    };
 };
 
 module.exports.signOut = function () {
     return function (req, res) {
         res.json({success: true, description: 'User sign out system'});
-    }
+    };
 };
 
 /**
@@ -110,17 +110,17 @@ module.exports.hashPassword = function () {
         if (req.body.password) {
             bcrypt.genSalt(10, function (error, salt) {
                 bcrypt.hash(req.body.password, salt, function (error, hash) {
-                    if (error) { return res.status(400).json({success: false, description: error}) }
+                    if (error) return res.status(400).json({success: false, description: error});
                     req.body.password_hash = hash; // 'password_hash' transfers and saves to DB
                     delete req.body.password;
                     next();
-                })
-            })
+                });
+            });
         }
         else {
             res.status(400).json({success: false, description: '\'password\' field not found'})
         }
-    }
+    };
 };
 
 module.exports.checkPassword = function () {
@@ -128,11 +128,12 @@ module.exports.checkPassword = function () {
         User.getByEmail(req.body.email)
             .then(function (user) {
                 bcrypt.compare(req.body.password, user.password_hash, function(error, result) {
-                    if (result) { return next() }
-                    res.status(403).json({success: false, description: 'Invalid password'})
+                    if (result) return next();
+                    res.status(403).json({success: false, description: 'Invalid password'});
                 });
-            }).catch(function (error) {
-            res.status(404).send({success: false, description: error});
-        });
-    }
+            })
+            .catch(function (error) {
+                res.status(404).send({success: false, description: error});
+            });
+    };
 };

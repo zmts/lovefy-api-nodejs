@@ -2,17 +2,35 @@
 
 var SUPERUSER = require('../config').roles.superuser;
 var ADMINROLES = require('../config').roles.adminRoles;
-var EDITORROLES = require('../config').roles.editorRoles;
+// var EDITORROLES = require('../config').roles.editorRoles;
 
 /**
  * ------------------------------
  * description: helper, check owner status
- * ------------------------------
  * owner status may have: ADMINROLES, OWNER
+ * ------------------------------
+ * @param {Object} req
+ * @returns {boolean}
+ * @private
  */
 function _isOwner(req) {
     if ( ADMINROLES.indexOf( req.body.helpData.userRole ) >= 0 ) return true; // check admins access
     if ( +req.body.helpData.userId === +req.params.id ) return true; // check owner access
+}
+
+/**
+ * ------------------------------
+ * description: helper, check check ownership in model
+ * owner can be: ADMINROLES, OWNER
+ * ------------------------------
+ * @param {Object} req
+ * @param {Object} model
+ * @returns {boolean}
+ * @private
+ */
+function _isModelOwner(req, model) {
+    if ( ADMINROLES.indexOf( req.body.helpData.userRole ) >= 0 ) return true; // check admins access
+    if ( +req.body.helpData.userId === +model.user_id ) return true; // check ownership in model
 }
 
 /**
@@ -95,8 +113,7 @@ module.exports.checkItemAccess = {
                 modelName.getById(req.params.id)
                     .then(function (model) {
                         if ( !model.private ) return next();
-                        if ( ADMINROLES.indexOf( req.body.helpData.userRole ) >= 0 ) return next();
-                        if ( +req.body.helpData.userId === +model.user_id ) return next(); // check owner access
+                        if ( _isModelOwner(req, model) ) return next();
                         res.status(403).send({
                             success: false,
                             description: 'Forbidden. userId(' + req.body.helpData.userId + ') to #' + req.params.id
@@ -157,8 +174,7 @@ module.exports.checkItemAccess = {
             if ( req.method === 'DELETE' ) {
                 modelName.getById(req.params.id)
                     .then(function (model) {
-                        if ( ADMINROLES.indexOf( req.body.helpData.userRole ) >= 0 ) return next();
-                        if ( +req.body.helpData.userId === +model.user_id ) return next(); // check owner access
+                        if ( _isModelOwner(req, model) ) return next();
                         res.status(403).send({
                             success: false,
                             description: 'Forbidden. userId(' + req.body.helpData.userId + ') to #' + req.params.id
@@ -176,8 +192,7 @@ module.exports.checkItemAccess = {
             if ( req.method === 'POST' ) {
                 modelName.getById(req.params.id)
                     .then(function (model) {
-                        if ( ADMINROLES.indexOf( req.body.helpData.userRole ) >= 0 ) return next();
-                        if ( +req.body.helpData.userId === +model.user_id ) return next(); // check owner access
+                        if ( _isModelOwner(req, model) ) return next();
                         res.status(403).send({
                             success: false,
                             description: 'Forbidden. userId(' + req.body.helpData.userId + ') to #' + req.params.id

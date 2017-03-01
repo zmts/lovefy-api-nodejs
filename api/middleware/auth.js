@@ -76,8 +76,8 @@ module.exports.checkToken = function () {
                 }
                 if (error) {
                     req.body.helpData = {
-                        userId: 'anonymous',
-                        userRole: 'anonymous'
+                        userId: false,
+                        userRole: false
                     };
                     return next();
                 }
@@ -85,8 +85,8 @@ module.exports.checkToken = function () {
 
         } else {
             req.body.helpData = {
-                userId: 'anonymous',
-                userRole: 'anonymous'
+                userId: false,
+                userRole: false
             };
             return next();
         }
@@ -118,7 +118,7 @@ module.exports.hashPassword = function () {
             });
         }
         else {
-            res.status(400).json({success: false, description: '\'password\' field not found'})
+            res.status(400).json({success: false, description: '\'password\' field not found'});
         }
     };
 };

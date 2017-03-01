@@ -79,11 +79,16 @@ Tag.findByString = function (str) {
         });
 };
 
+
+/**
+ * @param tagId
+ * @returns {Promise} public POSTS list
+ */
 Tag.getPublicPostsByTagId = function (tagId) {
     return this.query()
         .findById(tagId)
         .modifyEager('posts', function(builder) {
-            builder.where({private: false});
+            builder.where({private: false}).orderBy('user_id', 'updated_at')
         })
         .eager('posts')
         .then(function (data) {
@@ -95,10 +100,42 @@ Tag.getPublicPostsByTagId = function (tagId) {
         });
 };
 
-Tag.getMixPostsByTagId = function (tagId) {
+/**
+ * @param userId
+ * @param tagId
+ * @returns {Promise} only current USER mixed POSTS
+ */
+Tag.getCurrentUserPostsByTagId = function (userId, tagId) {
     return this.query()
         .findById(tagId)
         .eager('posts')
+        .modifyEager('posts', function(builder) {
+            builder.where({user_id: userId}).orderBy('updated_at')
+        })
+        .then(function (data) {
+            if (!data) throw {message: 'Empty response'};
+            return data;
+        })
+        .catch(function (error) {
+            throw error.message || error;
+        });
+};
+
+
+/**
+ * @param userId
+ * @param tagId
+ * @returns {Promise} All mix USER POSTS + other USERS public POSTS
+ */
+Tag.getMixPostsByTagId = function (userId, tagId) {
+    return this.query()
+        .findById(tagId)
+        .eager('posts')
+        .modifyEager('posts', function(builder) {
+            builder.where({user_id: userId})
+                .orWhere({private: false})
+                .orderBy('user_id', 'updated_at')
+        })
         .then(function (data) {
             if (!data) throw {message: 'Empty response'};
             return data;

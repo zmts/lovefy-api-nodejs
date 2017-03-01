@@ -4,8 +4,8 @@ var express = require('express');
 var router = express.Router();
 
 var Tag = require('../models/tag');
-// var validateReq = require('../middleware/validateReq');
-// var auth = require('../middleware/auth');
+var auth = require('../middleware/auth');
+var sec = require('../middleware/security');
 
 /**
  * ------------------------------
@@ -23,17 +23,16 @@ router.get('/find',
 /**
  * related routes
  */
-router.get('/:id/posts/all',
-    getMixPostsByTagId()
-);
-router.get('/:id/posts/public',
-    getPublicPostsByTagId()
+router.get('/:id/posts',
+    auth.checkToken(),
+    sec.checkOwner(),
+    getPostsByTagId()
 );
 
 /**
  * base routes
  */
-router.get('/all',
+router.get('/',
     getAll()
 );
 router.get('/:id',
@@ -49,6 +48,15 @@ router.delete('/:id',
     remove()
 );
 
+
+/**
+ * ------------------------------
+ * description: get Tag by id
+ * ------------------------------
+ * access: All
+ * url: tags/:id
+ * method: GET
+ */
 function getTag () {
     return function (req, res) {
         Tag.getById(req.params.id)
@@ -61,21 +69,29 @@ function getTag () {
     };
 }
 
-function getMixPostsByTagId() {
+/**
+ * ------------------------------
+ * description: get Posts by tag id
+ * url: tags/:id/posts
+ * method: GET
+ *
+ * if User is Public >>
+ * - endpoint must response only with public posts list
+ *
+ * if User is Owner of Post model >>
+ * - endpoint must response with full list of User posts
+ * - and with list of other Users public Posts
+ * ------------------------------
+ */
+function getPostsByTagId () {
     return function (req, res) {
-        Tag.getMixPostsByTagId(req.params.id)
-            .then(function (list) {
-                res.json({success: true, data: list});
+        Tag.getById(req.params.id)
+            .then(function (tag) {
+                if ( req.body.helpData.userId ) {
+                    return Tag.getMixPostsByTagId(req.body.helpData.userId, tag.id);
+                }
+                return Tag.getPublicPostsByTagId(tag.id);
             })
-            .catch(function (error) {
-                res.status(error.statusCode || 404).send({success: false, description: error});
-            });
-    };
-}
-
-function getPublicPostsByTagId() {
-    return function (req, res) {
-        Tag.getPublicPostsByTagId(req.params.id)
             .then(function (list) {
                 res.json({success: true, data: list});
             })
@@ -89,7 +105,7 @@ function getPublicPostsByTagId() {
  * ------------------------------
  * description: get all Tags
  * ------------------------------
- * url: tags/all
+ * url: tags/
  * method: GET
  */
 function getAll() {

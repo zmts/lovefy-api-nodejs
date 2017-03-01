@@ -20,17 +20,17 @@ var sec = require('../middleware/security');
  * related routes
  * ------------------------------
  */
-router.post('/:id/attachTag/',
+router.post('/:id/attach-tag',
     auth.checkToken(),
     sec.checkItemAccess.tag(Post),
     createAndAttachTagToPost()
 );
-router.post('/:id/attachTag/:tag_id',
+router.post('/:id/attach-tag/:tag_id',
     auth.checkToken(),
     sec.checkItemAccess.tag(Post),
     attachTagToPost()
 );
-router.post('/:id/detachTag/:tag_id',
+router.post('/:id/detach-tag/:tag_id',
     auth.checkToken(),
     sec.checkItemAccess.tag(Post),
     detachTagFromPost()
@@ -41,7 +41,7 @@ router.post('/:id/detachTag/:tag_id',
  * base routes
  * ------------------------------
  */
-router.get('/all', 
+router.get('/all',
     auth.checkToken(),
     sec.checkSUAccess(),
     getAllMix()

@@ -1,5 +1,7 @@
 'use strict';
 
+var Promise = require('bluebird');
+
 var MainModel = require('./main');
 
 function User() {
@@ -63,6 +65,7 @@ User.prototype.$beforeUpdate = function () {
  */
 
 User.getByEmail = function (email) {
+    if (!email) return Promise.reject('Query not defined');
     return this.query().where({email: email})
         .then(function (data) {
             if (!data.length) throw {message: 'Empty response'};
@@ -74,10 +77,11 @@ User.getByEmail = function (email) {
 };
 
 User.getByName = function (name) {
+    if (!name) return Promise.reject('Query not defined');
     return this.query().where({name: name})
         .then(function (data) {
             if (!data.length) throw {message: 'Empty response'};
-            return data;
+            return data[0];
         })
         .catch(function (error) {
             throw error.message || error;

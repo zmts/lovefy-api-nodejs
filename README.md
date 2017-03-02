@@ -22,12 +22,21 @@
     - Sign in
     - Sign out(todo)
     - Password hashing in DB (bcrypt.js)
-    - Tokens(JWT):
+    - Tokens(JWT, algorithm: 'HS512'):
         - Access-token
         - Refresh-token(todo)
         - Token encryption(AES-256-CTR)
 - Security:
     - Roles
+        - SU ['superuser']
+        - ADMINROLES ['superuser', 'moderator']
+        - EDITORROLES ['editor']
+        - USER ['user'] (default role on user creation)
+    - Logic roles:
+        - Anonymous
+        - IsAuth
+        - Owner(checks in *checkToken* middleware and depends from ownership of checked model entity)
+        - NotOwner === IsAuth and !Owner
     - Check permissions(create, read, update, delete) middleware
 - Error handling
 

@@ -11,13 +11,13 @@ var sec = require('../middleware/security');
 
 /**
  * ------------------------------
- * BASE_URL: posts/
+ * @BASE_URL: posts/
  * ------------------------------
  */
 
 /**
  * ------------------------------
- * related routes
+ * @RELATED_ROUTES
  * ------------------------------
  */
 router.post('/:id/attach-tag',
@@ -38,7 +38,7 @@ router.post('/:id/detach-tag/:tag_id',
 
 /**
  * ------------------------------
- * base routes
+ * @BASE_ROUTES
  * ------------------------------
  */
 router.get('/all',
@@ -72,12 +72,12 @@ router.delete('/:id',
 
 /**
  * ------------------------------
- * description: create and attach Tag to Post
+ * @description: create and attach Tag to Post
  * ------------------------------
- * access: owner, SU, ADMINROLES
- * url: posts/:id/attachTag/
- * method: POST
- * request: {"name": "string"}
+ * @hasaccess: owner, SU, ADMINROLES
+ * @url: posts/:id/attachTag/
+ * @verb: POST
+ * @request: {"name": "string"}
  */
 function createAndAttachTagToPost() {
     return function (req, res) {
@@ -97,11 +97,11 @@ function createAndAttachTagToPost() {
 
 /**
  * ------------------------------
- * description: attach Tag to Post
+ * @description: attach Tag to Post
  * ------------------------------
- * access: owner, SU, ADMINROLES
- * url: posts/:id/attachTag/:tag_id
- * method: POST
+ * @hasaccess: owner, SU, ADMINROLES
+ * @url: posts/:id/attachTag/:tag_id
+ * @verb: POST
  */
 function attachTagToPost() {
     return function (req, res) {
@@ -120,11 +120,11 @@ function attachTagToPost() {
 
 /**
  * ------------------------------
- * description: detach Tag From Post
+ * @description: detach Tag From Post
  * ------------------------------
- * access: owner, SU, ADMINROLES
- * url: posts/:id/detachTag/:tag_id
- * method: POST
+ * @hasaccess: owner, SU, ADMINROLES
+ * @url: posts/:id/detachTag/:tag_id
+ * @method: POST
  */
 function detachTagFromPost () {
     return function (req, res) {
@@ -140,11 +140,11 @@ function detachTagFromPost () {
 
 /**
  * ------------------------------
- * description: get all Posts of All users(public and private)
+ * @description: get all Posts of All users(public and private)
  * ------------------------------
- * access: only SU
- * url: posts/all
- * method: GET
+ * @hasaccess: only SU
+ * @url: posts/all
+ * @verb: GET
  */
 function getAllMix() {
     return function (req, res) {
@@ -160,11 +160,11 @@ function getAllMix() {
 
 /**
  * ------------------------------
- * description: get all public Posts of All Users
+ * @description: get all public Posts of All Users
  * ------------------------------
- * access: public
- * url: posts/public
- * method: GET
+ * @hasaccess: All
+ * @url: posts/public
+ * @verb: GET
  */
 function getAllPub() {
     return function (req, res) {
@@ -180,12 +180,12 @@ function getAllPub() {
 
 /**
  * ------------------------------
- * description: create Post
+ * @description: create Post
  * ------------------------------
- * access: owner, SU, ADMINROLES
- * url: posts/
- * method: POST
- * request: {"user_id": "int", "title": "string", "content": "string"}
+ * @hasaccess: owner, SU, ADMINROLES
+ * @url: posts/
+ * @verb: POST
+ * @request: {"user_id": "int", "title": "string", "content": "string"}
  */
 function newPost() {
     return function (req, res) {
@@ -202,11 +202,12 @@ function newPost() {
 
 /**
  * ------------------------------
- * description: get Post by id
+ * @description: get Post by id
  * ------------------------------
- * access: privete posts accessible for owner, SU, ADMINROLES
- * url: posts/:id
- * method: GET
+ * @hasaccess: public posts for All
+ * @hasaccess: private posts for owner, SU, ADMINROLES
+ * @url: posts/:id
+ * @verb: GET
  */
 function getPost() {
     return function (req, res) {
@@ -222,12 +223,12 @@ function getPost() {
 
 /**
  * ------------------------------
- * description: update Post by id
+ * @description: update Post by id
  * ------------------------------
- * access: owner, SU, ADMINROLES
- * url: posts/:id
- * method: PUT
- * request: {"title": "string", "content": "string"}
+ * @hasaccess: owner, SU, ADMINROLES
+ * @url: posts/:id
+ * @verb: PUT
+ * @request: {"title": "string", "content": "string"}
  */
 function update() {
     return function (req, res) {
@@ -247,11 +248,11 @@ function update() {
 
 /**
  * ------------------------------
- * description: remove Post from db by id
+ * @description: remove Post from db by id
  * ------------------------------
- * access: owner, SU, ADMINROLES
- * url: posts/:id
- * method: DELETE
+ * @hasaccess: owner, SU, ADMINROLES
+ * @url: posts/:id
+ * @verb: DELETE
  */
 function remove() {
     return function (req, res) {

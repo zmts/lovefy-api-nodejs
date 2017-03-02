@@ -9,26 +9,26 @@ var sec = require('../middleware/security');
 
 /**
  * ------------------------------
- * BASE_URL: users/
+ * @BASE_URL: users/
  * ------------------------------
  */
 
 /**
- * other routes
+ * @OTHER_ROUTES
  */
-// router.post('/:id/changeUserRole',
+// router.post('/:id/change-user-role',
 //     sec.checkSUAccess(),
 //     changeUserRole()
 // );
-router.post('/checkNameAvailability',
+router.get('/check-name-availability',
     checkNameAvailability()
 );
-router.post('/checkEmailAvailability',
+router.get('/check-email-availability',
     checkEmailAvailability()
 );
 
 /**
- * related routes
+ * @RELATED_ROUTES
  */
 router.get('/:id/posts/',
     auth.checkToken(),
@@ -37,9 +37,9 @@ router.get('/:id/posts/',
 );
 
 /**
- * base routes
+ * @BASE_ROUTES
  */
-router.get('/all',
+router.get('/',
     getAllUsers()
 );
 router.get('/:id',
@@ -63,10 +63,11 @@ router.delete('/:id',
 
 /**
  * ------------------------------
- * description: get all Users
+ * @description: get all Users
  * ------------------------------
- * url: users/all
- * method: GET
+ * @url: users/
+ * @verb: GET
+ * @hasaccess: All
  */
 function getAllUsers() {
     return function (req, res) {
@@ -82,13 +83,13 @@ function getAllUsers() {
 
 /**
  * ------------------------------
- * description: show Posts list by user ID
- * if user is Owner response with public and private posts list
- * else response only with public posts
+ * @description: show Posts list by user ID
  * ------------------------------
- * url: users/user_id/posts/
- * headers: token
- * method: GET
+ * @url: users/user_id/posts/
+ * @headers: token
+ * @verb: GET
+ * @hasaccess: Owner >> response with public and private posts list
+ * @hasaccess: Anonymous, NotOwner >> response only with public posts
  */
 function getPostsByUserId() {
     return function (req, res) {
@@ -108,11 +109,12 @@ function getPostsByUserId() {
 
 /**
  * ------------------------------
- * description: create new User(Registration)
+ * @description: create new User(Registration)
  * ------------------------------
- * url: users/
- * method: POST
- * request: {"name": "string", "email": "string", "password": "string"}
+ * @url: users/
+ * @hasaccess: only Anonymous
+ * @verb: POST
+ * @request: {"name": "string", "email": "string", "password": "string"}
  * "password" field from request transfers and saves to DB as "password_hash"
  */
 function newUser() {
@@ -130,10 +132,12 @@ function newUser() {
 
 /**
  * ------------------------------
- * description: get User by id
+ * @description: get User by id
  * ------------------------------
- * url: users/:id
- * method: POST
+ * @url: users/:id
+ * @verb: POST
+ * @hasaccess: Owner >> response with all profile data
+ * @hasaccess: Anonymous, NotOwner >> response only public profile data TODO
  */
 function getUser() {
     return function (req, res) {
@@ -149,11 +153,12 @@ function getUser() {
 
 /**
  * ------------------------------
- * description: update User by id
+ * @description: update User by id
  * ------------------------------
- * url: users/:id
- * method: PUT
- * request: {"name": "string", "email": "string", "password": "string"}
+ * @url: users/:id
+ * @hasaccess: Owner, ADMINROLES
+ * @verb: PUT
+ * @request: {"name": "string", "email": "string", "password": "string"}
  * "password" field from request transfers and saves to DB as "password_hash"
  */
 function update() {
@@ -161,7 +166,7 @@ function update() {
         User.getById(req.params.id)
             .then(function (user) {
                 delete req.body.helpData;
-                return User.update(user.id, req.body)
+                return User.update(user.id, req.body);
             })
             .then(function (updated_user) {
                 res.json({success: true, data: updated_user});
@@ -174,10 +179,11 @@ function update() {
 
 /**
  * ------------------------------
- * description: remove User from db by id
+ * @description: remove User from db by id
  * ------------------------------
- * url: users/:id
- * method: DELETE
+ * @url: users/:id
+ * @verb: DELETE
+ * @hasaccess: Owner, ADMINROLES
  */
 function remove() {
     return function (req, res) {
@@ -196,16 +202,15 @@ function remove() {
 
 /**
  * ------------------------------
- * description: check User name availability
+ * @description: check User name availability
  * ------------------------------
- * url: users/checkNameAvailability
- * method: POST
- * request: {"name": "string"}
- * response: true if found, false if not found
+ * @url: users/check-name-availability?q=string
+ * @verb: GET
+ * @hasaccess: All
  */
 function checkNameAvailability() {
     return function (req, res) {
-        User.getByName(req.body.name)
+        User.getByName(req.query.q)
             .then(function (user) {
                 res.json({success: true, data: user});
             })
@@ -217,16 +222,15 @@ function checkNameAvailability() {
 
 /**
  * ------------------------------
- * description: check User email availability
+ * @description: check User email availability
  * ------------------------------
- * url: users/checkEmailAvailability
- * method: POST
- * request: {"email": "string"}
- * response: true if found, false if not found
+ * @url: users/check-email-availability?q=string
+ * @verb: POST
+ * @hasaccess: All
  */
 function checkEmailAvailability() {
     return function (req, res) {
-        User.getByEmail(req.body.email)
+        User.getByEmail(req.query.q)
             .then(function (user) {
                 res.json({success: true, data: user});
             })
@@ -236,7 +240,16 @@ function checkEmailAvailability() {
     };
 }
 
-// function changeUserRole() {
+/**
+ * ------------------------------
+ * @description: change User Role
+ * ------------------------------
+ * @url: users/:id/change-user-role',
+ * @verb: POST
+ * @hasaccess: SU
+ * @request: {user_id: "role"}
+ */
+// function changeUserRole() { // TODO
 //     return function (req, res) {
 //         res.json({success: true});
 //     }

@@ -9,19 +9,19 @@ var sec = require('../middleware/security');
 
 /**
  * ------------------------------
- * BASE_URL: tags/
+ * @BASE_URL: tags/
  * ------------------------------
  */
 
 /**
- * other routes
+ * @OTHER_ROUTES
  */
 router.get('/find',
     findByString()
 );
 
 /**
- * related routes
+ * @RELATED_ROUTES
  */
 router.get('/:id/posts',
     auth.checkToken(),
@@ -29,7 +29,7 @@ router.get('/:id/posts',
 );
 
 /**
- * base routes
+ * @BASE_ROUTES
  */
 router.get('/',
     getAll()
@@ -38,23 +38,48 @@ router.get('/:id',
     getTag()
 );
 router.post('/',
+    auth.checkToken(),
+    sec.checkSUAccess(),
     newTag()
 );
 router.put('/:id',
+    auth.checkToken(),
+    sec.checkSUAccess(),
     update()
 );
 router.delete('/:id',
+    auth.checkToken(),
+    sec.checkSUAccess(),
     remove()
 );
 
+/**
+ * ------------------------------
+ * @description: find tag by substring
+ * ------------------------------
+ * @url: tags/find?q=sometagname
+ * @verb: GET
+ * @hasaccess: All
+ */
+function findByString() {
+    return function (req, res) {
+        Tag.findByString(req.query.q)
+            .then(function (list) {
+                res.json({success: true, data: list});
+            })
+            .catch(function (error) {
+                res.status(error.statusCode || 404).send({success: false, description: error});
+            });
+    };
+}
 
 /**
  * ------------------------------
- * description: get Tag by id
+ * @description: get Tag by id
  * ------------------------------
- * access: All
- * url: tags/:id
- * method: GET
+ * @hasaccess: All
+ * @url: tags/:id
+ * @verb: GET
  */
 function getTag () {
     return function (req, res) {
@@ -70,16 +95,17 @@ function getTag () {
 
 /**
  * ------------------------------
- * description: get Posts by tag id
+ * @description: get Posts by tag id
  *
- * url: tags/:id/posts
- * if USER is Public >> response only with public POSTS list
- * if USER is Owner of POST model >> response with full list of USER POSTS and other USERS public POSTS
+ * @url: tags/:id/posts
+ * @hasaccess: Owner of POST model >> response with full list of current USER POSTS and other USERS public POSTS
+ * @hasaccess: Anonymous, NotOwner >> response only with public POSTS list
  *
- * url: tags/:id/posts?clear=true
- * response only with full list of current USER
+ * @url: tags/:id/posts?clear=true
+ * @hasaccess: Owner of POST model >> response only with full list of current USER
+ * @hasaccess: Anonymous, NotOwner >> response only with public POSTS list
  *
- * method: GET
+ * @verb: GET
  * ------------------------------
  */
 function getPostsByTagId () {
@@ -105,10 +131,11 @@ function getPostsByTagId () {
 
 /**
  * ------------------------------
- * description: get all Tags
+ * @description: get all Tags list
  * ------------------------------
- * url: tags/
- * method: GET
+ * @url: tags/
+ * @verb: GET
+ * @hasaccess: All
  */
 function getAll() {
     return function (req, res) {
@@ -124,11 +151,12 @@ function getAll() {
 
 /**
  * ------------------------------
- * description: create Tag
+ * @description: create Tag
  * ------------------------------
- * url: tags/
- * method: POST
- * request: {"name": "string"}
+ * @url: tags/
+ * @verb: POST
+ * @request: {"name": "string"}
+ * @hasaccess: SU
  */
 function newTag() {
     return function (req, res) {
@@ -144,30 +172,12 @@ function newTag() {
 
 /**
  * ------------------------------
- * description: find tag by substring
+ * @description: update Post by id
  * ------------------------------
- * url: tags/find?q=sometagname
- * method: GET
- */
-function findByString() {
-    return function (req, res) {
-        Tag.findByString(req.query.q)
-            .then(function (list) {
-                res.json({success: true, data: list});
-            })
-            .catch(function (error) {
-                res.status(error.statusCode || 404).send({success: false, description: error});
-            });
-    };
-}
-
-/**
- * ------------------------------
- * description: update Post by id
- * ------------------------------
- * url: tags/:id
- * method: PUT
- * request: {"name": "string"}
+ * @url: tags/:id
+ * @verb: PUT
+ * @request: {"name": "string"}
+ * @hasaccess: SU
  */
 function update() {
     return function (req, res) {
@@ -186,10 +196,11 @@ function update() {
 
 /**
  * ------------------------------
- * description: remove Tag from db by id
+ * @description: remove Tag from db by id
  * ------------------------------
- * url: tags/:id
- * method: DELETE
+ * @url: tags/:id
+ * @verb: DELETE
+ * @hasaccess: SU
  */
 function remove() {
     return function (req, res) {

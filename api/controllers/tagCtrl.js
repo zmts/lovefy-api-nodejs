@@ -25,7 +25,6 @@ router.get('/find',
  */
 router.get('/:id/posts',
     auth.checkToken(),
-    sec.checkOwner(),
     getPostsByTagId()
 );
 
@@ -72,23 +71,26 @@ function getTag () {
 /**
  * ------------------------------
  * description: get Posts by tag id
+ *
  * url: tags/:id/posts
+ * if USER is Public >> response only with public POSTS list
+ * if USER is Owner of POST model >> response with full list of USER POSTS and other USERS public POSTS
+ *
+ * url: tags/:id/posts?clear=true
+ * response only with full list of current USER
+ *
  * method: GET
- *
- * if User is Public >>
- * - endpoint must response only with public posts list
- *
- * if User is Owner of Post model >>
- * - endpoint must response with full list of User posts
- * - and with list of other Users public Posts
  * ------------------------------
  */
 function getPostsByTagId () {
     return function (req, res) {
         Tag.getById(req.params.id)
             .then(function (tag) {
-                if ( req.body.helpData.userId ) {
+                if ( req.body.helpData.userId && !req.query.clear ) {
                     return Tag.getMixPostsByTagId(req.body.helpData.userId, tag.id);
+                }
+                if ( req.body.helpData.userId && req.query.clear ) {
+                    return Tag.getCurrentUserPostsByTagId(req.body.helpData.userId, tag.id);
                 }
                 return Tag.getPublicPostsByTagId(tag.id);
             })

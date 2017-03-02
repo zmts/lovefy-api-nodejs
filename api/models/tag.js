@@ -79,7 +79,6 @@ Tag.findByString = function (str) {
         });
 };
 
-
 /**
  * @param tagId
  * @returns {Promise} public POSTS list
@@ -120,7 +119,6 @@ Tag.getCurrentUserPostsByTagId = function (userId, tagId) {
             throw error.message || error;
         });
 };
-
 
 /**
  * @param userId

@@ -1,7 +1,10 @@
 'use strict';
 
-var fs =require('fs');
-var _ = require('lodash');
+var mz =require('mz/fs'); // promisificated fs
+var fsp = require('fs-promise'); // extended promisificated fs
+var moment = require('moment');
+// var _ = require('lodash');
+// var Promise = require('bluebird');
 
 var MainModel = require('./main');
 var PHOTOS_FOLDER = require('../config/').folders.photos;
@@ -59,41 +62,32 @@ Album.prototype.$beforeUpdate = function () {
 
 /**
  * ------------------------------
- * @description check for existing "user-id-photos" folder
- * if not exist >> create it
- * if exist >> create folder for ALBUM in PHOTOS_FOLDER >> create ALBUM
+ * @description ensure/create 'user-id-photo' folder >> create ALBUM model
  * ------------------------------
  * @param data
  */
-Album.testCreate = function (data) {
-    console.log(PHOTOS_FOLDER);
+Album.create = function (data) {
+    var albumDirDate = moment().format('YYYYMMDD-HHmmss-x');
+    var uid = '/uid-' + data.user_id + '/';
 
-    // fs.readdir(PHOTOS_FOLDER, function (error, folders) {
-    //     if (error) {
-    //         console.log(error);
-    //     } else {
-    //         // find USER folder by mask 'user-id-photos' in 'PHOTOS_FOLDER'
-    //         if ( folders.indexOf('foldername') >= 0) { // if folder exist, create folder by mask 'album-DD-MM-YYYY-HH-MM-SS'
-    //
-    //             fs.mkdir(PHOTOS_FOLDER + '/foldername/'+'one', function (error) {
-    //                 if ( error ) {
-    //                     console.log(error);
-    //                 }
-    //             });
-    //
-    //         } else { // create user folder by mask 'user-id-photos'
-    //
-    //             fs.mkdir(PHOTOS_FOLDER + '/foldername', function (error) {
-    //                 if ( error ) {
-    //                     console.log(error);
-    //                 }
-    //             });
-    //
-    //         }
-    //     }
-    // });
-
-    // return this.query().insert(data);
+    return mz.readdir(PHOTOS_FOLDER)
+        .then(function () { // ensure folder_name exist, if not create
+            return [
+                fsp.ensureDir(PHOTOS_FOLDER + uid),
+                fsp.ensureDir(PHOTOS_FOLDER + uid + albumDirDate),
+                fsp.ensureDir(PHOTOS_FOLDER + uid + albumDirDate + '/src'),
+                fsp.ensureDir(PHOTOS_FOLDER + uid + albumDirDate + '/thumbnail-mid'),
+                fsp.ensureDir(PHOTOS_FOLDER + uid + albumDirDate + '/thumbnail-low')
+            ];
+        })
+        .then(function () { // create ALBUM model
+            console.log(albumDirDate);
+            console.log('Create model');
+            // return this.query().insert(data);
+        })
+        .catch(function (error) {
+            throw {error: error.message, statusCode: 500};
+        });
 };
 
 Album.getById = function (id) {

@@ -95,14 +95,13 @@ function getAlbum () {
  */
 function newAlbum() {
     return function (req, res) {
-        Album.testCreate();
-        // Album.create(req.body)
-        //     .then(function (model) {
-        //         res.status(201).json({success: true, data: model});
-        //     })
-        //     .catch(function (error) {
-        //         res.status(error.statusCode || 400).send({success: false, description: error});
-        //     });
+        Album.create(req.body)
+            .then(function (model) {
+                res.status(201).json({success: true, data: model});
+            })
+            .catch(function (error) {
+                res.status(error.statusCode || 404).send({success: false, description: error});
+            });
     };
 }
 

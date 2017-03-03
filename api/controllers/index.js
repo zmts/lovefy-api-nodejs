@@ -6,6 +6,7 @@ var router = express.Router();
 var userCtrl = require('./userCtrl');
 var postCtrl = require('./postCtrl');
 var tagCtrl = require('./tagCtrl');
+var albumCtrl = require('./albumCtrl');
 var authCtrl = require('./authCtrl');
 
 router.get('/', function (req, res) {
@@ -15,6 +16,7 @@ router.get('/', function (req, res) {
 router.use('/users', userCtrl);
 router.use('/posts', postCtrl);
 router.use('/tags', tagCtrl);
+router.use('/albums', albumCtrl);
 router.use('/auth', authCtrl);
 
 module.exports = router;

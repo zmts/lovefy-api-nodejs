@@ -30,5 +30,9 @@ module.exports = {
     token: {
         secret: '908df97bf897gdf8bdf87dbcvbidfjgklrjt84',
         encryptpassword: 'h2j35g46h352hjk35jk6356fhj46h646fhrte7tc89b7r7ty'
+    },
+
+    folders: {
+        photos: process.env.PWD + '/public/photos'
     }
 };

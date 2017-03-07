@@ -27,8 +27,8 @@ router.get('/:id',
     getAlbum()
 );
 router.post('/',
-    // auth.checkToken(),
-    // sec.checkSUAccess(),
+    auth.checkToken(),
+    sec.checkItemAccess.create(),
     newAlbum()
 );
 router.put('/:id',
@@ -91,10 +91,21 @@ function getAlbum () {
  * @url: albums/
  * @verb: POST
  * @request:
+ * {
+ * user_id: "int'
+ * title: "string"
+ * [description: "string"]
+ * [cover_index: "string"]
+ * cover_thumbnail: "string"
+ * [private: "boolean"]
+ * [event_location: "int"] tag_id
+ * [event_date: "string"]
+ * }
  * @hasaccess: EDITORROLES, ADMINROLES
  */
 function newAlbum() {
     return function (req, res) {
+        delete req.body.helpData;
         Album.create(req.body)
             .then(function (model) {
                 res.status(201).json({success: true, data: model});

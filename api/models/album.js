@@ -1,13 +1,13 @@
 'use strict';
 
-var mz =require('mz/fs'); // promisificated fs
-var fsp = require('fs-promise'); // extended promisificated fs
+var fsp = require('fs-promise');
 var moment = require('moment');
 // var _ = require('lodash');
-// var Promise = require('bluebird');
+var Promise = require('bluebird');
 
 var MainModel = require('./main');
-var PHOTOS_FOLDER = require('../config/').folders.photos;
+var PHOTO_DIR = require('../config/').files.photo.localpath;
+var PHOTO_URL = require('../config/').files.photo.globalpath;
 
 function Album() {
     MainModel.apply(this, arguments);
@@ -16,17 +16,21 @@ function Album() {
 Album.tableName = 'albums';
 MainModel.extend(Album);
 
+/**
+ * ------------------------------
+ * @VALIDATION_SCHEMA
+ * ------------------------------
+ */
 Album.jsonSchema = {
     type: 'object',
-    required: ['user_id', 'title' /*, 'cover_thumbnail'*/],
+    required: ['user_id', 'path'],
     additionalProperties: false,
     properties: {
         id: {type: 'integer'},
         user_id: {type: 'integer'},
         title: {type: 'string', minLength: 3, maxLength: 100},
+        path: {type: 'string', minLength: 1, maxLength: 500},
         description: {type: 'string', minLength: 5, maxLength: 1000},
-        cover_index: {type: 'string', minLength: 1, maxLength: 500},
-        cover_thumbnail: {type: 'string', minLength: 1, maxLength: 500},
         private: {type: 'boolean'}, // default TRUE
         event_location: {type: 'integer'}, // tag_id
         event_date: {type: 'string', format: 'date-time'},
@@ -35,18 +39,35 @@ Album.jsonSchema = {
     }
 };
 
+/**
+ * ------------------------------
+ * @VIRTUAL_ATTRIBUTES
+ * ------------------------------
+ */
+Album.virtualAttributes = [
+    '_cover_thumbnail',
+    '_cover_index'
+];
+
+Album.prototype._cover_thumbnail = function () {
+    return PHOTO_URL + '/' + this.user_id + '/' + this.path + '/' + 'cover_thumbnail.jpg';
+};
+Album.prototype._cover_index = function () {
+    return PHOTO_URL + '/' + this.user_id + '/' + this.path + '/' + 'cover_index.jpg';
+};
+
 Album.relationMappings = {
 
 };
 
 /**
  * ------------------------------
- * hooks
+ * @HOOKS
  * ------------------------------
  */
 
 Album.prototype.$beforeInsert = function (json) {
-    this.$validate();
+    // this.$validate();
 };
 
 Album.prototype.$beforeUpdate = function () {
@@ -56,7 +77,7 @@ Album.prototype.$beforeUpdate = function () {
 
 /**
  * ------------------------------
- * methods
+ * @METHODS
  * ------------------------------
  */
 
@@ -67,26 +88,27 @@ Album.prototype.$beforeUpdate = function () {
  * @param data
  */
 Album.create = function (data) {
+    var that = this;
     var albumDirDate = moment().format('YYYYMMDD-HHmmss-x');
     var uid = '/uid-' + data.user_id + '/';
 
-    return mz.readdir(PHOTOS_FOLDER)
-        .then(function () { // ensure folder_name exist, if not create
-            return [
-                fsp.ensureDir(PHOTOS_FOLDER + uid),
-                fsp.ensureDir(PHOTOS_FOLDER + uid + albumDirDate),
-                fsp.ensureDir(PHOTOS_FOLDER + uid + albumDirDate + '/src'),
-                fsp.ensureDir(PHOTOS_FOLDER + uid + albumDirDate + '/thumbnail-mid'),
-                fsp.ensureDir(PHOTOS_FOLDER + uid + albumDirDate + '/thumbnail-low')
-            ];
+    return fsp.stat(PHOTO_DIR) // check root dir accessibility
+        .then(function () {
+            return Promise.all([ // ensure folders
+                fsp.ensureDir(PHOTO_DIR + uid),
+                fsp.ensureDir(PHOTO_DIR + uid + albumDirDate),
+                fsp.ensureDir(PHOTO_DIR + uid + albumDirDate + '/src'),
+                fsp.ensureDir(PHOTO_DIR + uid + albumDirDate + '/thumbnail-mid'),
+                fsp.ensureDir(PHOTO_DIR + uid + albumDirDate + '/thumbnail-low')
+            ]);
         })
-        .then(function () { // create ALBUM model
-            console.log(albumDirDate);
-            console.log('Create model');
-            // return this.query().insert(data);
+        .then(function () {
+            data.path = albumDirDate;
+            return that.query().insert(data);
         })
         .catch(function (error) {
-            throw {error: error.message, statusCode: 500};
+            // if error and "albumDirDate" exist TODO: delete "albumDirDate"
+            throw error.message;
         });
 };
 

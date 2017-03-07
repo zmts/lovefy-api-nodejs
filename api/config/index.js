@@ -1,4 +1,9 @@
 module.exports = {
+
+    url:{
+        domain: 'supersite.com',
+        api: 'api.supersite.com'
+    },
     /**
      * roles:
      * 'superuser' - have access to any endpoint
@@ -32,7 +37,10 @@ module.exports = {
         encryptpassword: 'h2j35g46h352hjk35jk6356fhj46h646fhrte7tc89b7r7ty'
     },
 
-    folders: {
-        photos: process.env.PWD + '/public/photos'
+    files: {
+        photo: {
+            localpath: process.env.PWD + '/public/photos',
+            globalpath: 'supersite.com/public/photos'
+        }
     }
 };

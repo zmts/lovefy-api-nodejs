@@ -17,9 +17,14 @@ function _encryptToken(str) {
 
 function _decryptToken(str) {
     var decipher = crypto.createDecipher('aes-256-ctr', ENCRYPTPASSWORD);
-    var dec = decipher.update(str, 'hex', 'utf8');
-    dec += decipher.final('utf8');
-    return dec;
+    try {
+        var dec = decipher.update(str, 'hex', 'utf8');
+        dec += decipher.final('utf8');
+        return dec;
+    } catch (error) {
+        throw { message: 'Check token. Bad input string' };
+    }
+
 }
 
 module.exports.makeToken = function () {
@@ -56,7 +61,7 @@ module.exports.makeToken = function () {
  * if token is valid define help object 'helpData' with current 'userId', 'userRole' fields
  * and pass to next middleware
  *
- * if token is missing set 'helpData' object 'userId', 'userRole' fields as 'anonymous'
+ * if token is missing >> set 'helpData' object 'userId', 'userRole' fields as 'anonymous'
  * and pass to next middleware
  */
 module.exports.checkToken = function () {

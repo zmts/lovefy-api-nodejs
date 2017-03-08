@@ -2,16 +2,56 @@
 
 var express = require('express');
 var router = express.Router();
+var formidable = require('formidable');
+var _ = require('lodash');
 
 var Album = require('../models/album');
 var auth = require('../middleware/auth');
 var sec = require('../middleware/security');
+var ROOT_DIR = require('../config/').rootDir;
+
+var uplOptions = {
+    encoding: 'utf-8',
+    uploadDir: ROOT_DIR + '/public/tmp_uploads',
+    multiples: true,
+    keepExtensions: true,
+    maxFieldsSize: 2 * 1024 * 1024,
+    maxFields: 1
+};
 
 /**
  * ------------------------------
  * @BASE_URL: albums/
  * ------------------------------
  */
+
+/**
+ * @OTHER_ROUTES
+ */
+router.post('/:id/cover/index',
+    function (req, res, next) {
+        var form = new formidable.IncomingForm(uplOptions);
+        form.parse(req, function (error, fields, files) {
+            if (error) {
+                global.console.log(error);
+            }
+            _.forEach(files, function (file) {
+                global.console.log(file);
+            });
+        });
+        next();
+    },
+    setCoverIndex()
+);
+router.post('/:id/cover/thumbnail',
+    setCoverThumbnail()
+);
+router.delete('/:id/cover/index'
+    // removeCoverIndex()
+);
+router.delete('/:id/cover/thumbnail'
+    // removeCoverThumbnail()
+);
 
 /**
  * @RELATED_ROUTES
@@ -55,10 +95,10 @@ function getAll() {
     return function (req, res) {
         Album.getAll()
             .then(function (list) {
-                res.json({success: true, data: list});
+                res.json({ success: true, data: list });
             })
             .catch(function (error) {
-                res.status(error.statusCode || 404).send({success: false, description: error});
+                res.status(error.statusCode || 404).send({ success: false, description: error });
             });
     };
 }
@@ -76,10 +116,10 @@ function getAlbum () {
     return function (req, res) {
         Album.getById(req.params.id)
             .then(function (model) {
-                res.json({success: true, data: model});
+                res.json({ success: true, data: model });
             })
             .catch(function (error) {
-                res.status(error.statusCode || 404).send({success: false, description: error});
+                res.status(error.statusCode || 404).send({ success: false, description: error });
             });
     };
 }
@@ -108,10 +148,10 @@ function newAlbum() {
         delete req.body.helpData;
         Album.create(req.body)
             .then(function (model) {
-                res.status(201).json({success: true, data: model});
+                res.status(201).json({ success: true, data: model });
             })
             .catch(function (error) {
-                res.status(error.statusCode || 404).send({success: false, description: error});
+                res.status(error.statusCode || 404).send({ success: false, description: error });
             });
     };
 }
@@ -132,10 +172,10 @@ function update() {
                 return Album.update(model.id, req.body);
             })
             .then(function (updated_model) {
-                res.json({success: true, data: updated_model});
+                res.json({ success: true, data: updated_model });
             })
             .catch(function (error) {
-                res.status(error.statusCode || 404).send({success: false, description: error});
+                res.status(error.statusCode || 404).send({ success: false, description: error });
             });
     };
 }
@@ -155,11 +195,47 @@ function remove() {
                 return Album.remove(model.id);
             })
             .then(function () {
-                res.json({success: true, description: 'Album #' + req.params.id + ' was removed'});
+                res.json({ success: true, description: 'Album #' + req.params.id + ' was removed' });
             })
             .catch(function (error) {
-                res.status(error.statusCode || 404).send({success: false, description: error});
+                res.status(error.statusCode || 404).send({ success: false, description: error });
             });
+    };
+}
+
+/**
+ * ------------------------------
+ * @description: set cover index picture
+ * ------------------------------
+ * @url: albums/:id/cover/index
+ * @verb: POST
+ * @hasaccess: owner, ADMINROLES
+ * @return updated model
+ */
+function setCoverIndex() {
+    return function (req, res) {
+        Album.setCoverIndex(req.params.id, req.files)
+            .then(function (model) {
+                res.json({ success: true, data: model });
+            })
+            .catch(function (error) {
+                res.status(error.statusCode || 404).send({ success: false, description: error });
+            });
+    };
+}
+
+/**
+ * ------------------------------
+ * @description: set cover thumbnail picture
+ * ------------------------------
+ * @url: albums/:id/cover/thumbnail
+ * @verb: POST
+ * @hasaccess: owner, ADMINROLES
+ * @return updated model
+ */
+function setCoverThumbnail() {
+    return function (req, res) {
+
     };
 }
 

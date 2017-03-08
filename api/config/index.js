@@ -1,6 +1,8 @@
 module.exports = {
 
-    url:{
+    rootDir: process.env.PWD,
+
+    url: {
         domain: 'supersite.com',
         api: 'api.supersite.com'
     },

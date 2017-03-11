@@ -11,7 +11,7 @@
 - Routing:
     - Base router
     - Routing of endpoints in own controllers
-- ORM (booksshelf.js)):
+- ORM (objection.js):
     - Database - PostgreSQL 
     - Models
     - Base parent model
@@ -31,7 +31,7 @@
         - SU ['superuser']
         - ADMINROLES ['superuser', 'moderator']
         - EDITORROLES ['editor']
-        - USER ['user'] (default role on user creation)
+        - USER ['user'] default role on user creation
     - Logic roles:
         - Anonymous
         - IsAuth

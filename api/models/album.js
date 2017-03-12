@@ -4,6 +4,7 @@ var fsp = require('fs-promise');
 var moment = require('moment');
 // var _ = require('lodash');
 var Promise = require('bluebird');
+var uuidV4 = require('uuid/v4');
 
 var MainModel = require('./main');
 var PHOTO_DIR = require('../config/').files.photo.localpath;
@@ -105,7 +106,7 @@ Album.prototype.$beforeUpdate = function () {
  */
 Album.create = function (data) {
     var that = this;
-    var albumDirDate = moment().format('YYYYMMDD-HHmmss-x');
+    var albumDirDate = moment().format('YYYYMMDD') + '-' + uuidV4();
     var uid = '/uid-' + data.user_id + '/';
 
     return fsp.stat(PHOTO_DIR) // check root dir accessibility

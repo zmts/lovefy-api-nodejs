@@ -16,13 +16,13 @@ Post.jsonSchema = {
     required: ['user_id', 'title', 'content'],
     additionalProperties: false,
     properties: {
-        id: {type: 'integer'},
-        user_id: {type: 'integer'},
-        title: {type: 'string', minLength: 5, maxLength: 50},
-        content: {type: 'string', minLength: 5, maxLength: 1000},
-        private: {type: 'boolean'},
-        created_at: {type: 'string', format: 'date-time'},
-        updated_at: {type: 'string', format: 'date-time'}
+        id: { type: 'integer' },
+        user_id: { type: 'integer' },
+        title: { type: 'string', minLength: 5, maxLength: 50 },
+        content: { type: 'string', minLength: 5, maxLength: 1000 },
+        private: { type: 'boolean' },
+        created_at: { type: 'string', format: 'date-time' },
+        updated_at: { type: 'string', format: 'date-time' }
     }
 };
 
@@ -63,7 +63,7 @@ Post.prototype.$beforeUpdate = function () {
  */
 
 function _checkExistingTags (data, tag_id) {
-    return _.find(data.tags, function(item) { 
+    return _.find(data.tags, function(item) {
         return +item.id === +tag_id;
     });
 }
@@ -79,7 +79,7 @@ Post.getById = function (id) {
         .findById(id)
         .eager('tags')
         .then(function (data) {
-            if (!data) throw {message: 'Empty response'};
+            if (!data) throw { message: 'Empty response' };
             return data;
         })
         .catch(function (error) {
@@ -89,10 +89,10 @@ Post.getById = function (id) {
 
 Post.getAllPub = function () {
     return this.query()
-        .where({private: false})
+        .where({ private: false })
         .eager('tags')
         .then(function (data) {
-            if (!data.length) throw {message: 'Empty response'};
+            if (!data.length) throw { message: 'Empty response' };
             return data;
         })
         .catch(function (error) {
@@ -104,7 +104,7 @@ Post.getAllMix = function () {
     return this.query()
         .eager('tags')
         .then(function (data) {
-            if (!data.length) throw {message: 'Empty response'};
+            if (!data.length) throw { message: 'Empty response' };
             return data;
         })
         .catch(function (error) {
@@ -127,7 +127,7 @@ Post.detachTagFromPost = function (post_id, tag_id) {
     return this.query()
         .findById(post_id)
         .then(function (post) {
-            return post.$relatedQuery('tags').unrelate().where({'tag_id': tag_id});
+            return post.$relatedQuery('tags').unrelate().where({ 'tag_id': tag_id });
         })
         .catch(function (error) {
             throw error.message || error;
@@ -144,8 +144,8 @@ Post.checkTagByIdInPost = function (post_id, tag_id) {
         .findById(post_id)
         .eager('tags')
         .then(function (data) {
-            if (!data) throw {message: 'Empty response'};
-            if ( _checkExistingTags(data, tag_id) ) throw {message: 'Tag already presents in post'};
+            if (!data) throw { message: 'Empty response' };
+            if ( _checkExistingTags(data, tag_id) ) throw { message: 'Tag already presents in post' };
             return;
         })
         .catch(function (error) {

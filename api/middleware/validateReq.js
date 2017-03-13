@@ -1,4 +1,4 @@
-var _ = require('lodash');
+const _ = require('lodash');
 
 module.exports.id = function () {
     return function (req, res, next) {
@@ -18,7 +18,7 @@ module.exports.id = function () {
  * acceptable only JPEG
  * ------------------------------
  */
-module.exports.cover = function () {
+module.exports.coverImage = function () {
     return function (req, res, next) {
         if (req.file.mimetype !== 'image/jpeg') {
             return res.status(400).send({

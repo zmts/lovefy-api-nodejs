@@ -149,15 +149,13 @@ Album.getById = function (id) {
  * 3) set in DB "cover_index" field to TRUE
  * ------------------------------
  * @param album_id
- * @param img
  */
-Album.setCoverIndex = function (album_id, img) {
-    var that = this;
+Album.setCoverIndex = function (album_id) {
+    const that = this;
 
     return this.getById(album_id)
         .then(function (model) {
-            var data = { cover_index: true };
-            return that.query().patchAndFetchById(model.id, data);
+            return that.query().patchAndFetchById(model.id, { cover_index: true });
         })
         .catch(function (error) {
             throw error.message || error;
@@ -172,9 +170,8 @@ Album.setCoverIndex = function (album_id, img) {
  * 3) set in DB "cover_thumbnail" field to TRUE
  * ------------------------------
  * @param album_id
- * @param img
  */
-Album.setCoverThumbnail = function (album_id, img) {
+Album.setCoverThumbnail = function (album_id) {
 
 };
 

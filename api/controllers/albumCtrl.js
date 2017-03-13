@@ -1,13 +1,13 @@
 'use strict';
 
-var express = require('express');
-var router = express.Router();
+const express = require('express');
+const router = express.Router();
 
-var Album = require('../models/album');
-var auth = require('../middleware/auth');
-var sec = require('../middleware/security');
-var upload = require('../middleware/upload');
-var validate = require('../middleware/validateReq');
+const Album = require('../models/album');
+const auth = require('../middleware/auth');
+const sec = require('../middleware/security');
+const upload = require('../middleware/upload');
+const validate = require('../middleware/validateReq');
 
 /**
  * ------------------------------
@@ -19,11 +19,13 @@ var validate = require('../middleware/validateReq');
  * @OTHER_ROUTES
  */
 router.post('/:id/cover/index',
-    upload.cover('cover_index'),
-    validate.cover(),
+    upload.coverImage('cover_index'),
+    validate.coverImage(),
     setCoverIndex()
 );
 router.post('/:id/cover/thumbnail',
+    // upload.cover('cover_thumbnail'),
+    // validate.cover(),
     setCoverThumbnail()
 );
 router.delete('/:id/cover/index'
@@ -178,7 +180,7 @@ function remove() {
                 return Album.remove(model.id);
             })
             .then(function () {
-                res.json({ success: true, description: 'Album #' + req.params.id + ' was removed' });
+                res.json({ success: true, description: `Album #${req.params.id} was removed` });
             })
             .catch(function (error) {
                 res.status(error.statusCode || 404).send({ success: false, description: error });

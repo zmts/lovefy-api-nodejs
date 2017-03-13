@@ -3,6 +3,7 @@ bower_components/
 tmp/
 .tmp/
 tmp_files/
+public/
 .DS_Store
 .idea
 *.ai

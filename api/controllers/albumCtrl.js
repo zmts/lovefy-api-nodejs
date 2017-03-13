@@ -2,22 +2,12 @@
 
 var express = require('express');
 var router = express.Router();
-var formidable = require('formidable');
-var _ = require('lodash');
 
 var Album = require('../models/album');
 var auth = require('../middleware/auth');
 var sec = require('../middleware/security');
-var ROOT_DIR = require('../config/').rootDir;
-
-var uplOptions = {
-    encoding: 'utf-8',
-    uploadDir: ROOT_DIR + '/public/tmp_uploads',
-    multiples: true,
-    keepExtensions: true,
-    maxFieldsSize: 2 * 1024 * 1024,
-    maxFields: 1
-};
+var upload = require('../middleware/upload');
+var validate = require('../middleware/validateReq');
 
 /**
  * ------------------------------
@@ -29,18 +19,8 @@ var uplOptions = {
  * @OTHER_ROUTES
  */
 router.post('/:id/cover/index',
-    function (req, res, next) {
-        var form = new formidable.IncomingForm(uplOptions);
-        form.parse(req, function (error, fields, files) {
-            if (error) {
-                global.console.log(error);
-            }
-            _.forEach(files, function (file) {
-                global.console.log(file);
-            });
-        });
-        next();
-    },
+    upload.cover('cover_index'),
+    validate.cover(),
     setCoverIndex()
 );
 router.post('/:id/cover/thumbnail',
@@ -82,12 +62,19 @@ router.delete('/:id',
     remove()
 );
 
+module.exports = router;
+
+/**
+ * ------------------------------
+ * @CONTROLLERS
+ * ------------------------------
+ */
+
 /**
  * ------------------------------
  * @description: get all Albums list
  * ------------------------------
- * @url: albums/
- * @verb: GET
+ * @url: GET: albums/
  * @return: owner, ADMINROLES >> all list
  * @return: Anonymous, NotOwner >> public list
  */
@@ -109,8 +96,7 @@ function getAll() {
  * ------------------------------
  * @return owner, ADMINROLES >> public or private ALBUM
  * @return Anonymous, NotOwner >> only public ALBUM
- * @url tags/:id
- * @verb GET
+ * @url GET: tags/:id
  */
 function getAlbum () {
     return function (req, res) {
@@ -128,8 +114,7 @@ function getAlbum () {
  * ------------------------------
  * @description: create ALBUM
  * ------------------------------
- * @url: albums/
- * @verb: POST
+ * @url: POST: albums/
  * @request:
  * {
  * user_id: "int'
@@ -160,8 +145,7 @@ function newAlbum() {
  * ------------------------------
  * @description: update ALBUM by id
  * ------------------------------
- * @url: albums/:id
- * @verb: PUT
+ * @url: PUT: albums/:id
  * @request:
  * @hasaccess: owner, ADMINROLES
  */
@@ -184,8 +168,7 @@ function update() {
  * ------------------------------
  * @description: remove ALBUM from db by id
  * ------------------------------
- * @url: albums/:id
- * @verb: DELETE
+ * @url: DELETE: albums/:id
  * @hasaccess: owner, ADMINROLES
  */
 function remove() {
@@ -207,14 +190,13 @@ function remove() {
  * ------------------------------
  * @description: set cover index picture
  * ------------------------------
- * @url: albums/:id/cover/index
- * @verb: POST
+ * @url: POST: albums/:id/cover/index
  * @hasaccess: owner, ADMINROLES
  * @return updated model
  */
 function setCoverIndex() {
     return function (req, res) {
-        Album.setCoverIndex(req.params.id, req.files)
+        Album.setCoverIndex(req.params.id)
             .then(function (model) {
                 res.json({ success: true, data: model });
             })
@@ -228,8 +210,7 @@ function setCoverIndex() {
  * ------------------------------
  * @description: set cover thumbnail picture
  * ------------------------------
- * @url: albums/:id/cover/thumbnail
- * @verb: POST
+ * @url: POST: albums/:id/cover/thumbnail
  * @hasaccess: owner, ADMINROLES
  * @return updated model
  */
@@ -238,5 +219,3 @@ function setCoverThumbnail() {
 
     };
 }
-
-module.exports = router;

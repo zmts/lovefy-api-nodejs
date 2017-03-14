@@ -8,14 +8,15 @@ const Album = require('../models/album');
  * ------------------------------
  * @param {String} coverType = 'cover_index'||'cover_thumbnail'
  */
-module.exports.coverImage = function (coverType) {
+module.exports.albumCover = function (coverType) {
     return function (req, res, next) {
         Album.getById(req.params.id)
             .then(function (model) {
 
                 let uploadStorage = multer.diskStorage({
                     destination: function (req, file, cb) {
-                        cb(null, `${ROOT_DIR}/public/photos/uid-${model.user_id}/${model.path}`);
+                        // place image to current MODEL folder
+                        cb(null, `${ROOT_DIR}/public/photos/uid-${model.user_id}/${model.id}`);
                     },
                     filename: function (req, file, cb) {
                         cb(null, file.fieldname + '.jpg');

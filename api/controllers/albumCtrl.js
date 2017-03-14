@@ -19,20 +19,20 @@ const validate = require('../middleware/validateReq');
  * @OTHER_ROUTES
  */
 router.post('/:id/cover/index',
-    upload.coverImage('cover_index'),
-    validate.coverImage(),
+    upload.albumCover('cover_index'),
+    validate.albumCover(),
     setCoverIndex()
 );
 router.post('/:id/cover/thumbnail',
-    // upload.cover('cover_thumbnail'),
-    // validate.cover(),
+    upload.albumCover('cover_thumbnail'),
+    validate.albumCover(),
     setCoverThumbnail()
 );
-router.delete('/:id/cover/index'
-    // removeCoverIndex()
+router.delete('/:id/cover/index',
+    removeCoverIndex()
 );
-router.delete('/:id/cover/thumbnail'
-    // removeCoverThumbnail()
+router.delete('/:id/cover/thumbnail',
+    removeCoverThumbnail()
 );
 
 /**
@@ -210,6 +210,23 @@ function setCoverIndex() {
 
 /**
  * ------------------------------
+ * @description: soft delete cover index picture
+ * ------------------------------
+ */
+function removeCoverIndex() {
+    return function (req, res) {
+        Album.removeCoverIndex(req.params.id)
+            .then(function (model) {
+                res.json({ success: true, data: model });
+            })
+            .catch(function (error) {
+                res.status(error.statusCode || 404).send({ success: false, description: error });
+            });
+    };
+}
+
+/**
+ * ------------------------------
  * @description: set cover thumbnail picture
  * ------------------------------
  * @url: POST: albums/:id/cover/thumbnail
@@ -218,6 +235,29 @@ function setCoverIndex() {
  */
 function setCoverThumbnail() {
     return function (req, res) {
+        Album.setCoverThumbnail(req.params.id)
+            .then(function (model) {
+                res.json({ success: true, data: model });
+            })
+            .catch(function (error) {
+                res.status(error.statusCode || 404).send({ success: false, description: error });
+            });
+    };
+}
 
+/**
+ * ------------------------------
+ * @description: soft delete cover thumbnail picture
+ * ------------------------------
+ */
+function removeCoverThumbnail() {
+    return function (req, res) {
+        Album.removeCoverThumbnail(req.params.id)
+            .then(function (model) {
+                res.json({ success: true, data: model });
+            })
+            .catch(function (error) {
+                res.status(error.statusCode || 404).send({ success: false, description: error });
+            });
     };
 }

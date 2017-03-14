@@ -18,7 +18,7 @@ module.exports.id = function () {
  * acceptable only JPEG
  * ------------------------------
  */
-module.exports.coverImage = function () {
+module.exports.albumCover = function () {
     return function (req, res, next) {
         if (req.file.mimetype !== 'image/jpeg') {
             return res.status(400).send({

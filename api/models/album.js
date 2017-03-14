@@ -1,14 +1,11 @@
 'use strict';
 
-var fsp = require('fs-promise');
-var moment = require('moment');
-// var _ = require('lodash');
-var Promise = require('bluebird');
-var uuidV4 = require('uuid/v4');
+const fsp = require('fs-promise');
+const Promise = require('bluebird');
 
-var MainModel = require('./main');
-var PHOTO_DIR = require('../config/').files.photo.localpath;
-var PHOTO_URL = require('../config/').files.photo.globalpath;
+const MainModel = require('./main');
+const PHOTO_DIR = require('../config/').files.photo.localpath;
+const PHOTO_URL = require('../config/').files.photo.globalpath;
 
 function Album() {
     MainModel.apply(this, arguments);
@@ -24,13 +21,12 @@ MainModel.extend(Album);
  */
 Album.jsonSchema = {
     type: 'object',
-    required: ['user_id', 'path'],
+    required: ['user_id'],
     additionalProperties: false,
     properties: {
         id: { type: 'integer' },
         user_id: { type: 'integer' },
         title: { type: 'string', minLength: 3, maxLength: 100 },
-        path: { type: 'string', minLength: 1, maxLength: 500 },
         description: { type: 'string', minLength: 5, maxLength: 1000 },
         private: { type: 'boolean' }, // default TRUE
         event_location: { type: 'integer' }, // tag_id
@@ -54,14 +50,14 @@ Album.virtualAttributes = [
 
 Album.prototype._cover_thumbnail = function () {
     if (this.cover_thumbnail) {
-        return PHOTO_URL + '/' + this.user_id + '/' + this.path + '/' + 'cover_thumbnail.jpg';
+        return `${PHOTO_URL}/uid-${this.user_id}/${this.id}/cover_thumbnail.jpg`;
     }
     return null;
 };
 
 Album.prototype._cover_index = function () {
     if (this.cover_index) {
-        return PHOTO_URL + '/' + this.user_id + '/' + this.path + '/' + 'cover_index.jpg';
+        return `${PHOTO_URL}/uid-${this.user_id}/${this.id}/cover_index.jpg`;
     }
     return null;
 };
@@ -83,7 +79,7 @@ Album.prototype.$formatJson = function (json) {
     return json;
 };
 
-Album.prototype.$beforeInsert = function (json) {
+Album.prototype.$beforeInsert = function (/*json*/) {
     // this.$validate();
 };
 
@@ -100,31 +96,36 @@ Album.prototype.$beforeUpdate = function () {
 
 /**
  * ------------------------------
- * @description ensure/create 'user-id-photo' folder >> create ALBUM model
+ * @description
  * ------------------------------
  * @param data
  */
 Album.create = function (data) {
-    var that = this;
-    var albumDirDate = moment().format('YYYYMMDD') + '-' + uuidV4();
-    var uid = '/uid-' + data.user_id + '/';
+    let that = this;
+    let uid = '/uid-' + data.user_id + '/';
 
-    return fsp.stat(PHOTO_DIR) // check root dir accessibility
+    return fsp.stat(PHOTO_DIR) // check root-photo dir accessibility
         .then(function () {
-            return Promise.all([ // ensure folders
-                fsp.ensureDir(PHOTO_DIR + uid),
-                fsp.ensureDir(PHOTO_DIR + uid + albumDirDate),
-                fsp.ensureDir(PHOTO_DIR + uid + albumDirDate + '/src'),
-                fsp.ensureDir(PHOTO_DIR + uid + albumDirDate + '/thumbnail-mid'),
-                fsp.ensureDir(PHOTO_DIR + uid + albumDirDate + '/thumbnail-low')
-            ]);
-        })
-        .then(function () {
-            data.path = albumDirDate;
             return that.query().insert(data);
         })
+        .then(function (model) {
+            Promise.all([ // ensure folders
+                fsp.ensureDir(PHOTO_DIR + uid),
+                fsp.ensureDir(PHOTO_DIR + uid + model.id),
+                fsp.ensureDir(PHOTO_DIR + uid + model.id + '/src'),
+                fsp.ensureDir(PHOTO_DIR + uid + model.id + '/thumbnail-mid'),
+                fsp.ensureDir(PHOTO_DIR + uid + model.id + '/thumbnail-low')
+            ]).catch(function (error) {
+                global.console.error((new Date).toUTCString());
+                global.console.error(`ERROR: ${error.message}`);
+                global.console.error(`ERROR PATH: ${__filename}`);
+
+                return that.remove(model.id); // remove model if error
+            });
+
+            return model;
+        })
         .catch(function (error) {
-            // if error and "albumDirDate" exist TODO: delete "albumDirDate"
             throw error.message;
         });
 };
@@ -143,15 +144,12 @@ Album.getById = function (id) {
 
 /**
  * ------------------------------
- * @description
- * 1) place image in "PHOTO_DIR + uid + albumDirDate" folder
- * 2) rename image file to "cover_index.jpg"
- * 3) set in DB "cover_index" field to TRUE
+ * @description: set in DB "cover_index" field to TRUE
  * ------------------------------
  * @param album_id
  */
 Album.setCoverIndex = function (album_id) {
-    const that = this;
+    let that = this;
 
     return this.getById(album_id)
         .then(function (model) {
@@ -164,15 +162,56 @@ Album.setCoverIndex = function (album_id) {
 
 /**
  * ------------------------------
- * @description
- * 1) place image in "PHOTO_DIR + uid + albumDirDate" folder
- * 2) rename image file to "cover_thumbnail.jpg"
- * 3) set in DB "cover_thumbnail" field to TRUE
+ * @description: set in DB "cover_index" field to FALSE(soft delete)
+ * ------------------------------
+ * @param album_id
+ */
+Album.removeCoverIndex = function (album_id) {
+    let that = this;
+
+    return this.getById(album_id)
+        .then(function (model) {
+            return that.query().patchAndFetchById(model.id, { cover_index: false });
+        })
+        .catch(function (error) {
+            throw error.message || error;
+        });
+};
+
+/**
+ * ------------------------------
+ * @description: set in DB "cover_thumbnail" field to TRUE
  * ------------------------------
  * @param album_id
  */
 Album.setCoverThumbnail = function (album_id) {
+    let that = this;
 
+    return this.getById(album_id)
+        .then(function (model) {
+            return that.query().patchAndFetchById(model.id, { cover_thumbnail: true });
+        })
+        .catch(function (error) {
+            throw error.message || error;
+        });
+};
+
+/**
+ * ------------------------------
+ * @description: set in DB "cover_thumbnail" field to FALSE(soft delete)
+ * ------------------------------
+ * @param album_id
+ */
+Album.removeCoverThumbnail = function (album_id) {
+    let that = this;
+
+    return this.getById(album_id)
+        .then(function (model) {
+            return that.query().patchAndFetchById(model.id, { cover_thumbnail: false });
+        })
+        .catch(function (error) {
+            throw error.message || error;
+        });
 };
 
 module.exports = Album;

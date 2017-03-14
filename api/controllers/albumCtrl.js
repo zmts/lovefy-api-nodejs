@@ -2,6 +2,7 @@
 
 const express = require('express');
 const router = express.Router();
+const _ =require('lodash');
 
 const Album = require('../models/album');
 const auth = require('../middleware/auth');
@@ -19,25 +20,37 @@ const validate = require('../middleware/validateReq');
  * @OTHER_ROUTES
  */
 router.post('/:id/cover/index',
+    auth.checkToken(),
+    sec.checkItemAccess.update(Album),
     upload.albumCover('cover_index'),
     validate.albumCover(),
     setCoverIndex()
 );
+router.delete('/:id/cover/index',
+    auth.checkToken(),
+    sec.checkItemAccess.update(Album),
+    removeCoverIndex()
+);
 router.post('/:id/cover/thumbnail',
+    auth.checkToken(),
+    sec.checkItemAccess.update(Album),
     upload.albumCover('cover_thumbnail'),
     validate.albumCover(),
     setCoverThumbnail()
 );
-router.delete('/:id/cover/index',
-    removeCoverIndex()
-);
 router.delete('/:id/cover/thumbnail',
+    auth.checkToken(),
+    sec.checkItemAccess.update(Album),
     removeCoverThumbnail()
 );
 
 /**
  * @RELATED_ROUTES
  */
+router.post('/:id/upload',
+    upload.photoToAlbum(),
+    processPhotosToAlbum()
+);
 
 /**
  * @BASE_ROUTES
@@ -55,7 +68,7 @@ router.post('/',
 );
 router.put('/:id',
     auth.checkToken(),
-    sec.checkSUAccess(),
+    sec.checkItemAccess.update(Album),
     update()
 );
 router.delete('/:id',
@@ -153,6 +166,7 @@ function newAlbum() {
  */
 function update() {
     return function (req, res) {
+        delete req.body.helpData;
         Album.getById(req.params.id)
             .then(function (model) {
                 return Album.update(model.id, req.body);
@@ -259,5 +273,18 @@ function removeCoverThumbnail() {
             .catch(function (error) {
                 res.status(error.statusCode || 404).send({ success: false, description: error });
             });
+    };
+}
+
+/**
+ * ------------------------------
+ * @description: create thumbnail, create PHOTO model and attach to ALBUM each PHOTO
+ * ------------------------------
+ */
+function processPhotosToAlbum() {
+    return function (req, res) {
+        _.forEach(req.files, function (photo) {
+            global.console.log(photo.filename);
+        });
     };
 }

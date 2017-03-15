@@ -217,10 +217,11 @@ Album.removeCoverThumbnail = function (album_id) {
 
 Album.processPhotosToAlbum = function (photos) {
     return Promise.map(photos, function (photoWrapper) {
-        return jimp.read(photoWrapper.path).then(function (photoRaw) {
-            // global.console.log(photoWrapper);
-            return photoRaw.resize(100, 100).write(photoWrapper.filename);
-        });
+        return jimp.read(photoWrapper.path)
+            .then(function (photoRaw) {
+                // global.console.log(photoWrapper);
+                return photoRaw.resize(100, 100).write(photoWrapper.filename);
+            });
     })
     .then(function (photo) {
         // global.console.log(photo);

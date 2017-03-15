@@ -2,7 +2,7 @@
 
 const fsp = require('fs-promise');
 const Promise = require('bluebird');
-const _ =require('lodash');
+const jimp = require('jimp');
 
 const MainModel = require('./main');
 const PHOTO_DIR = require('../config/').files.photo.localpath;
@@ -216,8 +216,17 @@ Album.removeCoverThumbnail = function (album_id) {
 };
 
 Album.processPhotosToAlbum = function (photos) {
-    _.forEach(photos, function (photo) {
-        global.console.log(photo.filename);
+    return Promise.map(photos, function (photoWrapper) {
+        return jimp.read(photoWrapper.path).then(function (photoRaw) {
+            // global.console.log(photoWrapper);
+            return photoRaw.resize(100, 100).write(photoWrapper.filename);
+        });
+    })
+    .then(function (photo) {
+        // global.console.log(photo);
+    })
+    .catch(function (error) {
+        throw error.message || error;
     });
 };
 

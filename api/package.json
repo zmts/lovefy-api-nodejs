@@ -58,7 +58,8 @@
         {
           "afterColon": true
         }
-      ]
+      ],
+      "no-multi-spaces": "error"
     }
   }
 }

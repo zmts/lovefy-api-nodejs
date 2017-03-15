@@ -1,7 +1,7 @@
 const moment = require('moment');
 
 const ROOT_DIR = require('../config/').rootDir;
-const multer  = require('multer');
+const multer = require('multer');
 const Album = require('../models/album');
 
 /**

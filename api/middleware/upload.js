@@ -1,4 +1,4 @@
-const moment =  require('moment');
+const moment = require('moment');
 
 const ROOT_DIR = require('../config/').rootDir;
 const multer  = require('multer');

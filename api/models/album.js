@@ -2,6 +2,7 @@
 
 const fsp = require('fs-promise');
 const Promise = require('bluebird');
+const _ =require('lodash');
 
 const MainModel = require('./main');
 const PHOTO_DIR = require('../config/').files.photo.localpath;
@@ -212,6 +213,12 @@ Album.removeCoverThumbnail = function (album_id) {
         .catch(function (error) {
             throw error.message || error;
         });
+};
+
+Album.processPhotosToAlbum = function (photos) {
+    _.forEach(photos, function (photo) {
+        global.console.log(photo.filename);
+    });
 };
 
 module.exports = Album;

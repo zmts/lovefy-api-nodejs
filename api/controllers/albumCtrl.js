@@ -2,7 +2,6 @@
 
 const express = require('express');
 const router = express.Router();
-const _ =require('lodash');
 
 const Album = require('../models/album');
 const auth = require('../middleware/auth');
@@ -278,13 +277,17 @@ function removeCoverThumbnail() {
 
 /**
  * ------------------------------
- * @description: create thumbnail, create PHOTO model and attach to ALBUM each PHOTO
+ * @description: create thumbnail, create PHOTO model and attach to ALBUM each created PHOTO model
  * ------------------------------
  */
 function processPhotosToAlbum() {
     return function (req, res) {
-        _.forEach(req.files, function (photo) {
-            global.console.log(photo.filename);
-        });
+        Album.processPhotosToAlbum(req.files)
+            .then(function (model) {
+                res.json({ success: true, data: model });
+            })
+            .catch(function (error) {
+                res.status(error.statusCode || 404).send({ success: false, description: error });
+            });
     };
 }

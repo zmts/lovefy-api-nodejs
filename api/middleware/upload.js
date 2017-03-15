@@ -1,4 +1,4 @@
-const uuidV4 = require('uuid/v4');
+const moment =  require('moment');
 
 const ROOT_DIR = require('../config/').rootDir;
 const multer  = require('multer');
@@ -55,18 +55,19 @@ module.exports.photoToAlbum = function () {
     return function (req, res, next) {
         Album.getById(req.params.id)
             .then(function (model) {
+                let photoCounter = 0;
 
                 let uploadStorage = multer.diskStorage({
                     destination: function (req, file, cb) {
                         // place images to 'public/photos/uid-user_id/album_id/src' folder
-                        // then in ALBUM controller make MODELS for each PHOTO and make thumbnails
+                        // then in ALBUM model >> make models for each PHOTO and make thumbnails
                         let user_id = model.user_id;
                         let album_id = model.id;
                         cb(null, `${ROOT_DIR}/public/photos/uid-${user_id}/${album_id}/src`);
                     },
                     filename: function (req, file, cb) {
-                        // rename files with UUID
-                        cb(null, uuidV4() + '.jpg');
+                        // rename files with 'Unix ms timestamp' + 'file number counter'
+                        cb(null, `${moment().format('x')}-${photoCounter++}.jpg`);
                     }
                 });
 

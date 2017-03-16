@@ -215,12 +215,27 @@ Album.removeCoverThumbnail = function (album_id) {
         });
 };
 
-Album.processPhotosToAlbum = function (photos) {
-    return Promise.map(photos, function (photoWrapper) {
+/**
+ * ------------------------------
+ * @description: create thumbnail, create PHOTO model and attach to ALBUM each created PHOTO model
+ * ------------------------------
+ * @param album_id
+ * @param user_id
+ * @param photosArray
+ * @return {Promise.<T>}
+ */
+Album.processPhotosToAlbum = function (album_id, user_id, photosArray) {
+    return Promise.map(photosArray, function (photoWrapper) {
         return jimp.read(photoWrapper.path)
             .then(function (photoRaw) {
-                // global.console.log(photoWrapper);
-                return photoRaw.resize(100, 100).write(photoWrapper.filename);
+                return photoRaw
+                    .resize(300, 300)
+                    .write(`${PHOTO_DIR}/uid-${user_id}/${album_id}/thumbnail-mid/${photoWrapper.filename}`);
+            })
+            .then(function (photo300) {
+                return photo300
+                    .resize(100, 100)
+                    .write(`${PHOTO_DIR}/uid-${user_id}/${album_id}/thumbnail-low/${photoWrapper.filename}`);
             });
     })
     .then(function (photo) {

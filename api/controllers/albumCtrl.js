@@ -277,12 +277,12 @@ function removeCoverThumbnail() {
 
 /**
  * ------------------------------
- * @description: create thumbnail, create PHOTO model and attach to ALBUM each created PHOTO model
+ * @description: add photos to ALBUM
  * ------------------------------
  */
 function processPhotosToAlbum() {
     return function (req, res) {
-        Album.processPhotosToAlbum(req.files)
+        Album.processPhotosToAlbum(req.params.id, req.body.helpData.userId, req.files)
             .then(function (model) {
                 res.json({ success: true, data: model });
             })

@@ -1,6 +1,6 @@
 const moment = require('moment');
 
-const ROOT_DIR = require('../config/').rootDir;
+const PHOTO_DIR = require('../config/').files.photo.localpath;
 const multer = require('multer');
 const Album = require('../models/album');
 
@@ -18,7 +18,7 @@ module.exports.albumCover = function (coverType) {
                 let uploadStorage = multer.diskStorage({
                     destination: function (req, file, cb) {
                         // place image to current MODEL folder
-                        cb(null, `${ROOT_DIR}/public/photos/uid-${model.user_id}/${model.id}`);
+                        cb(null, `${PHOTO_DIR}/uid-${model.user_id}/${model.id}`);
                     },
                     filename: function (req, file, cb) {
                         cb(null, file.fieldname + '.jpg');
@@ -63,7 +63,7 @@ module.exports.photoToAlbum = function () {
                         // then in ALBUM model >> make models for each PHOTO and make thumbnails
                         let user_id = model.user_id;
                         let album_id = model.id;
-                        cb(null, `${ROOT_DIR}/public/photos/uid-${user_id}/${album_id}/src`);
+                        cb(null, `${PHOTO_DIR}/uid-${user_id}/${album_id}/src`);
                     },
                     filename: function (req, file, cb) {
                         // rename files with 'Unix ms timestamp' + 'file number counter'
@@ -88,6 +88,9 @@ module.exports.photoToAlbum = function () {
                         description: error,
                         info: error.code === 'LIMIT_UNEXPECTED_FILE' ? 'Uploading field must be named as \'photos\'' : undefined
                     });
+                    req.body = { helpData:
+                        { userId: model.user_id }
+                    };
                     next();
                 });
             })

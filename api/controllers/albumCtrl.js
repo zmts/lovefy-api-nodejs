@@ -48,7 +48,7 @@ router.delete('/:id/cover/thumbnail',
  */
 router.post('/:id/upload',
     upload.photoToAlbum(),
-    processPhotosToAlbum()
+    processOnePhotoToAlbum()
 );
 
 /**
@@ -280,9 +280,9 @@ function removeCoverThumbnail() {
  * @description: add photos to ALBUM
  * ------------------------------
  */
-function processPhotosToAlbum() {
+function processOnePhotoToAlbum() {
     return function (req, res) {
-        Album.processPhotosToAlbum(req.params.id, req.body.helpData.userId, req.files)
+        Album.processOnePhotoToAlbum(req.params.id, req.body.helpData.userId, req.file)
             .then(function (model) {
                 res.json({ success: true, data: model });
             })

@@ -221,29 +221,34 @@ Album.removeCoverThumbnail = function (album_id) {
  * ------------------------------
  * @param album_id
  * @param user_id
- * @param photosArray
+ * @param photoWrapper
  * @return {Promise.<T>}
  */
-Album.processPhotosToAlbum = function (album_id, user_id, photosArray) {
-    return Promise.map(photosArray, function (photoWrapper) {
-        return jimp.read(photoWrapper.path)
-            .then(function (photoRaw) {
-                return photoRaw
-                    .resize(300, 300)
-                    .write(`${PHOTO_DIR}/uid-${user_id}/${album_id}/thumbnail-mid/${photoWrapper.filename}`);
-            })
-            .then(function (photo300) {
-                return photo300
-                    .resize(100, 100)
-                    .write(`${PHOTO_DIR}/uid-${user_id}/${album_id}/thumbnail-low/${photoWrapper.filename}`);
-            });
-    })
-    .then(function (photo) {
-        // global.console.log(photo);
-    })
-    .catch(function (error) {
-        throw error.message || error;
-    });
+Album.processOnePhotoToAlbum = function (album_id, user_id, photoWrapper) {
+    return jimp.read(photoWrapper.path)
+        .then(function (photoRaw) {
+            return photoRaw
+                .cover(400, 266)
+                .quality(90)
+                .write(`${PHOTO_DIR}/uid-${user_id}/${album_id}/thumbnail-mid/${photoWrapper.filename}`);
+        })
+        .then(function (thumbnailMid) {
+            return thumbnailMid
+                .cover(200, 133)
+                .quality(90)
+                .write(`${PHOTO_DIR}/uid-${user_id}/${album_id}/thumbnail-low/${photoWrapper.filename}`);
+        })
+        .then(function () {
+            // TODO: insert photo model >> something like this >>
+            // Photo.create({
+            //     filename: photoWrapper.filename,
+            //     user_id: user_id,
+            //     album_id: album_id
+            // });
+        })
+        .catch(function (error) {
+            throw error.message || error;
+        });
 };
 
 module.exports = Album;

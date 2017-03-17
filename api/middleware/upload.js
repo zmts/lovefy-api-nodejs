@@ -1,15 +1,13 @@
-const moment = require('moment');
-
 const PHOTO_DIR = require('../config/').files.photo.localpath;
 const multer = require('multer');
 const Album = require('../models/album');
 
 /**
- * ------------------------------
- * @description: upload cover image to ALBUM model
- * ------------------------------
- * @param {String} coverType = 'cover_index'||'cover_thumbnail'
- */
+* ------------------------------
+* @description: upload cover image to ALBUM model
+* ------------------------------
+* @param {String} coverType = 'cover_index'||'cover_thumbnail'
+*/
 module.exports.albumCover = function (coverType) {
     return function (req, res, next) {
         Album.getById(req.params.id)
@@ -25,23 +23,50 @@ module.exports.albumCover = function (coverType) {
                     }
                 });
 
+                let maxFileSize = 1024 * 1024; // max file size 1Mb
+
                 let uploadOptions = {
                     storage: uploadStorage,
                     limits: {
-                        fileSize: 1024 * 1024, // max file size 1Mb
+                        fileSize: maxFileSize,
                         files: 1
                     },
-                    includeEmptyFields: false
+                    includeEmptyFields: false,
+                    fileFilter: function (req, file, cb) {
+                        if (file.mimetype !== 'image/jpeg') {
+                            return cb('Unsupported Media Type. Only [\'.jpg\',\'.jpeg\'] files are allowed!', false);
+                        }
+                        return cb(null, true);
+                    }
                 };
 
                 let upload = multer(uploadOptions).single(coverType);
 
                 upload(req, res, function (error) {
-                    if (error) return res.status(400).send({
-                        success: false,
-                        description: error,
-                        info: error.code === 'LIMIT_UNEXPECTED_FILE' ? `Uploading field must be named as '${coverType}'` : undefined
-                    });
+
+                    if (error) {
+
+                        let errorInfoMessage = 'Upload error';
+
+                        switch (error.code) {
+                            case 'LIMIT_FILE_SIZE':
+                                errorInfoMessage = `Max file size ${maxFileSize / 1024 / 1024}Mb`;
+                                break;
+                            case 'LIMIT_UNEXPECTED_FILE':
+                                errorInfoMessage = `Uploading field must be named as >>> '${coverType}' <<<`;
+                                break;
+                            default:
+                                errorInfoMessage = undefined;
+                                break;
+                        }
+
+                        return res.status(400).send({
+                            success: false,
+                            description: error.message || error,
+                            info: errorInfoMessage
+                        });
+                    }
+
                     next();
                 });
             })
@@ -51,46 +76,78 @@ module.exports.albumCover = function (coverType) {
     };
 };
 
+/**
+ * ------------------------------
+ * @description: upload ONE PHOTO to ALBUM model
+ * ------------------------------
+ */
 module.exports.photoToAlbum = function () {
     return function (req, res, next) {
         Album.getById(req.params.id)
             .then(function (model) {
-                let photoCounter = 0;
 
                 let uploadStorage = multer.diskStorage({
                     destination: function (req, file, cb) {
-                        // place images to 'public/photos/uid-user_id/album_id/src' folder
-                        // then in ALBUM model >> make models for each PHOTO and make thumbnails
+                        // place image to 'public/photos/uid-user_id/album_id/src' folder
+                        // then in ALBUM model >> create PHOTO model and make thumbnail
                         let user_id = model.user_id;
                         let album_id = model.id;
                         cb(null, `${PHOTO_DIR}/uid-${user_id}/${album_id}/src`);
                     },
                     filename: function (req, file, cb) {
-                        // rename files with 'Unix ms timestamp' + 'file number counter'
-                        cb(null, `${moment().format('x')}-${photoCounter++}.jpg`);
+                        // rename files with 'Unix ms timestamp'
+                        cb(null, `${new Date().getTime()}.jpg`);
                     }
                 });
+
+                let maxFileSize = 1024 * 1024 * 2; // max file size 2Mb
 
                 let uploadOptions = {
                     storage: uploadStorage,
                     limits: {
-                        fileSize: 1024 * 1024 * 2, // max file size 2Mb
-                        files: 500 // max 500 files
+                        fileSize: maxFileSize,
+                        files: 1 // max 1 file
                     },
-                    includeEmptyFields: false
+                    includeEmptyFields: false,
+                    fileFilter: function (req, file, cb) {
+                        if (file.mimetype !== 'image/jpeg') {
+                            return cb('Unsupported Media Type. Only [\'.jpg\',\'.jpeg\'] files are allowed!', false);
+                        }
+                        return cb(null, true);
+                    }
                 };
 
-                let upload = multer(uploadOptions).array('photos');
+                let upload = multer(uploadOptions).single('photo');
 
                 upload(req, res, function (error) {
-                    if (error) return res.status(400).send({
-                        success: false,
-                        description: error,
-                        info: error.code === 'LIMIT_UNEXPECTED_FILE' ? 'Uploading field must be named as \'photos\'' : undefined
-                    });
-                    req.body = { helpData:
-                        { userId: model.user_id }
+
+                    if (error) {
+
+                        let errorInfoMessage = 'Upload error';
+
+                        switch (error.code) {
+                            case 'LIMIT_FILE_SIZE':
+                                errorInfoMessage = `Max file size ${maxFileSize / 1024 / 1024}Mb`;
+                                break;
+                            case 'LIMIT_UNEXPECTED_FILE':
+                                errorInfoMessage = 'Uploading field must be named as >>> \'photo\' <<<';
+                                break;
+                            default:
+                                errorInfoMessage = undefined;
+                                break;
+                        }
+
+                        return res.status(400).send({
+                            success: false,
+                            description: error.message || error,
+                            info: errorInfoMessage
+                        });
+                    }
+
+                    req.body = {
+                        helpData: { userId: model.user_id }
                     };
+
                     next();
                 });
             })

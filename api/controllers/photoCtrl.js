@@ -31,7 +31,7 @@ module.exports = router;
 /**
  * @description: get PHOTO by id
  * @hasaccess: All
- * @url GET: tags/:id
+ * @url GET: photos/:id
  */
 function getPhoto () {
     return function (req, res) {

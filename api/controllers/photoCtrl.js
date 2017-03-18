@@ -35,7 +35,7 @@ module.exports = router;
  */
 function getPhoto () {
     return function (req, res) {
-        Photo.getById(req.params.id)
+        Photo.getByIdAndIncrementViews(req.params.id)
             .then(function (model) {
                 res.json({ success: true, data: model });
             })

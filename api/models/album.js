@@ -5,6 +5,7 @@ const Promise = require('bluebird');
 const jimp = require('jimp');
 
 const MainModel = require('./main');
+const Photo = require('./photo');
 const PHOTO_DIR = require('../config/').files.photo.localpath;
 const PHOTO_URL = require('../config/').files.photo.globalpath;
 
@@ -246,12 +247,11 @@ Album.processOnePhotoToAlbum = function (album_id, user_id, photoWrapper) {
                 .write(`${PHOTO_DIR}/uid-${user_id}/${album_id}/thumbnail-low/${photoWrapper.filename}`);
         })
         .then(function () {
-            // TODO: insert photo model >> something like this >>
-            // Photo.create({
-            //     filename: photoWrapper.filename,
-            //     user_id: user_id,
-            //     album_id: album_id
-            // });
+            return Photo.create({
+                filename: photoWrapper.filename,
+                user_id: +user_id,
+                album_id: +album_id
+            });
         })
         .catch(function (error) {
             throw error.message || error;

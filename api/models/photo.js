@@ -1,6 +1,9 @@
 'use strict';
 
 const MainModel = require('./main');
+// const PHOTO_DIR = require('../config/').files.photo.localpath;
+const PHOTO_URL = require('../config/').files.photo.globalpath;
+
 
 function Photo() {
     MainModel.apply(this, arguments);
@@ -11,11 +14,12 @@ MainModel.extend(Photo);
 
 Photo.jsonSchema = {
     type: 'object',
-    required: ['album_id',],
+    required: ['album_id', 'user_id'],
     additionalProperties: false,
     properties: {
         id: { type: 'integer' },
         album_id: { type: 'integer' },
+        user_id: { type: 'integer' },
         views: { type: 'integer' },
         best: { type: 'boolean' },
         filename: { type: 'string' },
@@ -23,6 +27,20 @@ Photo.jsonSchema = {
         updated_at: { type: 'string', format: 'date-time' }
     }
 };
+
+/**
+ * ------------------------------
+ * @VIRTUAL_ATTRIBUTES
+ * ------------------------------
+ */
+Photo.virtualAttributes = [
+    '_path'
+];
+
+Photo.prototype._path = function () {
+    return `${PHOTO_URL}/uid-${this.user_id}/${this.album_id}/src/${this.filename}`;
+};
+
 
 /**
  * ------------------------------
@@ -36,7 +54,7 @@ Photo.prototype.$beforeInsert = function (/*json*/) {
 
 Photo.prototype.$beforeUpdate = function () {
     this.updated_at = new Date().toISOString();
-    this.$validate();
+    // this.$validate();
 };
 
 /**

@@ -1,22 +1,24 @@
 'use strict';
 
-var express = require('express');
-var router = express.Router();
+const express = require('express');
+const router = express.Router();
 
-var userCtrl = require('./userCtrl');
-var postCtrl = require('./postCtrl');
-var tagCtrl = require('./tagCtrl');
-var albumCtrl = require('./albumCtrl');
-var authCtrl = require('./authCtrl');
+const authCtrl = require('./authCtrl');
+const userCtrl = require('./userCtrl');
+const postCtrl = require('./postCtrl');
+const tagCtrl = require('./tagCtrl');
+const albumCtrl = require('./albumCtrl');
+const photoCtrl = require('./photoCtrl');
 
 router.get('/', function (req, res) {
-    res.json({success: true, data: 'hello'});
+    res.json({ success: true, data: 'hello' });
 });
 
+router.use('/auth', authCtrl);
 router.use('/users', userCtrl);
 router.use('/posts', postCtrl);
 router.use('/tags', tagCtrl);
 router.use('/albums', albumCtrl);
-router.use('/auth', authCtrl);
+router.use('/photos', photoCtrl);
 
 module.exports = router;

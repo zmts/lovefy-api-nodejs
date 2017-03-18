@@ -145,7 +145,7 @@ module.exports.photoToAlbum = function () {
                     }
 
                     req.body = {
-                        helpData: { userId: model.user_id }
+                        helpData: { userIdFromAlbumModel: model.user_id }
                     };
 
                     next();

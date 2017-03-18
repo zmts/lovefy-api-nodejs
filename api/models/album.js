@@ -64,7 +64,14 @@ Album.prototype._cover_index = function () {
 };
 
 Album.relationMappings = {
-
+    photos: {
+        relation: MainModel.HasManyRelation,
+        modelClass: __dirname + '/photo',
+        join: {
+            from: 'albums.id',
+            to: 'photos.album_id'
+        }
+    }
 };
 
 /**
@@ -217,7 +224,7 @@ Album.removeCoverThumbnail = function (album_id) {
 
 /**
  * ------------------------------
- * @description: create thumbnail, create PHOTO model and attach to ALBUM each created PHOTO model
+ * @description: create thumbnail, create PHOTO model
  * ------------------------------
  * @param album_id
  * @param user_id

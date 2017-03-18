@@ -1,0 +1,65 @@
+'use strict';
+
+const express = require('express');
+const router = express.Router();
+
+const Photo = require('../models/photo');
+// const auth = require('../middleware/auth');
+// const sec = require('../middleware/security');
+
+/**
+ * ------------------------------
+ * @BASE_URL: photos/
+ * ------------------------------
+ */
+
+/**
+ * @BASE_ROUTES
+ */
+router.get('/:id',
+    getPhoto()
+);
+
+module.exports = router;
+
+/**
+ * ------------------------------
+ * @CONTROLLERS
+ * ------------------------------
+ */
+
+/**
+ * @description: get PHOTO by id
+ * @hasaccess: All
+ * @url GET: tags/:id
+ */
+function getPhoto () {
+    return function (req, res) {
+        Photo.getById(req.params.id)
+            .then(function (model) {
+                res.json({ success: true, data: model });
+            })
+            .catch(function (error) {
+                res.status(error.statusCode || 404).send({ success: false, description: error });
+            });
+    };
+}
+
+/**
+ * @description remove PHOTO from db by id
+ * @url DELETE: photos/:id
+ */
+function remove() {
+    return function (req, res) {
+        Photo.getById(req.params.id)
+            .then(function (model) {
+                return Photo.remove(model.id);
+            })
+            .then(function () {
+                res.json({ success: true, description: 'Photo #' + req.params.id + ' was removed' });
+            })
+            .catch(function (error) {
+                res.status(error.statusCode || 404).send({ success: false, description: error });
+            });
+    };
+}

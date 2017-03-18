@@ -16,7 +16,9 @@ const validate = require('../middleware/validateReq');
  */
 
 /**
+ * ------------------------------
  * @OTHER_ROUTES
+ * ------------------------------
  */
 router.post('/:id/cover/index',
     auth.checkToken(),
@@ -25,7 +27,7 @@ router.post('/:id/cover/index',
     validate.albumCover(),
     setCoverIndex()
 );
-router.delete('/:id/cover/index',
+router.post('/:id/cover/index',
     auth.checkToken(),
     sec.checkItemAccess.update(Album),
     removeCoverIndex()
@@ -37,22 +39,29 @@ router.post('/:id/cover/thumbnail',
     validate.albumCover(),
     setCoverThumbnail()
 );
-router.delete('/:id/cover/thumbnail',
+router.post('/:id/cover/thumbnail',
     auth.checkToken(),
     sec.checkItemAccess.update(Album),
     removeCoverThumbnail()
 );
 
 /**
+ * ------------------------------
  * @RELATED_ROUTES
+ * ------------------------------
  */
 router.post('/:id/upload',
     upload.photoToAlbum(),
     processOnePhotoToAlbum()
 );
+router.post('/:id/remove-photo/:photo_id',
+    removePhotoFromAlbum()
+);
 
 /**
+ * ------------------------------
  * @BASE_ROUTES
+ * ------------------------------
  */
 router.get('/',
     getAll()
@@ -85,9 +94,7 @@ module.exports = router;
  */
 
 /**
- * ------------------------------
  * @description: get all Albums list
- * ------------------------------
  * @url: GET: albums/
  * @return: owner, ADMINROLES >> all list
  * @return: Anonymous, NotOwner >> public list
@@ -105,9 +112,7 @@ function getAll() {
 }
 
 /**
- * ------------------------------
  * @description: get ALBUM by id
- * ------------------------------
  * @return owner, ADMINROLES >> public or private ALBUM
  * @return Anonymous, NotOwner >> only public ALBUM
  * @url GET: tags/:id
@@ -125,9 +130,7 @@ function getAlbum () {
 }
 
 /**
- * ------------------------------
  * @description: create ALBUM
- * ------------------------------
  * @url: POST: albums/
  * @request:
  * {
@@ -156,9 +159,7 @@ function newAlbum() {
 }
 
 /**
- * ------------------------------
  * @description: update ALBUM by id
- * ------------------------------
  * @url: PUT: albums/:id
  * @request:
  * @hasaccess: owner, ADMINROLES
@@ -180,9 +181,7 @@ function update() {
 }
 
 /**
- * ------------------------------
  * @description: remove ALBUM from db by id
- * ------------------------------
  * @url: DELETE: albums/:id
  * @hasaccess: owner, ADMINROLES
  */
@@ -202,9 +201,7 @@ function remove() {
 }
 
 /**
- * ------------------------------
  * @description: set cover index picture
- * ------------------------------
  * @url: POST: albums/:id/cover/index
  * @hasaccess: owner, ADMINROLES
  * @return updated model
@@ -222,9 +219,7 @@ function setCoverIndex() {
 }
 
 /**
- * ------------------------------
  * @description: soft delete cover index picture
- * ------------------------------
  */
 function removeCoverIndex() {
     return function (req, res) {
@@ -239,9 +234,7 @@ function removeCoverIndex() {
 }
 
 /**
- * ------------------------------
  * @description: set cover thumbnail picture
- * ------------------------------
  * @url: POST: albums/:id/cover/thumbnail
  * @hasaccess: owner, ADMINROLES
  * @return updated model
@@ -259,9 +252,7 @@ function setCoverThumbnail() {
 }
 
 /**
- * ------------------------------
  * @description: soft delete cover thumbnail picture
- * ------------------------------
  */
 function removeCoverThumbnail() {
     return function (req, res) {
@@ -276,18 +267,28 @@ function removeCoverThumbnail() {
 }
 
 /**
- * ------------------------------
- * @description: add photos to ALBUM
- * ------------------------------
+ * @description: adds ONLY one image(JPG/JPEG) to ALBUM
+ * @url: POST: albums/:id/upload
+ * @request: form-data-file-field "photo"
  */
 function processOnePhotoToAlbum() {
     return function (req, res) {
-        Album.processOnePhotoToAlbum(req.params.id, req.body.helpData.userId, req.file)
+        Album.processOnePhotoToAlbum(req.params.id, req.body.helpData.userIdFromAlbumModel, req.file)
             .then(function (model) {
                 res.json({ success: true, data: model });
             })
             .catch(function (error) {
                 res.status(error.statusCode || 404).send({ success: false, description: error });
             });
+    };
+}
+
+/**
+ * @description remove PHOTO From ALBUM
+ * @url POST: albums/:id/remove-photo/:photo_id
+ */
+function removePhotoFromAlbum() {
+    return function (req, res) {
+        res.end();
     };
 }

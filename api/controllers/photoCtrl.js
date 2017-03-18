@@ -44,22 +44,3 @@ function getPhoto () {
             });
     };
 }
-
-/**
- * @description remove PHOTO from db by id
- * @url DELETE: photos/:id
- */
-function remove() {
-    return function (req, res) {
-        Photo.getById(req.params.id)
-            .then(function (model) {
-                return Photo.remove(model.id);
-            })
-            .then(function () {
-                res.json({ success: true, description: 'Photo #' + req.params.id + ' was removed' });
-            })
-            .catch(function (error) {
-                res.status(error.statusCode || 404).send({ success: false, description: error });
-            });
-    };
-}

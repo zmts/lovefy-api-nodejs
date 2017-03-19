@@ -74,7 +74,7 @@ router.post('/',
     sec.checkItemAccess.create(),
     newAlbum()
 );
-router.put('/:id',
+router.patch('/:id',
     auth.checkToken(),
     sec.checkItemAccess.update(Album),
     update()

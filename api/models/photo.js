@@ -37,15 +37,15 @@ Photo.virtualAttributes = [
 ];
 
 Photo.prototype._src = function () {
-    return `${process.env.HTTP_PROTOCOL}://${process.env.DOMAIN_NAME}/public/photos/uid-${this.path}/src/${this.filename}`;
+    return `${process.env.PROTOCOL}://${process.env.HOST}/public/photos/uid-${this.path}/src/${this.filename}`;
 };
 
 Photo.prototype._thumbnail_mid = function () {
-    return `${process.env.HTTP_PROTOCOL}://${process.env.DOMAIN_NAME}/public/photos/uid-${this.path}/thumbnail-mid/${this.filename}`;
+    return `${process.env.PROTOCOL}://${process.env.HOST}/public/photos/uid-${this.path}/thumbnail-mid/${this.filename}`;
 };
 
 Photo.prototype._thumbnail_low = function () {
-    return `${process.env.HTTP_PROTOCOL}://${process.env.DOMAIN_NAME}/public/photos/uid-${this.path}/thumbnail-low/${this.filename}`;
+    return `${process.env.PROTOCOL}://${process.env.HOST}/public/photos/uid-${this.path}/thumbnail-low/${this.filename}`;
 };
 
 /**

@@ -42,3 +42,8 @@
 
 ## Implemented (Client, AngularJS)
 - Base ... wip
+
+#Conventions:
+- POST to create new resources
+- POST to make custom VERBS
+- PATCH to update resources

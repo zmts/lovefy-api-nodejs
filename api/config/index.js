@@ -1,6 +1,8 @@
 module.exports = {
 
     rootDir: process.env.PWD,
+    publicDir: process.env.PWD + '/public',
+    photoDir: process.env.PWD + '/public/photos',
 
     url: {
         domain: 'supersite.com',
@@ -37,12 +39,5 @@ module.exports = {
     token: {
         secret: '908df97bf897gdf8bdf87dbcvbidfjgklrjt84',
         encryptpassword: 'h2j35g46h352hjk35jk6356fhj46h646fhrte7tc89b7r7ty'
-    },
-
-    files: {
-        photo: {
-            localpath: process.env.PWD + '/public/photos',
-            globalpath: 'supersite.com/public/photos'
-        }
     }
 };

@@ -141,7 +141,7 @@ module.exports.checkItemAccess = {
 
     update: function (modelName) {
         return function (req, res, next) {
-            if ( req.method === 'PUT' ) {
+            if ( req.method === 'PUT' || 'POST' ) {
                 modelName.getById(req.params.id)
                     .then(function (model) {
                         if ( ADMINROLES.indexOf( req.body.helpData.userRole ) >= 0 ) return next();

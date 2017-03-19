@@ -1,4 +1,4 @@
-const PHOTO_DIR = require('../config/').files.photo.localpath;
+const PHOTO_DIR = require('../config/').photoDir;
 const multer = require('multer');
 const Album = require('../models/album');
 

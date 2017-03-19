@@ -6,8 +6,7 @@ const jimp = require('jimp');
 
 const MainModel = require('./main');
 const Photo = require('./photo');
-const PHOTO_DIR = require('../config/').files.photo.localpath;
-const PHOTO_URL = require('../config/').files.photo.globalpath;
+const PHOTO_DIR = require('../config/').photoDir;
 
 function Album() {
     MainModel.apply(this, arguments);
@@ -52,14 +51,14 @@ Album.virtualAttributes = [
 
 Album.prototype._cover_thumbnail = function () {
     if (this.cover_thumbnail) {
-        return `${PHOTO_URL}/uid-${this.user_id}/${this.id}/cover_thumbnail.jpg`;
+        return `${process.env.HTTP_PROTOCOL}://${process.env.DOMAIN_NAME}/public/photos/uid-${this.user_id}/${this.id}/cover_thumbnail.jpg`;
     }
     return null;
 };
 
 Album.prototype._cover_index = function () {
     if (this.cover_index) {
-        return `${PHOTO_URL}/uid-${this.user_id}/${this.id}/cover_index.jpg`;
+        return `${process.env.HTTP_PROTOCOL}://${process.env.DOMAIN_NAME}/public/photos/uid-${this.user_id}/${this.id}/cover_index.jpg`;
     }
     return null;
 };
@@ -249,8 +248,8 @@ Album.processOnePhotoToAlbum = function (album_id, user_id, photoWrapper) {
         .then(function () {
             return Photo.create({
                 filename: photoWrapper.filename,
-                user_id: +user_id,
-                album_id: +album_id
+                album_id: +album_id,
+                path: `${user_id}/${album_id}`
             });
         })
         .catch(function (error) {

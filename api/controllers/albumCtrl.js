@@ -27,7 +27,7 @@ router.post('/:id/cover/index',
     validate.albumCover(),
     setCoverIndex()
 );
-router.post('/:id/cover/index',
+router.delete('/:id/cover/index',
     auth.checkToken(),
     sec.checkItemAccess.update(Album),
     removeCoverIndex()
@@ -39,7 +39,7 @@ router.post('/:id/cover/thumbnail',
     validate.albumCover(),
     setCoverThumbnail()
 );
-router.post('/:id/cover/thumbnail',
+router.delete('/:id/cover/thumbnail',
     auth.checkToken(),
     sec.checkItemAccess.update(Album),
     removeCoverThumbnail()

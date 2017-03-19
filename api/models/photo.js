@@ -1,9 +1,6 @@
 'use strict';
 
 const MainModel = require('./main');
-// const PHOTO_DIR = require('../config/').files.photo.localpath;
-const PHOTO_URL = require('../config/').files.photo.globalpath;
-
 
 function Photo() {
     MainModel.apply(this, arguments);
@@ -14,15 +11,15 @@ MainModel.extend(Photo);
 
 Photo.jsonSchema = {
     type: 'object',
-    required: ['album_id', 'user_id'],
+    required: ['filename', 'album_id', 'path'],
     additionalProperties: false,
     properties: {
         id: { type: 'integer' },
+        filename: { type: 'string' },
         album_id: { type: 'integer' },
-        user_id: { type: 'integer' },
+        path: { type: 'string' },
         views: { type: 'integer' },
         best: { type: 'boolean' },
-        filename: { type: 'string' },
         created_at: { type: 'string', format: 'date-time' },
         updated_at: { type: 'string', format: 'date-time' }
     }
@@ -34,13 +31,22 @@ Photo.jsonSchema = {
  * ------------------------------
  */
 Photo.virtualAttributes = [
-    '_path'
+    '_src',
+    '_thumbnail_mid',
+    '_thumbnail_low'
 ];
 
-Photo.prototype._path = function () {
-    return `${PHOTO_URL}/uid-${this.user_id}/${this.album_id}/src/${this.filename}`;
+Photo.prototype._src = function () {
+    return `${process.env.HTTP_PROTOCOL}://${process.env.DOMAIN_NAME}/public/photos/uid-${this.path}/src/${this.filename}`;
 };
 
+Photo.prototype._thumbnail_mid = function () {
+    return `${process.env.HTTP_PROTOCOL}://${process.env.DOMAIN_NAME}/public/photos/uid-${this.path}/thumbnail-mid/${this.filename}`;
+};
+
+Photo.prototype._thumbnail_low = function () {
+    return `${process.env.HTTP_PROTOCOL}://${process.env.DOMAIN_NAME}/public/photos/uid-${this.path}/thumbnail-low/${this.filename}`;
+};
 
 /**
  * ------------------------------

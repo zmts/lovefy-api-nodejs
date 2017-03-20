@@ -155,31 +155,15 @@ Album.getById = function (id) {
  * @description: set in DB "cover_index" field to TRUE
  * ------------------------------
  * @param album_id
+ * @param status TRUE/FALSE
  */
-Album.setCoverIndex = function (album_id) {
+Album.setCoverIndexStatus = function (album_id, status) {
     let that = this;
 
+    if (!status) return Promise.reject('>>> \'status\' <<< field in query not defined');
     return this.getById(album_id)
         .then(function (model) {
-            return that.query().patchAndFetchById(model.id, { cover_index: true });
-        })
-        .catch(function (error) {
-            throw error.message || error;
-        });
-};
-
-/**
- * ------------------------------
- * @description: set in DB "cover_index" field to FALSE(soft delete)
- * ------------------------------
- * @param album_id
- */
-Album.removeCoverIndex = function (album_id) {
-    let that = this;
-
-    return this.getById(album_id)
-        .then(function (model) {
-            return that.query().patchAndFetchById(model.id, { cover_index: false });
+            return that.query().patchAndFetchById(model.id, { cover_index: JSON.parse(status) });
         })
         .catch(function (error) {
             throw error.message || error;
@@ -191,31 +175,15 @@ Album.removeCoverIndex = function (album_id) {
  * @description: set in DB "cover_thumbnail" field to TRUE
  * ------------------------------
  * @param album_id
+ * @param status TRUE/FALSE
  */
-Album.setCoverThumbnail = function (album_id) {
+Album.setCoverThumbnailStatus = function (album_id, status) {
     let that = this;
 
+    if (!status) return Promise.reject('>>> \'status\' <<< field in query not defined');
     return this.getById(album_id)
         .then(function (model) {
-            return that.query().patchAndFetchById(model.id, { cover_thumbnail: true });
-        })
-        .catch(function (error) {
-            throw error.message || error;
-        });
-};
-
-/**
- * ------------------------------
- * @description: set in DB "cover_thumbnail" field to FALSE(soft delete)
- * ------------------------------
- * @param album_id
- */
-Album.removeCoverThumbnail = function (album_id) {
-    let that = this;
-
-    return this.getById(album_id)
-        .then(function (model) {
-            return that.query().patchAndFetchById(model.id, { cover_thumbnail: false });
+            return that.query().patchAndFetchById(model.id, { cover_thumbnail: JSON.parse(status) });
         })
         .catch(function (error) {
             throw error.message || error;

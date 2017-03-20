@@ -89,7 +89,7 @@ Photo.getByIdAndIncrementViews = function (id) {
 /**
  * @description set "best" status to TRUE/FALSE
  * @param id
- * @param status
+ * @param status TRUE/FALSE
  * @return updated model
  */
 Photo.setBestStatus = function (id, status) {

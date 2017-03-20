@@ -203,5 +203,26 @@ module.exports.checkItemAccess = {
                     });
             }
         };
-    }
+    },
+
+    setAlbumCover: function (modelName) {
+        return function (req, res, next) {
+            if ( req.method === 'POST' ) {
+                modelName.getById(req.params.id)
+                    .then(function (model) {
+                        if ( ADMINROLES.indexOf( req.body.helpData.userRole ) >= 0 ) return next();
+                        // check owner access
+                        if ( +req.body.helpData.userId === +model.user_id ) return next();
+                        res.status(403).send({
+                            success: false,
+                            description: 'Forbidden. userId(' + req.body.helpData.userId + ') to item#' + req.params.id
+                        });
+
+                    })
+                    .catch(function (error) {
+                        res.status(404).send({ success: false, description: error });
+                    });
+            }
+        };
+    },
 };

@@ -253,8 +253,8 @@ function processOnePhotoToAlbum() {
 function removePhotoFromAlbum() {
     return function (req, res) {
         Photo.getById(req.params.photo_id)
-            .then(function (model) {
-                return Photo.remove(model.id);
+            .then(function (photo) {
+                return Album.removePhoto(photo.path, photo.id, photo.filename);
             })
             .then(function () {
                 res.json({ success: true, description: 'Photo #' + req.params.id + ' was removed' });

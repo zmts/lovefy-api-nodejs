@@ -29,8 +29,6 @@ router.get('/:id',
     getPhoto()
 );
 
-module.exports = router;
-
 /**
  * ------------------------------
  * @CONTROLLERS
@@ -70,3 +68,7 @@ function setBestStatus() {
             });
     };
 }
+
+// photo removes via AlbumCtrl >> removePhotoFromAlbum controller
+
+module.exports = router;

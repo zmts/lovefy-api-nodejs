@@ -1,6 +1,9 @@
 'use strict';
 
+const fsp = require('fs-promise');
+
 const MainModel = require('./main');
+const PHOTO_DIR = require('../config/').photoDir;
 
 function Photo() {
     MainModel.apply(this, arguments);
@@ -99,6 +102,29 @@ Photo.setBestStatus = function (id, status) {
     return this.getById(id)
         .then(function () {
             return that.update(id, { best: JSON.parse(status) });
+        })
+        .catch(function (error) {
+            throw error.message || error;
+        });
+};
+
+/**
+ * @description removes images from FS >> deletes PHOTO model from DB
+ * @param photo_id
+ */
+Photo.remove = function (photo_id) { // TODO test it
+    let that = this;
+
+    return this.getById()
+        .then(function (photo) {
+            return Promise.all([
+                fsp.remove(`${PHOTO_DIR}/uid-${photo.path}/src/${photo.filename}`),
+                fsp.remove(`${PHOTO_DIR}/uid-${photo.path}/thumbnail-mid/${photo.filename}`),
+                fsp.remove(`${PHOTO_DIR}/uid-${photo.path}/thumbnail-low/${photo.filename}`)
+            ]);
+        })
+        .then(function () {
+            return that.remove(photo_id);
         })
         .catch(function (error) {
             throw error.message || error;

@@ -28,6 +28,9 @@ router.patch('/:id/set-best',
 router.get('/:id',
     getPhoto()
 );
+router.delete('/:id',
+    removePhotoFromAlbum()
+);
 
 /**
  * ------------------------------
@@ -69,6 +72,20 @@ function setBestStatus() {
     };
 }
 
-// photo removes via AlbumCtrl >> removePhotoFromAlbum controller
+/**
+ * @description remove PHOTO From ALBUM
+ * @url DELETE: photos/:id
+ */
+function removePhotoFromAlbum() {
+    return function (req, res) {
+        Photo.remove(req.params.id)
+            .then(function () {
+                res.json({ success: true, description: 'Photo #' + req.params.id + ' was removed' });
+            })
+            .catch(function (error) {
+                res.status(error.statusCode || 404).send({ success: false, description: error });
+            });
+    };
+}
 
 module.exports = router;

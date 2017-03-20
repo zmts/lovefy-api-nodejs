@@ -261,16 +261,4 @@ Album.processOnePhotoToAlbum = function (album_id, user_id, photoWrapper) {
         });
 };
 
-Album.removePhoto = function (path, photo_id, filename) { // TODO test it
-    return Promise.all([
-        fsp.remove(`${PHOTO_DIR}/uid-${path}/src/${filename}`),
-        fsp.remove(`${PHOTO_DIR}/uid-${path}/thumbnail-mid/${filename}`),
-        fsp.remove(`${PHOTO_DIR}/uid-${path}/thumbnail-low/${filename}`)
-    ]).then(function () {
-        Photo.remove(photo_id);
-    }).catch(function (error) {
-        throw error.message || error;
-    });
-};
-
 module.exports = Album;

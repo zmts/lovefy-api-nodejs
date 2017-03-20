@@ -4,7 +4,6 @@ const express = require('express');
 const router = express.Router();
 
 const Album = require('../models/album');
-const Photo = require('../models/photo');
 const auth = require('../middleware/auth');
 const sec = require('../middleware/security');
 const upload = require('../middleware/upload');
@@ -45,9 +44,6 @@ router.post('/:id/upload',
     upload.photoToAlbum(),
     processOnePhotoToAlbum()
 );
-router.post('/:id/remove-photo/:photo_id',
-    removePhotoFromAlbum()
-);
 
 /**
  * ------------------------------
@@ -75,8 +71,6 @@ router.delete('/:id',
     sec.checkSUAccess(),
     remove()
 );
-
-module.exports = router;
 
 /**
  * ------------------------------
@@ -246,21 +240,4 @@ function processOnePhotoToAlbum() {
     };
 }
 
-/**
- * @description remove PHOTO From ALBUM
- * @url POST: albums/:id/remove-photo/:photo_id
- */
-function removePhotoFromAlbum() {
-    return function (req, res) {
-        Photo.getById(req.params.photo_id)
-            .then(function (photo) {
-                return Album.removePhoto(photo.path, photo.id, photo.filename);
-            })
-            .then(function () {
-                res.json({ success: true, description: 'Photo #' + req.params.id + ' was removed' });
-            })
-            .catch(function (error) {
-                res.status(error.statusCode || 404).send({ success: false, description: error });
-            });
-    };
-}
+module.exports = router;

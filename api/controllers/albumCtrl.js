@@ -4,6 +4,7 @@ const express = require('express');
 const router = express.Router();
 
 const Album = require('../models/album');
+const Photo = require('../models/photo');
 const auth = require('../middleware/auth');
 const sec = require('../middleware/security');
 const upload = require('../middleware/upload');
@@ -20,19 +21,19 @@ const validate = require('../middleware/validateReq');
  * @OTHER_ROUTES
  * ------------------------------
  */
-router.post('/:id/set-cover/index',
+router.post('/:id/cover/index',
     auth.checkToken(),
     sec.checkItemAccess.setAlbumCover(Album),
     upload.albumCover('cover_index'),
     validate.albumCover(),
-    setCoverIndexStatus()
+    setCoverIndex()
 );
-router.post('/:id/set-cover/thumbnail',
+router.post('/:id/cover/thumbnail',
     auth.checkToken(),
     sec.checkItemAccess.setAlbumCover(Album),
     upload.albumCover('cover_thumbnail'),
     validate.albumCover(),
-    setCoverThumbnailStatus()
+    setCoverThumbnail()
 );
 
 /**
@@ -91,7 +92,7 @@ module.exports = router;
  */
 function getAll() {
     return function (req, res) {
-        Album.getAll()
+        Album.getAllPub()
             .then(function (list) {
                 res.json({ success: true, data: list });
             })
@@ -192,14 +193,14 @@ function remove() {
 
 /**
  * @description: set cover index picture
- * @url: POST: /albums/:id/set-cover/index?status=true
- * @url: POST: /albums/:id/set-cover/index?status=false
+ * @url: POST: /albums/:id/cover/index?status=true
+ * @url: POST: /albums/:id/cover/index?status=false // to disable cover
  * @hasaccess: owner, ADMINROLES
  * @return updated model
  */
-function setCoverIndexStatus() {
+function setCoverIndex() {
     return function (req, res) {
-        Album.setCoverIndexStatus(req.params.id, req.query.status)
+        Album.setCoverIndex(req.params.id, req.query.status)
             .then(function (model) {
                 res.json({ success: true, data: model });
             })
@@ -211,14 +212,14 @@ function setCoverIndexStatus() {
 
 /**
  * @description: set cover thumbnail picture
- * @url: POST: albums/:id/set-cover/thumbnail?status=true
- * @url: POST: albums/:id/set-cover/thumbnail?status=false
+ * @url: POST: albums/:id/cover/thumbnail?status=true
+ * @url: POST: albums/:id/cover/thumbnail?status=false // to disable cover
  * @hasaccess: owner, ADMINROLES
  * @return updated model
  */
-function setCoverThumbnailStatus() {
+function setCoverThumbnail() {
     return function (req, res) {
-        Album.setCoverThumbnailStatus(req.params.id, req.query.status)
+        Album.setCoverThumbnail(req.params.id, req.query.status)
             .then(function (model) {
                 res.json({ success: true, data: model });
             })
@@ -251,6 +252,15 @@ function processOnePhotoToAlbum() {
  */
 function removePhotoFromAlbum() {
     return function (req, res) {
-        res.end();
+        Photo.getById(req.params.photo_id)
+            .then(function (model) {
+                return Photo.remove(model.id);
+            })
+            .then(function () {
+                res.json({ success: true, description: 'Photo #' + req.params.id + ' was removed' });
+            })
+            .catch(function (error) {
+                res.status(error.statusCode || 404).send({ success: false, description: error });
+            });
     };
 }

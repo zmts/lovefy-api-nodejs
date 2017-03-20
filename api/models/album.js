@@ -138,11 +138,47 @@ Album.create = function (data) {
         });
 };
 
+/**
+ * @param id
+ * @return ALBUM with PHOTOS
+ */
 Album.getById = function (id) {
     return this.query()
         .findById(id)
+        .eager('photos')
         .then(function (data) {
             if (!data) throw { message: 'Empty response' };
+            return data;
+        })
+        .catch(function (error) {
+            throw error.message || error;
+        });
+};
+
+/**
+ * @return all Public ALBUM's with all related PHOTOS
+ */
+Album.getAllPub = function () {
+    return this.query()
+        .where({ private: false })
+        .eager('photos')
+        .then(function (data) {
+            if (!data.length) throw { message: 'Empty response' };
+            return data;
+        })
+        .catch(function (error) {
+            throw error.message || error;
+        });
+};
+
+/**
+ * @return all Mixed ALBUM's with all related PHOTOS
+ */
+Album.getAllMixed = function () {
+    return this.query()
+        .eager('photos')
+        .then(function (data) {
+            if (!data.length) throw { message: 'Empty response' };
             return data;
         })
         .catch(function (error) {
@@ -157,7 +193,7 @@ Album.getById = function (id) {
  * @param album_id
  * @param status TRUE/FALSE
  */
-Album.setCoverIndexStatus = function (album_id, status) {
+Album.setCoverIndex = function (album_id, status) {
     let that = this;
 
     if (!status) return Promise.reject('>>> \'status\' <<< field in query not defined');
@@ -177,7 +213,7 @@ Album.setCoverIndexStatus = function (album_id, status) {
  * @param album_id
  * @param status TRUE/FALSE
  */
-Album.setCoverThumbnailStatus = function (album_id, status) {
+Album.setCoverThumbnail = function (album_id, status) {
     let that = this;
 
     if (!status) return Promise.reject('>>> \'status\' <<< field in query not defined');

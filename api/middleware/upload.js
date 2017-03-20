@@ -29,7 +29,8 @@ module.exports.albumCover = function (coverType) {
                     storage: uploadStorage,
                     limits: {
                         fileSize: maxFileSize,
-                        files: 1
+                        files: 1,
+                        fields: 0 // denny non file-type fields
                     },
                     includeEmptyFields: false,
                     fileFilter: function (req, file, cb) {
@@ -106,7 +107,8 @@ module.exports.photoToAlbum = function () {
                     storage: uploadStorage,
                     limits: {
                         fileSize: maxFileSize,
-                        files: 1 // max 1 file
+                        files: 1, // max 1 file
+                        fields: 0 // denny non file-type fields
                     },
                     includeEmptyFields: false,
                     fileFilter: function (req, file, cb) {

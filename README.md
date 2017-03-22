@@ -43,7 +43,11 @@
 ## Implemented (Client, AngularJS)
 - Base ... wip
 
-#Conventions:
+# Conventions:
 - POST to create new resources
 - POST to make custom VERBS
 - PATCH to update resources
+
+# Terminology:
+- Model - row in DB table
+- Entity - model + relations(folder in FS, related models)

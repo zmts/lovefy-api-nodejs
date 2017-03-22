@@ -68,7 +68,7 @@ router.patch('/:id',
 );
 router.delete('/:id',
     auth.checkToken(),
-    sec.checkSUAccess(),
+    sec.checkItemAccess.remove(Album),
     remove()
 );
 
@@ -166,7 +166,7 @@ function update() {
 }
 
 /**
- * @description: remove ALBUM from db by id
+ * @description: remove ALBUM entity
  * @url: DELETE: albums/:id
  * @hasaccess: owner, ADMINROLES
  */
@@ -174,7 +174,7 @@ function remove() {
     return function (req, res) {
         Album.getById(req.params.id)
             .then(function (model) {
-                return Album.remove(model.id);
+                return Album.eraseAlbum(model.id);
             })
             .then(function () {
                 res.json({ success: true, description: `Album #${req.params.id} was removed` });

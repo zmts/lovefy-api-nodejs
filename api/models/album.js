@@ -264,4 +264,24 @@ Album.processOnePhotoToAlbum = function (album_id, user_id, photoWrapper) {
         });
 };
 
+/**
+ * @description erase ALBUM dir from FS >> remove ALBUM model from DB
+ * @param album_id
+ * @return success status
+ */
+Album.eraseAlbum = function (album_id) {
+    let that = this;
+
+    return this.getById(album_id)
+        .then(function (album) {
+            return fsp.remove(`${PHOTO_DIR}/uid-${album.user_id}/${album.id}`);
+        })
+        .then(function () {
+            return that.remove(album_id);
+        })
+        .catch(function (error) {
+            throw error.message || error;
+        });
+};
+
 module.exports = Album;

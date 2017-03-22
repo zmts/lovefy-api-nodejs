@@ -104,7 +104,8 @@ Album.prototype.$beforeUpdate = function () {
 
 /**
  * ------------------------------
- * @description
+ * @description check PHOTO_DIR accessibility >> create model >> create folders in FS
+ * @return ALBUM model
  * ------------------------------
  * @param data
  */
@@ -188,10 +189,11 @@ Album.getAllMixed = function () {
 
 /**
  * ------------------------------
- * @description: set in DB "cover_index" field to TRUE
+ * @description: set in DB "cover_index" field to TRUE/FALSE
  * ------------------------------
- * @param album_id
- * @param status TRUE/FALSE
+ * @param album_id INT
+ * @param status BOOLEAN
+ * @return updated ALBUM model
  */
 Album.setCoverIndex = function (album_id, status) {
     let that = this;
@@ -208,10 +210,11 @@ Album.setCoverIndex = function (album_id, status) {
 
 /**
  * ------------------------------
- * @description: set in DB "cover_thumbnail" field to TRUE
+ * @description: set in DB "cover_thumbnail" field to TRUE/FALSE
  * ------------------------------
- * @param album_id
- * @param status TRUE/FALSE
+ * @param album_id INT
+ * @param status BOOLEAN
+ * @return updated ALBUM model
  */
 Album.setCoverThumbnail = function (album_id, status) {
     let that = this;
@@ -233,7 +236,7 @@ Album.setCoverThumbnail = function (album_id, status) {
  * @param album_id
  * @param user_id
  * @param photoWrapper
- * @return {Promise.<T>}
+ * @return created PHOTO model
  */
 Album.processOnePhotoToAlbum = function (album_id, user_id, photoWrapper) {
     return jimp.read(photoWrapper.path)
@@ -253,7 +256,7 @@ Album.processOnePhotoToAlbum = function (album_id, user_id, photoWrapper) {
             return Photo.create({
                 filename: photoWrapper.filename,
                 album_id: +album_id,
-                path: `${user_id}/${album_id}`
+                user_id: +user_id
             });
         })
         .catch(function (error) {

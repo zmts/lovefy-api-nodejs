@@ -14,13 +14,13 @@ MainModel.extend(Photo);
 
 Photo.jsonSchema = {
     type: 'object',
-    required: ['filename', 'album_id', 'path'],
+    required: ['filename', 'user_id', 'album_id'],
     additionalProperties: false,
     properties: {
         id: { type: 'integer' },
         filename: { type: 'string' },
+        user_id: { type: 'integer' },
         album_id: { type: 'integer' },
-        path: { type: 'string' },
         views: { type: 'integer' },
         best: { type: 'boolean' },
         created_at: { type: 'string', format: 'date-time' },
@@ -40,15 +40,15 @@ Photo.virtualAttributes = [
 ];
 
 Photo.prototype._src = function () {
-    return `${process.env.PROTOCOL}://${process.env.HOST}/public/photos/uid-${this.path}/src/${this.filename}`;
+    return `${process.env.PROTOCOL}://${process.env.HOST}/public/photos/uid-${this.user_id}/${this.album_id}/src/${this.filename}`;
 };
 
 Photo.prototype._thumbnail_mid = function () {
-    return `${process.env.PROTOCOL}://${process.env.HOST}/public/photos/uid-${this.path}/thumbnail-mid/${this.filename}`;
+    return `${process.env.PROTOCOL}://${process.env.HOST}/public/photos/uid-${this.user_id}/${this.album_id}/thumbnail-mid/${this.filename}`;
 };
 
 Photo.prototype._thumbnail_low = function () {
-    return `${process.env.PROTOCOL}://${process.env.HOST}/public/photos/uid-${this.path}/thumbnail-low/${this.filename}`;
+    return `${process.env.PROTOCOL}://${process.env.HOST}/public/photos/uid-${this.user_id}/${this.album_id}/thumbnail-low/${this.filename}`;
 };
 
 /**
@@ -109,18 +109,19 @@ Photo.setBestStatus = function (id, status) {
 };
 
 /**
- * @description removes images from FS >> deletes PHOTO model from DB
+ * @description erase images(src and thumbnails) from FS >> removes PHOTO model from DB
  * @param photo_id
+ * @return success status
  */
-Photo.remove = function (photo_id) { // TODO test it
+Photo.erasePhoto = function (photo_id) {
     let that = this;
 
-    return this.getById()
+    return this.getById(photo_id)
         .then(function (photo) {
             return Promise.all([
-                fsp.remove(`${PHOTO_DIR}/uid-${photo.path}/src/${photo.filename}`),
-                fsp.remove(`${PHOTO_DIR}/uid-${photo.path}/thumbnail-mid/${photo.filename}`),
-                fsp.remove(`${PHOTO_DIR}/uid-${photo.path}/thumbnail-low/${photo.filename}`)
+                fsp.remove(`${PHOTO_DIR}/uid-${photo.user_id}/${photo.album_id}/src/${photo.filename}`),
+                fsp.remove(`${PHOTO_DIR}/uid-${photo.user_id}/${photo.album_id}/thumbnail-mid/${photo.filename}`),
+                fsp.remove(`${PHOTO_DIR}/uid-${photo.user_id}/${photo.album_id}/thumbnail-low/${photo.filename}`)
             ]);
         })
         .then(function () {

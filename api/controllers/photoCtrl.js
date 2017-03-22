@@ -75,11 +75,12 @@ function setBestStatus() {
 /**
  * @description remove PHOTO From ALBUM
  * @url DELETE: photos/:id
+ * @return success status
  */
 function removePhotoFromAlbum() {
     return function (req, res) {
-        Photo.remove(req.params.id)
-            .then(function () {
+        Photo.erasePhoto(req.params.id)
+            .then(function (a) {
                 res.json({ success: true, description: 'Photo #' + req.params.id + ' was removed' });
             })
             .catch(function (error) {

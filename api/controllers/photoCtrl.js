@@ -76,6 +76,7 @@ function setBestStatus() {
 
 /**
  * @description remove PHOTO From ALBUM
+ * @hasaccess: OWNER, ADMINROLES
  * @url DELETE: photos/:id
  * @return success status
  */

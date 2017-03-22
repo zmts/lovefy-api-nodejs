@@ -83,7 +83,7 @@ function setBestStatus() {
 function removePhotoFromAlbum() {
     return function (req, res) {
         Photo.erasePhoto(req.params.id)
-            .then(function (a) {
+            .then(function () {
                 res.json({ success: true, description: 'Photo #' + req.params.id + ' was removed' });
             })
             .catch(function (error) {

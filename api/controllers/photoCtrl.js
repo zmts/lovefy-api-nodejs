@@ -4,8 +4,8 @@ const express = require('express');
 const router = express.Router();
 
 const Photo = require('../models/photo');
-// const auth = require('../middleware/auth');
-// const sec = require('../middleware/security');
+const auth = require('../middleware/auth');
+const sec = require('../middleware/security');
 
 /**
  * ------------------------------
@@ -29,6 +29,8 @@ router.get('/:id',
     getPhoto()
 );
 router.delete('/:id',
+    auth.checkToken(),
+    sec.checkItemAccess.remove(Photo),
     removePhotoFromAlbum()
 );
 

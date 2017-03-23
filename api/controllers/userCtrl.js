@@ -32,7 +32,7 @@ router.get('/check-email-availability',
  */
 router.get('/:id/posts/',
     auth.checkToken(),
-    sec.checkOwner(),
+    sec.checkOwnerIdInParams(),
     getPostsByUserId()
 );
 

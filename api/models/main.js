@@ -39,6 +39,17 @@ MainModel.getById = function (id) {
         });
 };
 
+MainModel.GETbyId = function (id) {
+    return this.query().findById(id)
+        .then(function (data) {
+            if (!data) throw {message: 'Empty response'};
+            return data;
+        })
+        .catch(function (error) {
+            throw error.message || error;
+        });
+};
+
 MainModel.update = function (id, data) {
     return this.query().patchAndFetchById(id, data);
 };

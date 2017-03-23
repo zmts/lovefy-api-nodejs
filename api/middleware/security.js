@@ -141,7 +141,7 @@ module.exports.checkItemAccess = {
     read: function (modelName) {
         return function (req, res, next) {
             if ( req.method === 'GET' ) {
-                modelName.getById(req.params.id)
+                modelName.GETbyId(req.params.id)
                     .then(function (model) {
                         if ( !model.private ) return next();
                         if ( _isModelOwner(req, model) ) return next();
@@ -176,7 +176,7 @@ module.exports.checkItemAccess = {
     update: function (modelName) {
         return function (req, res, next) {
             if ( req.method === 'PUT' || 'POST' || 'PATCH') {
-                modelName.getById(req.params.id)
+                modelName.GETbyId(req.params.id)
                     .then(function (model) {
                         // check owner access // forbid to User change Item 'user_id'
                         if ( _isModelOwner(req, model) && _isOwnerIdInBody(req) ) return next();
@@ -208,7 +208,7 @@ module.exports.checkItemAccess = {
     updateWithoutBody: function (modelName) {
         return function (req, res, next) {
             if ( req.method === 'POST' ) {
-                modelName.getById(req.params.id)
+                modelName.GETbyId(req.params.id)
                     .then(function (model) {
                         // check owner access
                         if ( _isModelOwner(req, model) ) return next();
@@ -228,7 +228,7 @@ module.exports.checkItemAccess = {
     remove: function (modelName) {
         return function (req, res, next) {
             if ( req.method === 'DELETE' ) {
-                modelName.getById(req.params.id)
+                modelName.GETbyId(req.params.id)
                     .then(function (model) {
                         if ( _isModelOwner(req, model) ) return next();
                         res.status(403).send({
@@ -246,7 +246,7 @@ module.exports.checkItemAccess = {
     tag: function (modelName) {
         return function (req, res, next) {
             if ( req.method === 'POST' ) {
-                modelName.getById(req.params.id)
+                modelName.GETbyId(req.params.id)
                     .then(function (model) {
                         if ( _isModelOwner(req, model) ) return next();
                         res.status(403).send({

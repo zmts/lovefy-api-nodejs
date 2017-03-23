@@ -22,14 +22,14 @@ const validate = require('../middleware/validateReq');
  */
 router.post('/:id/cover/index',
     auth.checkToken(),
-    sec.checkItemAccess.updateWithoutBody(Album),
+    sec.checkItemAccess.modelOwner(Album),
     upload.albumCover('cover_index'),
     validate.albumCover(),
     setCoverIndex()
 );
 router.post('/:id/cover/thumbnail',
     auth.checkToken(),
-    sec.checkItemAccess.updateWithoutBody(Album),
+    sec.checkItemAccess.modelOwner(Album),
     upload.albumCover('cover_thumbnail'),
     validate.albumCover(),
     setCoverThumbnail()
@@ -68,7 +68,7 @@ router.patch('/:id',
 );
 router.delete('/:id',
     auth.checkToken(),
-    sec.checkItemAccess.remove(Album),
+    sec.checkItemAccess.modelOwner(Album),
     remove()
 );
 

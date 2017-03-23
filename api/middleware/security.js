@@ -138,35 +138,50 @@ module.exports.checkUserProfileAccess = function () {
  */
 module.exports.checkItemAccess = {
 
+    /**
+     * @description check >> user_id from TOKEN === user_id from MODEL
+     */
+    modelOwner: function (modelName) {
+        return function (req, res, next) {
+            modelName.GETbyId(req.params.id)
+                .then(function (model) {
+                    if ( _isModelOwner(req, model) ) return next();
+                    res.status(403).send({
+                        success: false,
+                        description: 'Forbidden. userId(' + req.body.helpData.userId + ') to #' + req.params.id
+                    });
+                })
+                .catch(function (error) {
+                    res.status(404).send({ success: false, description: error });
+                });
+        };
+    },
+
     read: function (modelName) {
         return function (req, res, next) {
-            if ( req.method === 'GET' ) {
-                modelName.GETbyId(req.params.id)
-                    .then(function (model) {
-                        if ( !model.private ) return next();
-                        if ( _isModelOwner(req, model) ) return next();
-                        res.status(403).send({
-                            success: false,
-                            description: 'Forbidden. userId(' + req.body.helpData.userId + ') to #' + req.params.id
-                        });
-                    })
-                    .catch(function (error) {
-                        res.status(404).send({ success: false, description: error });
+            modelName.GETbyId(req.params.id)
+                .then(function (model) {
+                    if ( !model.private ) return next();
+                    if ( _isModelOwner(req, model) ) return next();
+                    res.status(403).send({
+                        success: false,
+                        description: 'Forbidden. userId(' + req.body.helpData.userId + ') to #' + req.params.id
                     });
-            }
+                })
+                .catch(function (error) {
+                    res.status(404).send({ success: false, description: error });
+                });
         };
     },
 
     create: function () {
         return function (req, res, next) {
-            if ( req.method === 'POST' ) {
-                if ( _isAdminUser(req) ) return next();
-                if ( _isOwnerIdInBody(req) ) return next(); // check owner access
-                res.status(403).send({
-                    success: false,
-                    description: 'Forbidden. userId(' + req.body.helpData.userId + ') to #' + req.body.user_id
-                });
-            }
+            if ( _isAdminUser(req) ) return next();
+            if ( _isOwnerIdInBody(req) ) return next();
+            res.status(403).send({
+                success: false,
+                description: 'Forbidden. userId(' + req.body.helpData.userId + ') to #' + req.body.user_id
+            });
         };
     },
 
@@ -175,89 +190,28 @@ module.exports.checkItemAccess = {
      */
     update: function (modelName) {
         return function (req, res, next) {
-            if ( req.method === 'PUT' || 'POST' || 'PATCH') {
-                modelName.GETbyId(req.params.id)
-                    .then(function (model) {
-                        // check owner access // forbid to User change Item 'user_id'
-                        if ( _isModelOwner(req, model) && _isOwnerIdInBody(req) ) return next();
-                        // handle error if User not Item owner
-                        else if ( !_isModelOwner(req, model) ) {
-                            res.status(403).send({
-                                success: false,
-                                description: 'Forbidden. userId(' + req.body.helpData.userId + ') to item#' + req.params.id
-                            });
-                        }
-                        // handle error if User try change Item user_id
-                        else if ( !_isOwnerIdInBody(req) ) {
-                            res.status(403).send({
-                                success: false,
-                                description: 'Forbidden change \'user_id\'. For item#' + req.params.id + ' \'user_id\' must be #' + req.body.helpData.userId
-                            });
-                        }
-                    })
-                    .catch(function (error) {
-                        res.status(404).send({ success: false, description: error });
-                    });
-            }
-        };
-    },
-
-    /**
-     * @description check >> user_id from TOKEN === user_id from MODEL
-     */
-    updateWithoutBody: function (modelName) {
-        return function (req, res, next) {
-            if ( req.method === 'POST' ) {
-                modelName.GETbyId(req.params.id)
-                    .then(function (model) {
-                        // check owner access
-                        if ( _isModelOwner(req, model) ) return next();
+            modelName.GETbyId(req.params.id)
+                .then(function (model) {
+                    // check owner access // forbid to User change Item 'user_id'
+                    if ( _isModelOwner(req, model) && _isOwnerIdInBody(req) ) return next();
+                    // handle error if User not Item owner
+                    else if ( !_isModelOwner(req, model) ) {
                         res.status(403).send({
                             success: false,
                             description: 'Forbidden. userId(' + req.body.helpData.userId + ') to item#' + req.params.id
                         });
-
-                    })
-                    .catch(function (error) {
-                        res.status(404).send({ success: false, description: error });
-                    });
-            }
-        };
-    },
-
-    remove: function (modelName) {
-        return function (req, res, next) {
-            if ( req.method === 'DELETE' ) {
-                modelName.GETbyId(req.params.id)
-                    .then(function (model) {
-                        if ( _isModelOwner(req, model) ) return next();
+                    }
+                    // handle error if User try change Item user_id
+                    else if ( !_isOwnerIdInBody(req) ) {
                         res.status(403).send({
                             success: false,
-                            description: 'Forbidden. userId(' + req.body.helpData.userId + ') to #' + req.params.id
+                            description: 'Forbidden change \'user_id\'. For item#' + req.params.id + ' \'user_id\' must be #' + req.body.helpData.userId
                         });
-                    })
-                    .catch(function (error) {
-                        res.status(404).send({ success: false, description: error });
-                    });
-            }
-        };
-    },
-
-    tag: function (modelName) {
-        return function (req, res, next) {
-            if ( req.method === 'POST' ) {
-                modelName.GETbyId(req.params.id)
-                    .then(function (model) {
-                        if ( _isModelOwner(req, model) ) return next();
-                        res.status(403).send({
-                            success: false,
-                            description: 'Forbidden. userId(' + req.body.helpData.userId + ') to #' + req.params.id
-                        });
-                    })
-                    .catch(function (error) {
-                        res.status(404).send({ success: false, description: error });
-                    });
-            }
+                    }
+                })
+                .catch(function (error) {
+                    res.status(404).send({ success: false, description: error });
+                });
         };
     }
 };

@@ -30,7 +30,7 @@ router.get('/:id',
 );
 router.delete('/:id',
     auth.checkToken(),
-    sec.checkItemAccess.remove(Photo),
+    sec.checkItemAccess.modelOwner(Photo),
     removePhotoFromAlbum()
 );
 

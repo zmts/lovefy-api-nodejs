@@ -47,6 +47,8 @@
 - POST to create new resources
 - POST to make custom VERBS
 - PATCH to update resources
+- GETbyId(), CREATE() - basic parent method
+- getById(), create() - custom children method
 
 # Terminology:
 - Model - row in DB table

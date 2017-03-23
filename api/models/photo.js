@@ -40,15 +40,15 @@ Photo.virtualAttributes = [
 ];
 
 Photo.prototype._src = function () {
-    return `${process.env.PROTOCOL}://${process.env.HOST}/public/photos/uid-${this.user_id}/${this.album_id}/src/${this.filename}`;
+    return `${process.env.PROTOCOL}://${process.env.HOST}:${process.env.PORT}/photos/uid-${this.user_id}/${this.album_id}/src/${this.filename}`;
 };
 
 Photo.prototype._thumbnail_mid = function () {
-    return `${process.env.PROTOCOL}://${process.env.HOST}/public/photos/uid-${this.user_id}/${this.album_id}/thumbnail-mid/${this.filename}`;
+    return `${process.env.PROTOCOL}://${process.env.HOST}:${process.env.PORT}/photos/uid-${this.user_id}/${this.album_id}/thumbnail-mid/${this.filename}`;
 };
 
 Photo.prototype._thumbnail_low = function () {
-    return `${process.env.PROTOCOL}://${process.env.HOST}/public/photos/uid-${this.user_id}/${this.album_id}/thumbnail-low/${this.filename}`;
+    return `${process.env.PROTOCOL}://${process.env.HOST}:${process.env.PORT}/photos/uid-${this.user_id}/${this.album_id}/thumbnail-low/${this.filename}`;
 };
 
 /**

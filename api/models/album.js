@@ -51,14 +51,14 @@ Album.virtualAttributes = [
 
 Album.prototype._cover_thumbnail = function () {
     if (this.cover_thumbnail) {
-        return `${process.env.PROTOCOL}://${process.env.HOST}/public/photos/uid-${this.user_id}/${this.id}/cover_thumbnail.jpg`;
+        return `${process.env.PROTOCOL}://${process.env.HOST}:${process.env.PORT}/photos/uid-${this.user_id}/${this.id}/cover_thumbnail.jpg`;
     }
     return null;
 };
 
 Album.prototype._cover_index = function () {
     if (this.cover_index) {
-        return `${process.env.PROTOCOL}://${process.env.HOST}/public/photos/uid-${this.user_id}/${this.id}/cover_index.jpg`;
+        return `${process.env.PROTOCOL}://${process.env.HOST}:${process.env.PORT}/photos/uid-${this.user_id}/${this.id}/cover_index.jpg`;
     }
     return null;
 };

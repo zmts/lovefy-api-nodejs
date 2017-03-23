@@ -75,7 +75,7 @@ function _isOwnerIdInBody(req) {
  */
 
 /**
- * @description check Authorization status,
+ * @description check Authorization status
  */
 module.exports.isAuth = function () {
     return function (req, res, next) {

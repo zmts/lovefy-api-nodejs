@@ -39,7 +39,7 @@ function _isEditorUser(req) {
  * @returns {boolean}
  * @private
  */
-function _isModelOwner(req, model) {
+function _isOwnerIdInModel(req, model) {
     if ( _isAdminUser(req) ) return true;
     if ( +req.body.helpData.userId === +model.user_id ) return true;
 }
@@ -141,11 +141,11 @@ module.exports.checkItemAccess = {
     /**
      * @description check >> user_id from TOKEN === user_id from MODEL
      */
-    modelOwner: function (modelName) {
+    ownerIdInModel: function (modelName) {
         return function (req, res, next) {
             modelName.GETbyId(req.params.id)
                 .then(function (model) {
-                    if ( _isModelOwner(req, model) ) return next();
+                    if ( _isOwnerIdInModel(req, model) ) return next();
                     res.status(403).send({
                         success: false,
                         description: 'Forbidden. userId(' + req.body.helpData.userId + ') to #' + req.params.id
@@ -162,7 +162,7 @@ module.exports.checkItemAccess = {
             modelName.GETbyId(req.params.id)
                 .then(function (model) {
                     if ( !model.private ) return next();
-                    if ( _isModelOwner(req, model) ) return next();
+                    if ( _isOwnerIdInModel(req, model) ) return next();
                     res.status(403).send({
                         success: false,
                         description: 'Forbidden. userId(' + req.body.helpData.userId + ') to #' + req.params.id
@@ -193,9 +193,9 @@ module.exports.checkItemAccess = {
             modelName.GETbyId(req.params.id)
                 .then(function (model) {
                     // check owner access // forbid to User change Item 'user_id'
-                    if ( _isModelOwner(req, model) && _isOwnerIdInBody(req) ) return next();
+                    if ( _isOwnerIdInModel(req, model) && _isOwnerIdInBody(req) ) return next();
                     // handle error if User not Item owner
-                    else if ( !_isModelOwner(req, model) ) {
+                    else if ( !_isOwnerIdInModel(req, model) ) {
                         res.status(403).send({
                             success: false,
                             description: 'Forbidden. userId(' + req.body.helpData.userId + ') to item#' + req.params.id

@@ -265,7 +265,7 @@ Album.processOnePhotoToAlbum = function (album_id, user_id, photoWrapper) {
 };
 
 /**
- * @description erase ALBUM dir from FS >> remove ALBUM model from DB
+ * @description erase ALBUM dir from FS >> remove ALBUM row from DB
  * @param album_id
  * @return success status
  */

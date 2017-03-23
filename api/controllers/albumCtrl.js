@@ -172,10 +172,7 @@ function update() {
  */
 function remove() {
     return function (req, res) {
-        Album.getById(req.params.id)
-            .then(function (model) {
-                return Album.eraseAlbum(model.id);
-            })
+        Album.eraseAlbum(req.params.id)
             .then(function () {
                 res.json({ success: true, description: `Album #${req.params.id} was removed` });
             })

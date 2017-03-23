@@ -22,17 +22,17 @@ var sec = require('../middleware/security');
  */
 router.post('/:id/attach-tag',
     auth.checkToken(),
-    sec.checkItemAccess.ownerIdInModel(Post),
+    sec.checkItemAccess.tokenUIDisEqualsModelUID(Post),
     createAndAttachTagToPost()
 );
 router.post('/:id/attach-tag/:tag_id',
     auth.checkToken(),
-    sec.checkItemAccess.ownerIdInModel(Post),
+    sec.checkItemAccess.tokenUIDisEqualsModelUID(Post),
     attachTagToPost()
 );
 router.post('/:id/detach-tag/:tag_id',
     auth.checkToken(),
-    sec.checkItemAccess.ownerIdInModel(Post),
+    sec.checkItemAccess.tokenUIDisEqualsModelUID(Post),
     detachTagFromPost()
 );
 
@@ -66,7 +66,7 @@ router.put('/:id',
 );
 router.delete('/:id',
     auth.checkToken(),
-    sec.checkItemAccess.ownerIdInModel(Post),
+    sec.checkItemAccess.tokenUIDisEqualsModelUID(Post),
     remove()
 );
 

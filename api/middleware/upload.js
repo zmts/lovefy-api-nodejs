@@ -97,7 +97,7 @@ module.exports.photoToAlbum = function () {
                     },
                     filename: function (req, file, cb) {
                         // rename files with 'Unix ms timestamp'
-                        cb(null, `${new Date().getTime()}.jpg`);
+                        cb(null, `${Date.now()}.jpg`);
                     }
                 });
 

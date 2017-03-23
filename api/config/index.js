@@ -1,3 +1,5 @@
+const os = require('os');
+
 module.exports = {
 
     rootDir: process.env.PWD,
@@ -5,7 +7,7 @@ module.exports = {
     photoDir: process.env.PWD + '/public/photos',
 
     url: {
-        domain: 'supersite.com',
+        domain: os.hostname(),
         api: 'api.supersite.com'
     },
     /**

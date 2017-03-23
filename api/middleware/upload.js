@@ -10,7 +10,7 @@ const Album = require('../models/album');
 */
 module.exports.albumCover = function (coverType) {
     return function (req, res, next) {
-        Album.getById(req.params.id)
+        Album.GETbyId(req.params.id)
             .then(function (model) {
 
                 let uploadStorage = multer.diskStorage({
@@ -84,7 +84,7 @@ module.exports.albumCover = function (coverType) {
  */
 module.exports.photoToAlbum = function () {
     return function (req, res, next) {
-        Album.getById(req.params.id)
+        Album.GETbyId(req.params.id)
             .then(function (model) {
 
                 let uploadStorage = multer.diskStorage({

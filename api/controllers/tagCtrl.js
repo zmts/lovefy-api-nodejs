@@ -1,11 +1,11 @@
 'use strict';
 
-var express = require('express');
-var router = express.Router();
+const express = require('express');
+const router = express.Router();
 
-var Tag = require('../models/tag');
-var auth = require('../middleware/auth');
-var sec = require('../middleware/security');
+const Tag = require('../models/tag');
+const auth = require('../middleware/auth');
+const sec = require('../middleware/security');
 
 /**
  * ------------------------------
@@ -65,10 +65,10 @@ function findByString() {
     return function (req, res) {
         Tag.findByString(req.query.q)
             .then(function (list) {
-                res.json({success: true, data: list});
+                res.json({ success: true, data: list });
             })
             .catch(function (error) {
-                res.status(error.statusCode || 404).send({success: false, description: error});
+                res.status(error.statusCode || 404).send({ success: false, description: error });
             });
     };
 }
@@ -83,12 +83,12 @@ function findByString() {
  */
 function getTag () {
     return function (req, res) {
-        Tag.getById(req.params.id)
+        Tag.GETbyId(req.params.id)
             .then(function (model) {
-                res.json({success: true, data: model});
+                res.json({ success: true, data: model });
             })
             .catch(function (error) {
-                res.status(error.statusCode || 404).send({success: false, description: error});
+                res.status(error.statusCode || 404).send({ success: false, description: error });
             });
     };
 }
@@ -110,7 +110,7 @@ function getTag () {
  */
 function getPostsByTagId () {
     return function (req, res) {
-        Tag.getById(req.params.id)
+        Tag.GETbyId(req.params.id)
             .then(function (tag) {
                 if ( req.body.helpData.userId && !req.query.clear ) {
                     return Tag.getMixPostsByTagId(req.body.helpData.userId, tag.id);
@@ -139,9 +139,9 @@ function getPostsByTagId () {
  */
 function getAll() {
     return function (req, res) {
-        Tag.getAll()
+        Tag.GETall()
             .then(function (list) {
-                res.json({success: true, data: list});
+                res.json({ success: true, data: list });
             })
             .catch(function (error) {
                 res.status(error.statusCode || 404).send({success: false, description: error});
@@ -160,12 +160,12 @@ function getAll() {
  */
 function newTag() {
     return function (req, res) {
-        Tag.create(req.body)
+        Tag.CREATE(req.body)
             .then(function (tag) {
-                res.json({success: true, data: tag});
+                res.json({ success: true, data: tag });
             })
             .catch(function (error) {
-                res.status(error.statusCode || 400).send({success: false, description: error});
+                res.status(error.statusCode || 400).send({ success: false, description: error });
             });
     };
 }
@@ -181,15 +181,15 @@ function newTag() {
  */
 function update() {
     return function (req, res) {
-        Tag.getById(req.params.id)
+        Tag.GETbyId(req.params.id)
             .then(function (tag) {
-                return Tag.update(tag.id, req.body);
+                return Tag.UPDATE(tag.id, req.body);
             })
             .then(function (updated_tag) {
-                res.json({success: true, data: updated_tag});
+                res.json({ success: true, data: updated_tag });
             })
             .catch(function (error) {
-                res.status(error.statusCode || 404).send({success: false, description: error});
+                res.status(error.statusCode || 404).send({ success: false, description: error });
             });
     };
 }
@@ -204,15 +204,15 @@ function update() {
  */
 function remove() {
     return function (req, res) {
-        Tag.getById(req.params.id)
+        Tag.GETbyId(req.params.id)
             .then(function (model) {
-                return Tag.remove(model.id);
+                return Tag.REMOVE(model.id);
             })
             .then(function () {
-                res.json({success: true, description: 'Tag #' + req.params.id + ' was removed'});
+                res.json({ success: true, description: 'Tag #' + req.params.id + ' was removed' });
             })
             .catch(function (error) {
-                res.status(error.statusCode || 404).send({success: false, description: error});
+                res.status(error.statusCode || 404).send({ success: false, description: error });
             });
     };
 }

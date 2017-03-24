@@ -1,8 +1,8 @@
 'use strict';
 
-var Promise = require('bluebird');
+const Promise = require('bluebird');
 
-var MainModel = require('./main');
+const MainModel = require('./main');
 
 function Tag() {
     MainModel.apply(this, arguments);
@@ -16,10 +16,10 @@ Tag.jsonSchema = {
     required: ['name'],
     additionalProperties: false,
     properties: {
-        id: {type: 'integer'},
-        name: {type: 'string', minLength: 3, maxLength: 30},
-        created_at: {type: 'string', format: 'date-time'},
-        updated_at: {type: 'string', format: 'date-time'}
+        id: { type: 'integer' },
+        name: { type: 'string', minLength: 3, maxLength: 30 },
+        created_at: { type: 'string', format: 'date-time' },
+        updated_at: { type: 'string', format: 'date-time' }
     }
 };
 
@@ -40,7 +40,7 @@ Tag.relationMappings = {
 
 /**
  * ------------------------------
- * hooks
+ * @HOOKS
  * ------------------------------
  */
 
@@ -61,7 +61,7 @@ Tag.prototype.$beforeUpdate = function () {
 
 /**
  * ------------------------------
- * methods
+ * @METHODS
  * ------------------------------
  */
 
@@ -71,7 +71,7 @@ Tag.findByString = function (str) {
         .where('name', 'like', `%${str}%`)
         .limit(10)
         .then(function (data) {
-            if (!data.length) throw {message: 'Empty response'};
+            if (!data.length) throw { message: 'Empty response' };
             return data;
         })
         .catch(function (error) {
@@ -87,11 +87,11 @@ Tag.getPublicPostsByTagId = function (tagId) {
     return this.query()
         .findById(tagId)
         .modifyEager('posts', function(builder) {
-            builder.where({private: false}).orderBy('user_id', 'updated_at')
+            builder.where({ private: false }).orderBy('user_id', 'updated_at');
         })
         .eager('posts')
         .then(function (data) {
-            if (!data) throw {message: 'Empty response'};
+            if (!data) throw { message: 'Empty response' };
             return data;
         })
         .catch(function (error) {
@@ -109,10 +109,10 @@ Tag.getCurrentUserPostsByTagId = function (userId, tagId) {
         .findById(tagId)
         .eager('posts')
         .modifyEager('posts', function(builder) {
-            builder.where({user_id: userId}).orderBy('updated_at')
+            builder.where({ user_id: userId }).orderBy('updated_at');
         })
         .then(function (data) {
-            if (!data) throw {message: 'Empty response'};
+            if (!data) throw { message: 'Empty response' };
             return data;
         })
         .catch(function (error) {
@@ -130,12 +130,12 @@ Tag.getMixPostsByTagId = function (userId, tagId) {
         .findById(tagId)
         .eager('posts')
         .modifyEager('posts', function(builder) {
-            builder.where({user_id: userId})
-                .orWhere({private: false})
-                .orderBy('user_id', 'updated_at')
+            builder.where({ user_id: userId })
+                .orWhere({ private: false })
+                .orderBy('user_id', 'updated_at');
         })
         .then(function (data) {
-            if (!data) throw {message: 'Empty response'};
+            if (!data) throw { message: 'Empty response' };
             return data;
         })
         .catch(function (error) {

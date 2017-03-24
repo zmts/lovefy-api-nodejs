@@ -1,8 +1,8 @@
 'use strict';
 
-var Promise = require('bluebird');
+const Promise = require('bluebird');
 
-var MainModel = require('./main');
+const MainModel = require('./main');
 
 function User() {
     MainModel.apply(this, arguments);
@@ -16,18 +16,18 @@ User.jsonSchema = {
     required: ['name', 'email', 'password_hash'],
     additionalProperties: false,
     properties: {
-        id: {type: 'integer'},
-        name: {type: 'string', minLength: 3, maxLength: 30},
-        email: {type: 'string', format:'email', minLength: 5, maxLength: 50},
-        password_hash: {type: 'string'},
-        role: {type: 'string'},
-        created_at: {type: 'string', format: 'date-time'},
-        updated_at: {type: 'string', format: 'date-time'}
+        id: { type: 'integer' },
+        name: { type: 'string', minLength: 3, maxLength: 30 },
+        email: { type: 'string', format: 'email', minLength: 5, maxLength: 50 },
+        password_hash: { type: 'string' },
+        role: { type: 'string' },
+        created_at: { type: 'string', format: 'date-time' },
+        updated_at: { type: 'string', format: 'date-time' }
     }
 };
 
 User.relationMappings = {
-    posts:{
+    posts: {
         relation: MainModel.HasManyRelation,
         modelClass: __dirname + '/post',
         join: {
@@ -39,7 +39,7 @@ User.relationMappings = {
 
 /**
  * ------------------------------
- * hooks
+ * @HOOKS
  * ------------------------------
  */
 
@@ -60,15 +60,15 @@ User.prototype.$beforeUpdate = function () {
 
 /**
  * ------------------------------
- * methods
+ * @METHODS
  * ------------------------------
  */
 
 User.getByEmail = function (email) {
     if (!email) return Promise.reject('Query not defined');
-    return this.query().where({email: email})
+    return this.query().where({ email: email })
         .then(function (data) {
-            if (!data.length) throw {message: 'Empty response'};
+            if (!data.length) throw { message: 'Empty response' };
             return data[0]; // email field is unique and should pass only one first item
         })
         .catch(function (error) {
@@ -78,9 +78,9 @@ User.getByEmail = function (email) {
 
 User.getByName = function (name) {
     if (!name) return Promise.reject('Query not defined');
-    return this.query().where({name: name})
+    return this.query().where({ name: name })
         .then(function (data) {
-            if (!data.length) throw {message: 'Empty response'};
+            if (!data.length) throw { message: 'Empty response' };
             return data[0];
         })
         .catch(function (error) {
@@ -90,10 +90,10 @@ User.getByName = function (name) {
 
 User.getMixPostsByUserId = function (id) {
     return this.query()
-        .where({id: id})
+        .where({ id: id })
         .eager('posts')
         .then(function (data) {
-            if (!data[0].posts.length) throw {message: 'Empty response'};
+            if (!data[0].posts.length) throw { message: 'Empty response' };
             return data[0].posts;
         })
         .catch(function (error) {
@@ -103,13 +103,13 @@ User.getMixPostsByUserId = function (id) {
 
 User.getPubPostsByUserId = function (id) {
     return this.query()
-        .where({id: id})
+        .where({ id: id })
         .eager('posts')
         .modifyEager('posts', function(builder) {
-            builder.where({private: false});
+            builder.where({ private: false });
         })
         .then(function (data) {
-            if (!data[0].posts.length) throw {message: 'Empty response'};
+            if (!data[0].posts.length) throw { message: 'Empty response' };
             return data[0].posts;
         })
         .catch(function (error) {

@@ -1,8 +1,8 @@
 'use strict';
 
-var _ = require('lodash');
+const _ = require('lodash');
 
-var MainModel = require('./main');
+const MainModel = require('./main');
 
 function Post() {
     MainModel.apply(this, arguments);
@@ -43,11 +43,11 @@ Post.relationMappings = {
 
 /**
  * ------------------------------
- * hooks
+ * @HOOKS
  * ------------------------------
  */
 
-Post.prototype.$beforeInsert = function (json) {
+Post.prototype.$beforeInsert = function (/*json*/) {
     this.$validate();
 };
 
@@ -58,7 +58,7 @@ Post.prototype.$beforeUpdate = function () {
 
 /**
  * ------------------------------
- * helpers
+ * @HELPERS
  * ------------------------------
  */
 
@@ -70,7 +70,7 @@ function _checkExistingTags (data, tag_id) {
 
 /**
  * ------------------------------
- * methods
+ * @METHODS
  * ------------------------------
  */
 

@@ -141,7 +141,7 @@ Album.create = function (data) {
 
 /**
  * @param id
- * @return ALBUM with PHOTOS
+ * @return ALBUM with all related PHOTOS
  */
 Album.getById = function (id) {
     return this.query()
@@ -157,12 +157,22 @@ Album.getById = function (id) {
 };
 
 /**
- * @return all Public ALBUM's with all related PHOTOS
+ * @description look getAllPub(), getAllOwnAndOtherPublic()
+ * @param user_id
+ * @param isAdmin
+ */
+Album.getAllAccessSwitcher = function (user_id, isAdmin) {
+    if (isAdmin) return this.GETall(); // return full list(private and public) of all USER's
+    if (user_id) return this.getAllOwnAndOtherPublic(user_id);
+    return this.getAllPub();
+};
+
+/**
+ * @return all public ALBUM's
  */
 Album.getAllPub = function () {
     return this.query()
         .where({ private: false })
-        .eager('photos')
         .then(function (data) {
             if (!data.length) throw { message: 'Empty response' };
             return data;
@@ -173,11 +183,12 @@ Album.getAllPub = function () {
 };
 
 /**
- * @return all Mixed ALBUM's with all related PHOTOS
+ * @return all own ALBUM's + all public ALBUM's others USER's
  */
-Album.getAllMixed = function () {
+Album.getAllOwnAndOtherPublic = function (user_id) {
     return this.query()
-        .eager('photos')
+        .where({ user_id: user_id })
+        .orWhere({ private: false })
         .then(function (data) {
             if (!data.length) throw { message: 'Empty response' };
             return data;

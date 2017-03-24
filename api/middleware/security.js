@@ -75,15 +75,19 @@ function _isOwnerIdInBody(req) {
  */
 
 /**
- * @description check Authorization status
+ * @description check Authorization status and role
  */
-module.exports.isAuth = function () {
+module.exports.isLogin = function () {
     return function (req, res, next) {
-        if ( +req.body.helpData.userId ) return next();
-        res.status(403).send({
-            success: false,
-            description: 'Forbidden. User is not authorized to access this resource'
-        });
+        if ( _isAdminUser(req) ) {
+            req.body.helpData.isAdmin = true;
+            return next();
+        }
+        // if user is login
+        if ( req.body.helpData ) return next();
+        // else user is Anonymous
+        req.body.helpData.userId = false;
+        next();
     };
 };
 

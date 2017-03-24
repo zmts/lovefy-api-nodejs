@@ -51,6 +51,8 @@ router.post('/:id/upload',
  * ------------------------------
  */
 router.get('/',
+    auth.checkToken(),
+    sec.isLogin(),
     getAll()
 );
 router.get('/:id',
@@ -81,12 +83,12 @@ router.delete('/:id',
 /**
  * @description: get all Albums list
  * @url: GET: albums/
- * @return: owner, ADMINROLES >> all list
- * @return: Anonymous, NotOwner >> public list
+ * @return: owner, ADMINROLES >> all own ALBUM's + all public ALBUM's others USER's
+ * @return: Anonymous, NotOwner >> all public ALBUM's
  */
 function getAll() {
     return function (req, res) {
-        Album.getAllPub()
+        Album.getAllAccessSwitcher(+req.body.helpData.userId, req.body.helpData.isAdmin)
             .then(function (list) {
                 res.json({ success: true, data: list });
             })

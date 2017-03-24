@@ -24,6 +24,17 @@ MainModel.getAll = function () {
         });
 };
 
+MainModel.GETall = function () {
+    return this.query()
+        .then(function (data) {
+            if (!data.length) throw {message: 'Empty response'};
+            return data;
+        })
+        .catch(function (error) {
+            throw error.message || error;
+        });
+};
+
 MainModel.create = function (data) {
     return this.query().insert(data);
 };

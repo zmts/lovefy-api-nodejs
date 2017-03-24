@@ -93,7 +93,7 @@ function getAllUsers() {
  */
 function getPostsByUserId() {
     return function (req, res) {
-        User.getById(req.params.id)
+        User.GETById(req.params.id)
             .then(function (user) {
                 if ( req.body.helpData.isOwner ) return User.getMixPostsByUserId(user.id);
                 return User.getPubPostsByUserId(user.id);

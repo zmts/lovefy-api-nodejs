@@ -1,13 +1,13 @@
 'use strict';
 
-var express = require('express');
-var router = express.Router();
+const express = require('express');
+const router = express.Router();
 
-var Post = require('../models/post');
-var Tag = require('../models/tag');
+const Post = require('../models/post');
+const Tag = require('../models/tag');
 
-var auth = require('../middleware/auth');
-var sec = require('../middleware/security');
+const auth = require('../middleware/auth');
+const sec = require('../middleware/security');
 
 /**
  * ------------------------------
@@ -82,15 +82,15 @@ router.delete('/:id',
 function createAndAttachTagToPost() {
     return function (req, res) {
         delete req.body.helpData;
-        Tag.create(req.body)
+        Tag.CREATE(req.body)
             .then(function (tag) {
                 return Post.attachTagToPost(req.params.id, tag.id);
             })
             .then(function (post) {
-                res.json({success: true, data: post});
+                res.json({ success: true, data: post });
             })
             .catch(function (error) {
-                res.status(error.statusCode || 403).send({success: false, description: error});
+                res.status(error.statusCode || 403).send({ success: false, description: error });
             });
     };
 }
@@ -110,10 +110,10 @@ function attachTagToPost() {
                 return Post.attachTagToPost(req.params.id, req.params.tag_id);
             })
             .then(function (post) {
-                res.json({success: true, data: post});
+                res.json({ success: true, data: post });
             })
             .catch(function (error) {
-                res.status(error.statusCode || 403).send({success: false, description: error});
+                res.status(error.statusCode || 403).send({ success: false, description: error });
             });
     };
 }
@@ -130,10 +130,10 @@ function detachTagFromPost () {
     return function (req, res) {
         Post.detachTagFromPost(req.params.id, req.params.tag_id)
             .then(function () {
-                res.json({success: true, data: 'Tag#' + req.params.tag_id + ' is detached from ' + 'Post#' + req.params.id});
+                res.json({ success: true, data: 'Tag#' + req.params.tag_id + ' is detached from ' + 'Post#' + req.params.id });
             })
             .catch(function (error) {
-                res.status(error.statusCode || 403).send({success: false, description: error});
+                res.status(error.statusCode || 403).send({ success: false, description: error });
             });
     };
 }
@@ -150,10 +150,10 @@ function getAllMix() {
     return function (req, res) {
         Post.getAllMix()
             .then(function (list) {
-                res.json({success: true, data: list});
+                res.json({ success: true, data: list });
             })
             .catch(function (error) {
-                res.status(error.statusCode || 404).send({success: false, description: error});
+                res.status(error.statusCode || 404).send({ success: false, description: error });
             });
     };
 }
@@ -170,10 +170,10 @@ function getAllPub() {
     return function (req, res) {
         Post.getAllPub()
             .then(function (list) {
-                res.json({success: true, data: list});
+                res.json({ success: true, data: list });
             })
             .catch(function (error) {
-                res.status(error.statusCode || 404).send({success: false, description: error});
+                res.status(error.statusCode || 404).send({ success: false, description: error });
             });
     };
 }
@@ -190,12 +190,12 @@ function getAllPub() {
 function newPost() {
     return function (req, res) {
         delete req.body.helpData;
-        Post.create(req.body)
+        Post.CREATE(req.body)
             .then(function (post) {
-                res.status(201).json({success: true, data: post});
+                res.status(201).json({ success: true, data: post });
             })
             .catch(function (error) {
-                res.status(error.statusCode || 404).send({success: false, description: error});
+                res.status(error.statusCode || 404).send({ success: false, description: error });
             });
     };
 }
@@ -213,10 +213,10 @@ function getPost() {
     return function (req, res) {
         Post.getById(req.params.id)
             .then(function (post) {
-                res.json({success: true, data: post});
+                res.json({ success: true, data: post });
             })
             .catch(function (error) {
-                res.status(error.statusCode || 404).send({success: false, description: error});
+                res.status(error.statusCode || 404).send({ success: false, description: error });
             });
     };
 }
@@ -233,15 +233,15 @@ function getPost() {
 function update() {
     return function (req, res) {
         delete req.body.helpData;
-        Post.getById(req.params.id)
+        Post.GETbyId(req.params.id)
             .then(function (post) {
-                return Post.update(post.id, req.body);
+                return Post.UPDATE(post.id, req.body);
             })
             .then(function (updated_post) {
-                res.json({success: true, data: updated_post});
+                res.json({ success: true, data: updated_post });
             })
             .catch(function (error) {
-                res.status(error.statusCode || 404).send({success: false, description: error});
+                res.status(error.statusCode || 404).send({ success: false, description: error });
             });
     };
 }
@@ -256,15 +256,15 @@ function update() {
  */
 function remove() {
     return function (req, res) {
-        Post.getById(req.params.id)
+        Post.GETbyId(req.params.id)
             .then(function (model) {
                 return Post.remove(model.id);
             })
             .then(function () {
-                res.json({success: true, description: 'Post #' + req.params.id + ' was removed'});
+                res.json({ success: true, description: 'Post #' + req.params.id + ' was removed' });
             })
             .catch(function (error) {
-                res.status(error.statusCode || 404).send({success: false, description: error});
+                res.status(error.statusCode || 404).send({ success: false, description: error });
             });
     };
 }

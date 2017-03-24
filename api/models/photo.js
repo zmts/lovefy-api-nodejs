@@ -82,7 +82,7 @@ Photo.getByIdAndIncrementViews = function (id) {
 
     return this.getById(id)
         .then(function (model) {
-            return that.update(id, { views: model.views + 1 });
+            return that.UPDATE(id, { views: model.views + 1 });
         })
         .catch(function (error) {
             throw error.message || error;
@@ -101,7 +101,7 @@ Photo.setBestStatus = function (id, status) {
     if (!status) return Promise.reject('>>> \'status\' <<< field in query not defined');
     return this.getById(id)
         .then(function () {
-            return that.update(id, { best: JSON.parse(status) });
+            return that.UPDATE(id, { best: JSON.parse(status) });
         })
         .catch(function (error) {
             throw error.message || error;
@@ -125,7 +125,7 @@ Photo.erasePhoto = function (photo_id) {
             ]);
         })
         .then(function () {
-            return that.remove(photo_id);
+            return that.REMOVE(photo_id);
         })
         .catch(function (error) {
             throw error.message || error;

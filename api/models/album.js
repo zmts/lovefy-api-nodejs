@@ -115,7 +115,7 @@ Album.create = function (data) {
 
     return fsp.stat(PHOTO_DIR) // check root-photo dir accessibility
         .then(function () {
-            return that.query().insert(data);
+            return that.CREATE(data);
         })
         .then(function (model) {
             Promise.all([ // ensure folders
@@ -125,11 +125,11 @@ Album.create = function (data) {
                 fsp.ensureDir(PHOTO_DIR + uid + model.id + '/thumbnail-mid'),
                 fsp.ensureDir(PHOTO_DIR + uid + model.id + '/thumbnail-low')
             ]).catch(function (error) {
-                global.console.error((new Date).toUTCString());
+                global.console.error( (new Date).toUTCString() );
                 global.console.error(`ERROR: ${error.message}`);
                 global.console.error(`ERROR PATH: ${__filename}`);
 
-                return that.remove(model.id); // remove model if error
+                return that.REMOVE(model.id); // remove model if error
             });
 
             return model;
@@ -210,7 +210,7 @@ Album.setCoverIndex = function (album_id, status) {
     let that = this;
 
     if (!status) return Promise.reject('>>> \'status\' <<< field in query not defined');
-    return this.getById(album_id)
+    return this.GETbyId(album_id)
         .then(function (model) {
             return that.query().patchAndFetchById(model.id, { cover_index: JSON.parse(status) });
         })
@@ -231,7 +231,7 @@ Album.setCoverThumbnail = function (album_id, status) {
     let that = this;
 
     if (!status) return Promise.reject('>>> \'status\' <<< field in query not defined');
-    return this.getById(album_id)
+    return this.GETbyId(album_id)
         .then(function (model) {
             return that.query().patchAndFetchById(model.id, { cover_thumbnail: JSON.parse(status) });
         })
@@ -283,12 +283,12 @@ Album.processOnePhotoToAlbum = function (album_id, user_id, photoWrapper) {
 Album.eraseAlbum = function (album_id) {
     let that = this;
 
-    return this.getById(album_id)
+    return this.GETbyId(album_id)
         .then(function (album) {
             return fsp.remove(`${PHOTO_DIR}/uid-${album.user_id}/${album.id}`);
         })
         .then(function () {
-            return that.remove(album_id);
+            return that.REMOVE(album_id);
         })
         .catch(function (error) {
             throw error.message || error;

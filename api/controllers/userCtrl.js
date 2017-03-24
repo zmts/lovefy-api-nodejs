@@ -1,11 +1,11 @@
 'use strict';
 
-var express = require('express');
-var router = express.Router();
+const express = require('express');
+const router = express.Router();
 
-var User = require('../models/user');
-var auth = require('../middleware/auth');
-var sec = require('../middleware/security');
+const User = require('../models/user');
+const auth = require('../middleware/auth');
+const sec = require('../middleware/security');
 
 /**
  * ------------------------------
@@ -71,12 +71,12 @@ router.delete('/:id',
  */
 function getAllUsers() {
     return function (req, res) {
-        User.getAll()
+        User.GETall()
             .then(function (list) {
-                res.json({success: true, data: list});
+                res.json({ success: true, data: list });
             })
             .catch(function (error) {
-                res.status(error.statusCode || 404).send({success: false, description: error.message || error});
+                res.status(error.statusCode || 404).send({ success: false, description: error.message || error });
             });
     };
 }
@@ -99,10 +99,10 @@ function getPostsByUserId() {
                 return User.getPubPostsByUserId(user.id);
             })
             .then(function (list) {
-                res.json({success: true, data: list});
+                res.json({ success: true, data: list });
             })
             .catch(function (error) {
-                res.status(error.statusCode || 404).send({success: false, description: error.message || error});
+                res.status(error.statusCode || 404).send({ success: false, description: error.message || error });
             });
     };
 }
@@ -120,12 +120,12 @@ function getPostsByUserId() {
 function newUser() {
     return function (req, res) {
         delete req.body.helpData;
-        User.create(req.body)
+        User.CREATE(req.body)
             .then(function (user) {
                 res.json(user);
             })
             .catch(function (error) {
-                res.status(error.statusCode || 404).send({success: false, description: error.message || error});
+                res.status(error.statusCode || 404).send({ success: false, description: error.message || error });
             });
     };
 }
@@ -141,12 +141,12 @@ function newUser() {
  */
 function getUser() {
     return function (req, res) {
-        User.getById(req.params.id)
+        User.GETbyId(req.params.id)
             .then(function (user) {
-                res.json({success: true, data: user});
+                res.json({ success: true, data: user });
             })
             .catch(function (error) {
-                res.status(error.statusCode || 404).send({success: false, description: error.message || error});
+                res.status(error.statusCode || 404).send({ success: false, description: error.message || error });
             });
     };
 }
@@ -163,16 +163,16 @@ function getUser() {
  */
 function update() {
     return function (req, res) {
-        User.getById(req.params.id)
+        User.GETbyId(req.params.id)
             .then(function (user) {
                 delete req.body.helpData;
-                return User.update(user.id, req.body);
+                return User.UPDATE(user.id, req.body);
             })
             .then(function (updated_user) {
-                res.json({success: true, data: updated_user});
+                res.json({ success: true, data: updated_user });
             })
             .catch(function (error) {
-                res.status(error.statusCode || 404).send({success: false, description: error.message || error});
+                res.status(error.statusCode || 404).send({ success: false, description: error.message || error });
             });
     };
 }
@@ -187,15 +187,15 @@ function update() {
  */
 function remove() {
     return function (req, res) {
-        User.getById(req.params.id)
+        User.GETbyId(req.params.id)
             .then(function (model) {
-                return User.remove(model.id);
+                return User.REMOVE(model.id);
             })
             .then(function () {
-                res.json({success: true, description: 'User #'+ req.params.id +' was removed'});
+                res.json({ success: true, description: 'User #'+ req.params.id +' was removed' });
             })
             .catch(function (error) {
-                res.status(error.statusCode || 404).send({success: false, description: error.message || error});
+                res.status(error.statusCode || 404).send({ success: false, description: error.message || error });
             });
     };
 }
@@ -212,10 +212,10 @@ function checkNameAvailability() {
     return function (req, res) {
         User.getByName(req.query.q)
             .then(function (user) {
-                res.json({success: true, data: user});
+                res.json({ success: true, data: user });
             })
             .catch(function (error) {
-                res.status(error.statusCode || 404).send({success: false, description: error.message || error});
+                res.status(error.statusCode || 404).send({ success: false, description: error.message || error });
             });
     };
 }
@@ -232,10 +232,10 @@ function checkEmailAvailability() {
     return function (req, res) {
         User.getByEmail(req.query.q)
             .then(function (user) {
-                res.json({success: true, data: user});
+                res.json({ success: true, data: user });
             })
             .catch(function (error) {
-                res.status(error.statusCode || 404).send({success: false, description: error.message || error});
+                res.status(error.statusCode || 404).send({ success: false, description: error.message || error });
             });
     };
 }

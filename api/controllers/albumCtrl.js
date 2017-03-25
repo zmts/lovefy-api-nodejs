@@ -81,10 +81,10 @@ router.delete('/:id',
  */
 
 /**
- * @description: get all Albums list
- * @url: GET: albums/
- * @return: owner, ADMINROLES >> all own ALBUM's + all public ALBUM's others USER's
- * @return: Anonymous, NotOwner >> all public ALBUM's
+ * @description get all Albums list
+ * @url GET: albums/
+ * @return owner, ADMINROLES >> all own ALBUM's + all public ALBUM's others USER's
+ * @return Anonymous, NotOwner >> all public ALBUM's
  */
 function getAll() {
     return function (req, res) {
@@ -99,7 +99,7 @@ function getAll() {
 }
 
 /**
- * @description: get ALBUM by id
+ * @description get ALBUM by id
  * @return owner, ADMINROLES >> public or private ALBUM
  * @return Anonymous, NotOwner >> only public ALBUM
  * @url GET: tags/:id
@@ -117,11 +117,10 @@ function getAlbum () {
 }
 
 /**
- * @description: create ALBUM
- * @url: POST: albums/
- * @request:
+ * @description create ALBUM
+ * @url POST: albums/
+ * @request
  * {
- * user_id: "int'
  * title: "string"
  * [description: "string"]
  * [cover_index: "string"]
@@ -130,7 +129,7 @@ function getAlbum () {
  * [event_location: "int"] tag_id
  * [event_date: "string"]
  * }
- * @hasaccess: EDITORROLES, ADMINROLES
+ * @hasaccess EDITORROLES, ADMINROLES
  */
 function newAlbum() {
     return function (req, res) {
@@ -146,10 +145,19 @@ function newAlbum() {
 }
 
 /**
- * @description: update ALBUM by id
- * @url: PUT: albums/:id
- * @request:
- * @hasaccess: owner, ADMINROLES
+ * @description update ALBUM by id
+ * @url PATCH: albums/:id
+ * @request
+ * {
+ * title: "string"
+ * [description: "string"]
+ * [cover_index: "string"]
+ * cover_thumbnail: "string"
+ * [private: "boolean"]
+ * [event_location: "int"] tag_id
+ * [event_date: "string"]
+ * }
+ * @hasaccess OWNER, ADMINROLES
  */
 function update() {
     return function (req, res) {
@@ -168,9 +176,9 @@ function update() {
 }
 
 /**
- * @description: remove ALBUM entity
- * @url: DELETE: albums/:id
- * @hasaccess: owner, ADMINROLES
+ * @description remove ALBUM entity
+ * @url DELETE: albums/:id
+ * @hasaccess owner, ADMINROLES
  */
 function remove() {
     return function (req, res) {
@@ -185,10 +193,10 @@ function remove() {
 }
 
 /**
- * @description: set cover index picture
- * @url: POST: /albums/:id/cover/index?status=true
- * @url: POST: /albums/:id/cover/index?status=false // to disable cover
- * @hasaccess: owner, ADMINROLES
+ * @description set cover index picture
+ * @url POST: /albums/:id/cover/index?status=true
+ * @url POST: /albums/:id/cover/index?status=false // to disable cover
+ * @hasaccess owner, ADMINROLES
  * @return updated model
  */
 function setCoverIndex() {
@@ -204,10 +212,10 @@ function setCoverIndex() {
 }
 
 /**
- * @description: set cover thumbnail picture
- * @url: POST: albums/:id/cover/thumbnail?status=true
- * @url: POST: albums/:id/cover/thumbnail?status=false // to disable cover
- * @hasaccess: owner, ADMINROLES
+ * @description set cover thumbnail picture
+ * @url POST: albums/:id/cover/thumbnail?status=true
+ * @url POST: albums/:id/cover/thumbnail?status=false // to disable cover
+ * @hasaccess owner, ADMINROLES
  * @return updated model
  */
 function setCoverThumbnail() {
@@ -223,9 +231,9 @@ function setCoverThumbnail() {
 }
 
 /**
- * @description: adds ONLY one image(JPG/JPEG) to ALBUM
- * @url: POST: albums/:id/upload
- * @request: form-data-file-field "photo"
+ * @description adds ONLY one image(JPG/JPEG) to ALBUM
+ * @url POST: albums/:id/upload
+ * @request form-data-file-field "photo"
  */
 function processOnePhotoToAlbum() {
     return function (req, res) {

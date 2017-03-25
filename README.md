@@ -53,3 +53,11 @@
 # Terminology:
 - Model - row in DB table
 - Entity - model + relations(folder in FS, related models)
+
+# Permissions:
+## TAG:
+- Attach to items(ARTICLE, ALBUM): any user, must be ITEM OWNER or ADMINROLE
+- Detach from items(ARTICLE, ALBUM): any user, must be ITEM OWNER or ADMINROLE
+- Create: any member
+- Remove: ADMINROLE
+- Update: ADMINROLE

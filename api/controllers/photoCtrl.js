@@ -41,8 +41,8 @@ router.delete('/:id',
  */
 
 /**
- * @description: get PHOTO by id
- * @hasaccess: All
+ * @description get PHOTO by id
+ * @hasaccess All
  * @url GET: photos/:id
  */
 function getPhoto () {
@@ -58,7 +58,7 @@ function getPhoto () {
 }
 
 /**
- * @description: set "best" status to TRUE/FALSE
+ * @description set "best" status to TRUE/FALSE
  * @url GET: photos/:id/set-best?status=true
  * @url GET: photos/:id/set-best?status=false
  */
@@ -76,7 +76,7 @@ function setBestStatus() {
 
 /**
  * @description remove PHOTO From ALBUM
- * @hasaccess: OWNER, ADMINROLES
+ * @hasaccess OWNER, ADMINROLES
  * @url DELETE: photos/:id
  * @return success status
  */

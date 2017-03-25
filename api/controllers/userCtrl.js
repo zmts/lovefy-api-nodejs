@@ -14,7 +14,9 @@ const sec = require('../middleware/security');
  */
 
 /**
+ * ------------------------------
  * @OTHER_ROUTES
+ * ------------------------------
  */
 // router.post('/:id/change-user-role',
 //     sec.checkSUAccess(),
@@ -28,7 +30,9 @@ router.get('/check-email-availability',
 );
 
 /**
+ * ------------------------------
  * @RELATED_ROUTES
+ * ------------------------------
  */
 router.get('/:id/posts/',
     auth.checkToken(),
@@ -49,7 +53,7 @@ router.post('/',
     auth.hashPassword(),
     newUser()
 );
-router.put('/:id',
+router.patch('/:id',
     auth.checkToken(),
     sec.checkUserProfileAccess(),
     auth.hashPassword(),
@@ -63,11 +67,14 @@ router.delete('/:id',
 
 /**
  * ------------------------------
- * @description: get all Users
+ * @CONTROLLERS
  * ------------------------------
- * @url: users/
- * @verb: GET
- * @hasaccess: All
+ */
+
+/**
+ * @description get all Users
+ * @url GET: users/
+ * @hasaccess All
  */
 function getAllUsers() {
     return function (req, res) {
@@ -82,14 +89,11 @@ function getAllUsers() {
 }
 
 /**
- * ------------------------------
- * @description: show Posts list by user ID
- * ------------------------------
- * @url: users/user_id/posts/
- * @headers: token
- * @verb: GET
- * @hasaccess: Owner >> response with public and private posts list
- * @hasaccess: Anonymous, NotOwner >> response only with public posts
+ * @description show Posts list by user ID
+ * @url GET: users/user_id/posts/
+ * @headers token
+ * @hasaccess Owner >> response with public and private posts list
+ * @hasaccess Anonymous, NotOwner >> response only with public posts
  */
 function getPostsByUserId() {
     return function (req, res) {
@@ -108,13 +112,10 @@ function getPostsByUserId() {
 }
 
 /**
- * ------------------------------
- * @description: create new User(Registration)
- * ------------------------------
- * @url: users/
- * @hasaccess: only Anonymous
- * @verb: POST
- * @request: {"name": "string", "email": "string", "password": "string"}
+ * @description create new User(Registration)
+ * @url POST: users/
+ * @hasaccess only Anonymous
+ * @request {"name": "string", "email": "string", "password": "string"}
  * "password" field from request transfers and saves to DB as "password_hash"
  */
 function newUser() {
@@ -131,13 +132,10 @@ function newUser() {
 }
 
 /**
- * ------------------------------
- * @description: get User by id
- * ------------------------------
- * @url: users/:id
- * @verb: POST
- * @hasaccess: Owner >> response with all profile data
- * @hasaccess: Anonymous, NotOwner >> response only public profile data TODO
+ * @description get User by id
+ * @url POST users/:id
+ * @hasaccess Owner >> response with all profile data
+ * @hasaccess Anonymous, NotOwner >> response only public profile data TODO
  */
 function getUser() {
     return function (req, res) {
@@ -152,13 +150,10 @@ function getUser() {
 }
 
 /**
- * ------------------------------
- * @description: update User by id
- * ------------------------------
- * @url: users/:id
- * @hasaccess: Owner, ADMINROLES
- * @verb: PUT
- * @request: {"name": "string", "email": "string", "password": "string"}
+ * @description update User by id
+ * @url PATCH users/:id
+ * @hasaccess OWNER, ADMINROLES
+ * @request {"name": "string", "email": "string", "password": "string"}
  * "password" field from request transfers and saves to DB as "password_hash"
  */
 function update() {
@@ -178,12 +173,9 @@ function update() {
 }
 
 /**
- * ------------------------------
- * @description: remove User from db by id
- * ------------------------------
- * @url: users/:id
- * @verb: DELETE
- * @hasaccess: Owner, ADMINROLES
+ * @description remove User from db by id
+ * @url DELETE: users/:id
+ * @hasaccess OWNER, ADMINROLES
  */
 function remove() {
     return function (req, res) {
@@ -201,11 +193,8 @@ function remove() {
 }
 
 /**
- * ------------------------------
- * @description: check User name availability
- * ------------------------------
- * @url: users/check-name-availability?q=string
- * @verb: GET
+ * @description check User name availability
+ * @url GET: users/check-name-availability?q=string
  * @hasaccess: All
  */
 function checkNameAvailability() {
@@ -221,12 +210,9 @@ function checkNameAvailability() {
 }
 
 /**
- * ------------------------------
- * @description: check User email availability
- * ------------------------------
- * @url: users/check-email-availability?q=string
- * @verb: POST
- * @hasaccess: All
+ * @description check User email availability
+ * @url POST: users/check-email-availability?q=string
+ * @hasaccess All
  */
 function checkEmailAvailability() {
     return function (req, res) {
@@ -241,13 +227,10 @@ function checkEmailAvailability() {
 }
 
 /**
- * ------------------------------
- * @description: change User Role
- * ------------------------------
- * @url: users/:id/change-user-role',
- * @verb: POST
- * @hasaccess: SU
- * @request: {user_id: "role"}
+ * @description change User Role
+ * @url POST: users/:id/change-user-role',
+ * @hasaccess SU
+ * @request {user_id: "role"}
  */
 // function changeUserRole() { // TODO
 //     return function (req, res) {

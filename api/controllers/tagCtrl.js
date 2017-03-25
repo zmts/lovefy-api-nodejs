@@ -39,26 +39,23 @@ router.get('/:id',
 );
 router.post('/',
     auth.checkToken(),
-    sec.checkSUAccess(),
+    sec.checkAdminRoleAccess(),
     newTag()
 );
-router.put('/:id',
+router.patch('/:id',
     auth.checkToken(),
-    sec.checkSUAccess(),
+    sec.checkAdminRoleAccess(),
     update()
 );
 router.delete('/:id',
     auth.checkToken(),
-    sec.checkSUAccess(),
+    sec.checkAdminRoleAccess(),
     remove()
 );
 
 /**
- * ------------------------------
- * @description: find tag by substring
- * ------------------------------
- * @url: tags/find?q=sometagname
- * @verb: GET
+ * @description find tag by substring
+ * @url GET: tags/find?q=sometagname
  * @hasaccess: All
  */
 function findByString() {
@@ -74,12 +71,9 @@ function findByString() {
 }
 
 /**
- * ------------------------------
- * @description: get Tag by id
- * ------------------------------
- * @hasaccess: All
- * @url: tags/:id
- * @verb: GET
+ * @description get Tag by id
+ * @hasaccess All
+ * @url GET: tags/:id
  */
 function getTag () {
     return function (req, res) {
@@ -94,19 +88,15 @@ function getTag () {
 }
 
 /**
- * ------------------------------
- * @description: get Posts by tag id
+ * @description get Posts by tag id
  *
- * @url: tags/:id/posts
- * @hasaccess: Owner of POST model >> response with full list of current USER POSTS and other USERS public POSTS
- * @hasaccess: Anonymous, NotOwner >> response only with public POSTS list
+ * @url GET: tags/:id/posts
+ * @hasaccess Owner of POST model >> response with full list of current USER POSTS and other USERS public POSTS
+ * @hasaccess Anonymous, NotOwner >> response only with public POSTS list
  *
- * @url: tags/:id/posts?clear=true
- * @hasaccess: Owner of POST model >> response only with full list of current USER
- * @hasaccess: Anonymous, NotOwner >> response only with public POSTS list
- *
- * @verb: GET
- * ------------------------------
+ * @url GET: tags/:id/posts?clear=true
+ * @hasaccess Owner of POST model >> response only with full list of current USER
+ * @hasaccess Anonymous, NotOwner >> response only with public POSTS list
  */
 function getPostsByTagId () {
     return function (req, res) {
@@ -130,12 +120,9 @@ function getPostsByTagId () {
 }
 
 /**
- * ------------------------------
- * @description: get all Tags list
- * ------------------------------
- * @url: tags/
- * @verb: GET
- * @hasaccess: All
+ * @description get all Tags list
+ * @url GET: tags/
+ * @hasaccess All
  */
 function getAll() {
     return function (req, res) {
@@ -150,13 +137,10 @@ function getAll() {
 }
 
 /**
- * ------------------------------
- * @description: create Tag
- * ------------------------------
- * @url: tags/
- * @verb: POST
- * @request: {"name": "string"}
- * @hasaccess: SU
+ * @description create Tag
+ * @url POST: tags/
+ * @request {"name": "string"}
+ * @hasaccess ADMINROLES
  */
 function newTag() {
     return function (req, res) {
@@ -171,16 +155,14 @@ function newTag() {
 }
 
 /**
- * ------------------------------
- * @description: update Post by id
- * ------------------------------
- * @url: tags/:id
- * @verb: PUT
- * @request: {"name": "string"}
- * @hasaccess: SU
+ * @description update Tag by id
+ * @url PATCH: tags/:id
+ * @request {"name": "string"}
+ * @hasaccess ADMINROLES
  */
 function update() {
     return function (req, res) {
+        delete req.body.helpData;
         Tag.GETbyId(req.params.id)
             .then(function (tag) {
                 return Tag.UPDATE(tag.id, req.body);
@@ -195,12 +177,9 @@ function update() {
 }
 
 /**
- * ------------------------------
- * @description: remove Tag from db by id
- * ------------------------------
- * @url: tags/:id
- * @verb: DELETE
- * @hasaccess: SU
+ * @description remove Tag from db by id
+ * @url: DELETE: tags/:id
+ * @hasaccess ADMINROLES
  */
 function remove() {
     return function (req, res) {

@@ -103,8 +103,21 @@ module.exports.checkOwnerIdInParams = function () {
 };
 
 /**
+ * @description check ADMINROLES permission
+ * @required: 'auth.checkToken' middleware
+ */
+module.exports.checkAdminRoleAccess = function () {
+    return function (req, res, next) {
+        if (_isAdminUser(req)) return next();
+        res.status(403).send({
+            success: false,
+            description: 'Forbidden. userId(' + req.body.helpData.userId + ') to #' + req.params.id
+        });
+    };
+};
+
+/**
  * @description check SUPERUSER permission
- * @hasaccess SUPERUSER
  * @required: 'auth.checkToken' middleware
  */
 module.exports.checkSUAccess = function () {

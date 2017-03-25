@@ -162,10 +162,7 @@ function newAlbum() {
 function update() {
     return function (req, res) {
         delete req.body.helpData;
-        Album.GETbyId(req.params.id)
-            .then(function (model) {
-                return Album.UPDATE(model.id, req.body);
-            })
+        Album.UPDATE(req.params.id, req.body)
             .then(function (updated_model) {
                 res.json({ success: true, data: updated_model });
             })

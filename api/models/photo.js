@@ -75,12 +75,12 @@ Photo.prototype.$beforeUpdate = function () {
 /**
  * @description get Photo by Id and Update views counter
  * @param id
- * @return updated model
+ * @return model with updated views counter
  */
 Photo.getByIdAndIncrementViews = function (id) {
     let that = this;
 
-    return this.getById(id)
+    return this.GETbyId(id)
         .then(function (model) {
             return that.UPDATE(id, { views: model.views + 1 });
         })
@@ -96,16 +96,8 @@ Photo.getByIdAndIncrementViews = function (id) {
  * @return updated model
  */
 Photo.setBestStatus = function (id, status) {
-    let that = this;
-
     if (!status) return Promise.reject('>>> \'status\' <<< field in query not defined');
-    return this.getById(id)
-        .then(function () {
-            return that.UPDATE(id, { best: JSON.parse(status) });
-        })
-        .catch(function (error) {
-            throw error.message || error;
-        });
+    return this.UPDATE(id, { best: JSON.parse(status) });
 };
 
 /**

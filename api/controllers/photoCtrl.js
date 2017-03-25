@@ -18,7 +18,9 @@ const sec = require('../middleware/security');
  * @OTHER_ROUTES
  * ------------------------------
  */
-router.patch('/:id/set-best',
+router.post('/:id/set-best',
+    auth.checkToken(),
+    sec.checkItemAccess.tokenUIDisEqualsModelUID(Photo),
     setBestStatus()
 );
 

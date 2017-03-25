@@ -25,6 +25,7 @@ router.get('/find',
  */
 router.get('/:id/posts',
     auth.checkToken(),
+    sec.isLogin(),
     getPostsByTagId()
 );
 
@@ -91,30 +92,30 @@ function getTag () {
  * @description get Posts by tag id
  *
  * @url GET: tags/:id/posts
- * @hasaccess Owner of POST model >> response with full list of current USER POSTS and other USERS public POSTS
- * @hasaccess Anonymous, NotOwner >> response only with public POSTS list
+ * @hasaccess Owner of POST model >> response with own POST's list and other USERS public POST's
+ * @hasaccess ADMINROLES >> response All mixed POSTS of all USER's
+ * @hasaccess Anonymous, NotOwner >> response only with public POSTS of all USER's
  *
- * @url GET: tags/:id/posts?clear=true
- * @hasaccess Owner of POST model >> response only with full list of current USER
- * @hasaccess Anonymous, NotOwner >> response only with public POSTS list
+ * @url GET: tags/:id/posts?own=true
+ * @hasaccess Owner of POST model >> response only with own POST's list
+ * @hasaccess ADMINROLES >> response only with own POST's list
+ * @hasaccess Anonymous, NotOwner >> response only with public POSTS of all USER's
  */
 function getPostsByTagId () {
     return function (req, res) {
-        Tag.GETbyId(req.params.id)
-            .then(function (tag) {
-                if ( req.body.helpData.userId && !req.query.clear ) {
-                    return Tag.getMixPostsByTagId(req.body.helpData.userId, tag.id);
-                }
-                if ( req.body.helpData.userId && req.query.clear ) {
-                    return Tag.getCurrentUserPostsByTagId(req.body.helpData.userId, tag.id);
-                }
-                return Tag.getPublicPostsByTagId(tag.id);
-            })
+        let requestOptions = {
+            userId: req.body.helpData.userId,
+            tagId: req.params.id,
+            isOwn: req.query.own ? JSON.parse(req.query.own) : false,
+            isAdmin: req.body.helpData.isAdmin
+        };
+
+        Tag.getPostsByTagIdAccessSwitcher(requestOptions)
             .then(function (list) {
-                res.json({success: true, data: list});
+                res.json({ success: true, data: list });
             })
             .catch(function (error) {
-                res.status(error.statusCode || 404).send({success: false, description: error});
+                res.status(error.statusCode || 404).send({ success: false, description: error });
             });
     };
 }
@@ -131,7 +132,7 @@ function getAll() {
                 res.json({ success: true, data: list });
             })
             .catch(function (error) {
-                res.status(error.statusCode || 404).send({success: false, description: error});
+                res.status(error.statusCode || 404).send({ success: false, description: error });
             });
     };
 }

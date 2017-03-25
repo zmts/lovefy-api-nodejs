@@ -97,7 +97,7 @@ function getAllUsers() {
  */
 function getPostsByUserId() {
     return function (req, res) {
-        User.GETById(req.params.id)
+        User.GETById(req.params.id) // TODO refactoring
             .then(function (user) {
                 if ( req.body.helpData.isOwner ) return User.getMixPostsByUserId(user.id);
                 return User.getPubPostsByUserId(user.id);
@@ -158,11 +158,8 @@ function getUser() {
  */
 function update() {
     return function (req, res) {
-        User.GETbyId(req.params.id)
-            .then(function (user) {
-                delete req.body.helpData;
-                return User.UPDATE(user.id, req.body);
-            })
+        delete req.body.helpData;
+        User.UPDATE(req.params.id, req.body)
             .then(function (updated_user) {
                 res.json({ success: true, data: updated_user });
             })
@@ -179,10 +176,7 @@ function update() {
  */
 function remove() {
     return function (req, res) {
-        User.GETbyId(req.params.id)
-            .then(function (model) {
-                return User.REMOVE(model.id);
-            })
+        User.REMOVE(req.params.id)
             .then(function () {
                 res.json({ success: true, description: 'User #'+ req.params.id +' was removed' });
             })

@@ -215,10 +215,7 @@ function getPost() {
 function update() {
     return function (req, res) {
         delete req.body.helpData;
-        Post.GETbyId(req.params.id)
-            .then(function (post) {
-                return Post.UPDATE(post.id, req.body);
-            })
+        Post.UPDATE(req.params.id, req.body)
             .then(function (updated_post) {
                 res.json({ success: true, data: updated_post });
             })
@@ -235,10 +232,7 @@ function update() {
  */
 function remove() {
     return function (req, res) {
-        Post.GETbyId(req.params.id)
-            .then(function (model) {
-                return Post.remove(model.id);
-            })
+        Post.REMOVE(req.params.id)
             .then(function () {
                 res.json({ success: true, description: 'Post #' + req.params.id + ' was removed' });
             })

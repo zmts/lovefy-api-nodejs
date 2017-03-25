@@ -146,7 +146,6 @@ Post.checkTagByIdInPost = function (post_id, tag_id) {
         .then(function (data) {
             if (!data) throw { message: 'Empty response' };
             if ( _checkExistingTags(data, tag_id) ) throw { message: 'Tag already presents in post' };
-            return;
         })
         .catch(function (error) {
             throw error.message || error;

@@ -88,6 +88,19 @@ User.getByName = function (name) {
         });
 };
 
+User.getPostsByUserIdAccessSwitcher = function (user_id, isOwner) {
+    let that = this;
+
+    return this.GETbyId(user_id)
+        .then(function () {
+            if (isOwner) return that.getMixPostsByUserId(user_id);
+            return that.getPubPostsByUserId(user_id);
+        })
+        .catch(function (error) {
+            throw error.message || error;
+        });
+};
+
 User.getMixPostsByUserId = function (id) {
     return this.query()
         .where({ id: id })

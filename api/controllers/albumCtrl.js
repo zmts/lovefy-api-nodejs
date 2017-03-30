@@ -4,7 +4,6 @@ const express = require('express');
 const router = express.Router();
 
 const Album = require('../models/album');
-const Tag = require('../models/tag');
 const auth = require('../middleware/auth');
 const sec = require('../middleware/security');
 const upload = require('../middleware/upload');
@@ -104,7 +103,7 @@ router.delete('/:id',
  */
 function getAll() {
     return function (req, res, next) {
-        Album.getAllAccessSwitcher(+req.body.helpData.userId, req.body.helpData.isAdmin)
+        Album.GetAllAccessSwitcher(+req.body.helpData.userId, req.body.helpData.isAdmin)
             .then(function (list) {
                 res.json({ success: true, data: list });
             }).catch(next);
@@ -119,7 +118,7 @@ function getAll() {
  */
 function getAlbum () {
     return function (req, res, next) {
-        Album.getById(req.params.id)
+        Album.GetById(req.params.id)
             .then(function (model) {
                 res.json({ success: true, data: model });
             }).catch(next);
@@ -144,7 +143,7 @@ function getAlbum () {
 function newAlbum() {
     return function (req, res, next) {
         delete req.body.helpData;
-        Album.create(req.body)
+        Album.Create(req.body)
             .then(function (model) {
                 res.status(201).json({ success: true, data: model });
             }).catch(next);
@@ -183,7 +182,7 @@ function update() {
  */
 function remove() {
     return function (req, res, next) {
-        Album.eraseAlbum(req.params.id)
+        Album.EraseAlbum(req.params.id)
             .then(function () {
                 res.json({ success: true, description: `Album #${req.params.id} was removed` });
             }).catch(next);
@@ -199,7 +198,7 @@ function remove() {
  */
 function setCoverIndex() {
     return function (req, res, next) {
-        Album.setCoverIndex(req.params.id, req.query.status)
+        Album.SetCoverIndex(req.params.id, req.query.status)
             .then(function (model) {
                 res.json({ success: true, data: model });
             }).catch(next);
@@ -215,7 +214,7 @@ function setCoverIndex() {
  */
 function setCoverThumbnail() {
     return function (req, res, next) {
-        Album.setCoverThumbnail(req.params.id, req.query.status)
+        Album.SetCoverThumbnail(req.params.id, req.query.status)
             .then(function (model) {
                 res.json({ success: true, data: model });
             }).catch(next);
@@ -229,7 +228,7 @@ function setCoverThumbnail() {
  */
 function processOnePhotoToAlbum() {
     return function (req, res, next) {
-        Album.processOnePhotoToAlbum(req.params.id, req.body.helpData.userIdFromAlbumModel, req.file)
+        Album.ProcessOnePhotoToAlbum(req.params.id, req.body.helpData.userIdFromAlbumModel, req.file)
             .then(function (model) {
                 res.json({ success: true, data: model });
             }).catch(next);
@@ -245,10 +244,7 @@ function processOnePhotoToAlbum() {
 function createAndAttachTagToAlbum() {
     return function (req, res, next) {
         delete req.body.helpData;
-        Tag.CREATE(req.body)
-            .then(function (tag) {
-                return Album.attachTagToAlbum(req.params.id, tag.id);
-            })
+        Album.CreateAndAttachTagToAlbum(req.body, req.params.id)
             .then(function (tag_id) {
                 res.status(201).json({ success: true, data: `Tag#${tag_id} was created and attached to ${req.params.id}` });
             }).catch(next);
@@ -262,10 +258,7 @@ function createAndAttachTagToAlbum() {
  */
 function attachTagToAlbum() {
     return function (req, res, next) {
-        Album.checkTagByIdInAlbum(req.params.id, req.params.tag_id)
-            .then(function () {
-                return Album.attachTagToAlbum(req.params.id, req.params.tag_id);
-            })
+        Album.AttachTagToAlbumWrapper(req.params.id, req.params.tag_id)
             .then(function (tag_id) {
                 res.json({ success: true, data: `Tag#${tag_id} was attached to Album#${req.params.id}` });
             }).catch(next);
@@ -279,7 +272,7 @@ function attachTagToAlbum() {
  */
 function detachTagFromAlbum () {
     return function (req, res, next) {
-        Album.detachTagFromAlbum(req.params.id, req.params.tag_id)
+        Album.DetachTagFromAlbum(req.params.id, req.params.tag_id)
             .then(function (tag_id) {
                 res.json({ success: true, data: `Tag#${tag_id} was detached from Album#${req.params.id}` });
             }).catch(next);

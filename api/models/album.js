@@ -7,6 +7,7 @@ const _ = require('lodash');
 
 const MainModel = require('./main');
 const Photo = require('./photo');
+const Tag = require('./tag');
 const PHOTO_DIR = require('../config/').photoDir;
 
 function Album() {
@@ -138,7 +139,7 @@ Album.prototype.$beforeUpdate = function () {
  * @return ALBUM model
  * @param data
  */
-Album.create = function (data) {
+Album.Create = function (data) {
     let that = this;
     let uid = '/uid-' + data.user_id + '/';
 
@@ -172,7 +173,7 @@ Album.create = function (data) {
  * @param id
  * @return ALBUM with all related PHOTO's and TAG's
  */
-Album.getById = function (id) {
+Album.GetById = function (id) {
     return this.query()
         .findById(id)
         .eager('photos')
@@ -192,18 +193,18 @@ Album.getById = function (id) {
 /**
  * @description look getAllPub(), getAllOwnAndOtherPublic()
  * @param user_id
- * @param isAdmin
+ * @param isAdmin BOOLEAN
  */
-Album.getAllAccessSwitcher = function (user_id, isAdmin) {
+Album.GetAllAccessSwitcher = function (user_id, isAdmin) {
     if (isAdmin) return this.GETall(); // return full list(private and public) of all USER's
-    if (user_id) return this.getAllOwnAndOtherPublic(user_id);
-    return this.getAllPub();
+    if (user_id) return this.GetAllOwnAndOtherPublic(user_id);
+    return this.GetAllPub();
 };
 
 /**
  * @return all public ALBUM's
  */
-Album.getAllPub = function () {
+Album.GetAllPub = function () {
     return this.query()
         .where({ private: false })
         .then(function (data) {
@@ -216,9 +217,10 @@ Album.getAllPub = function () {
 };
 
 /**
+ * @param user_id
  * @return all own ALBUM's + all public ALBUM's others USER's
  */
-Album.getAllOwnAndOtherPublic = function (user_id) {
+Album.GetAllOwnAndOtherPublic = function (user_id) {
     return this.query()
         .where({ user_id: user_id })
         .orWhere({ private: false })
@@ -233,11 +235,11 @@ Album.getAllOwnAndOtherPublic = function (user_id) {
 
 /**
  * @description: set in DB "cover_index" field to TRUE/FALSE
- * @param album_id INT
+ * @param album_id
  * @param status BOOLEAN
  * @return updated ALBUM model
  */
-Album.setCoverIndex = function (album_id, status) {
+Album.SetCoverIndex = function (album_id, status) {
     let that = this;
 
     if (!status) return Promise.reject('>>> \'status\' <<< field in query not defined');
@@ -252,11 +254,11 @@ Album.setCoverIndex = function (album_id, status) {
 
 /**
  * @description: set in DB "cover_thumbnail" field to TRUE/FALSE
- * @param album_id INT
+ * @param album_id
  * @param status BOOLEAN
  * @return updated ALBUM model
  */
-Album.setCoverThumbnail = function (album_id, status) {
+Album.SetCoverThumbnail = function (album_id, status) {
     let that = this;
 
     if (!status) return Promise.reject('>>> \'status\' <<< field in query not defined');
@@ -276,7 +278,7 @@ Album.setCoverThumbnail = function (album_id, status) {
  * @param photoWrapper
  * @return created PHOTO model
  */
-Album.processOnePhotoToAlbum = function (album_id, user_id, photoWrapper) {
+Album.ProcessOnePhotoToAlbum = function (album_id, user_id, photoWrapper) {
     return jimp.read(photoWrapper.path)
         .then(function (photoRaw) {
             return photoRaw
@@ -307,7 +309,7 @@ Album.processOnePhotoToAlbum = function (album_id, user_id, photoWrapper) {
  * @param album_id
  * @return success status
  */
-Album.eraseAlbum = function (album_id) {
+Album.EraseAlbum = function (album_id) {
     let that = this;
 
     return this.GETbyId(album_id)
@@ -323,12 +325,51 @@ Album.eraseAlbum = function (album_id) {
 };
 
 /**
+ * @description create TAG >> attach TAG to ALBUM
+ * @param tagBody
+ * @param album_id
+ * @return tag_id
+ */
+Album.CreateAndAttachTagToAlbum = function (tagBody, album_id) {
+    let that = this;
+
+    return Tag.CREATE(tagBody)
+        .then(function (tag) {
+            return that.AttachTagToAlbum(album_id, tag.id);
+        })
+        .catch(function (error) {
+            throw error;
+        });
+};
+
+/**
+ * @description check TAG existing in ALBUM >> attach TAG to ALBUM
+ * @param album_id
+ * @param tag_id
+ * @return tag_id
+ */
+Album.AttachTagToAlbumWrapper = function (album_id, tag_id) {
+    let that = this;
+
+    return this.CheckTagByIdInAlbum(album_id, tag_id)
+        .then(function () {
+            return that.AttachTagToAlbum(album_id, tag_id);
+        })
+        .then(function (tag_id) {
+            return tag_id;
+        })
+        .catch(function (error) {
+            throw error;
+        });
+};
+
+/**
  * @description attach TAG to ALBUM
  * @param album_id
  * @param tag_id
  * @return tag_id
  */
-Album.attachTagToAlbum = function (album_id, tag_id) {
+Album.AttachTagToAlbum = function (album_id, tag_id) {
     return this.GETbyId(album_id)
         .then(function (album) {
             return album.$relatedQuery('tags').relate(tag_id);
@@ -344,9 +385,8 @@ Album.attachTagToAlbum = function (album_id, tag_id) {
  * @param tag_id
  * @return tag_id
  */
-Album.detachTagFromAlbum = function (album_id, tag_id) {
-    return this.query()
-        .findById(album_id)
+Album.DetachTagFromAlbum = function (album_id, tag_id) {
+    return this.GETbyId(album_id)
         .then(function (album) {
             return album.$relatedQuery('tags').unrelate().where({ 'tag_id': tag_id });
         })
@@ -364,7 +404,7 @@ Album.detachTagFromAlbum = function (album_id, tag_id) {
  * @param tag_id
  * @return status
  */
-Album.checkTagByIdInAlbum = function (album_id, tag_id) {
+Album.CheckTagByIdInAlbum = function (album_id, tag_id) {
     return this.query()
         .findById(album_id)
         .eager('tags')

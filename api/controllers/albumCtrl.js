@@ -249,8 +249,8 @@ function createAndAttachTagToAlbum() {
             .then(function (tag) {
                 return Album.attachTagToAlbum(req.params.id, tag.id);
             })
-            .then(function (tag) {
-                res.status(201).json({ success: true, data: `Tag#${tag} was created and attached to ${req.params.id}` });
+            .then(function (tag_id) {
+                res.status(201).json({ success: true, data: `Tag#${tag_id} was created and attached to ${req.params.id}` });
             }).catch(next);
     };
 }
@@ -266,8 +266,8 @@ function attachTagToAlbum() {
             .then(function () {
                 return Album.attachTagToAlbum(req.params.id, req.params.tag_id);
             })
-            .then(function (tag) {
-                res.json({ success: true, data: `Tag#${tag} was attached to Album#${req.params.id}` });
+            .then(function (tag_id) {
+                res.json({ success: true, data: `Tag#${tag_id} was attached to Album#${req.params.id}` });
             }).catch(next);
     };
 }
@@ -280,8 +280,8 @@ function attachTagToAlbum() {
 function detachTagFromAlbum () {
     return function (req, res, next) {
         Album.detachTagFromAlbum(req.params.id, req.params.tag_id)
-            .then(function (tag) {
-                res.json({ success: true, data: `Tag#${tag} was detached from Album#${req.params.id}` });
+            .then(function (tag_id) {
+                res.json({ success: true, data: `Tag#${tag_id} was detached from Album#${req.params.id}` });
             }).catch(next);
     };
 }

@@ -4,21 +4,22 @@ const express = require('express');
 const router = express.Router();
 
 const Album = require('../models/album');
+const Tag = require('../models/tag');
 const auth = require('../middleware/auth');
 const sec = require('../middleware/security');
 const upload = require('../middleware/upload');
 const validate = require('../middleware/validateReq');
 
 /**
- * ------------------------------
+ * ------------------------------------------------------------
  * @BASE_URL: albums/
- * ------------------------------
+ * ------------------------------------------------------------
  */
 
 /**
- * ------------------------------
+ * ------------------------------------------------------------
  * @OTHER_ROUTES
- * ------------------------------
+ * ------------------------------------------------------------
  */
 router.post('/:id/cover/index',
     auth.checkToken(),
@@ -36,29 +37,34 @@ router.post('/:id/cover/thumbnail',
 );
 
 /**
- * ------------------------------
+ * ------------------------------------------------------------
  * @RELATED_ROUTES
- * ------------------------------
+ * ------------------------------------------------------------
  */
 router.post('/:id/upload',
     upload.photoToAlbum(),
     processOnePhotoToAlbum()
 );
-// router.post('/:id/attach-tag/:tag_id',
-//     auth.checkToken(),
-//     sec.checkItemAccess.tokenUIDisEqualsModelUID(Post),
-//     // attachTagToPost()
-// );
-// router.post('/:id/detach-tag/:tag_id',
-//     auth.checkToken(),
-//     sec.checkItemAccess.tokenUIDisEqualsModelUID(Post),
-//     // detachTagFromPost()
-// );
+router.post('/:id/create-attach-tag',
+    auth.checkToken(),
+    sec.checkItemAccess.tokenUIDisEqualsModelUID(Album),
+    createAndAttachTagToAlbum()
+);
+router.post('/:id/attach-tag/:tag_id',
+    auth.checkToken(),
+    sec.checkItemAccess.tokenUIDisEqualsModelUID(Album),
+    attachTagToAlbum()
+);
+router.post('/:id/detach-tag/:tag_id',
+    auth.checkToken(),
+    sec.checkItemAccess.tokenUIDisEqualsModelUID(Album),
+    detachTagFromAlbum()
+);
 
 /**
- * ------------------------------
+ * ------------------------------------------------------------
  * @BASE_ROUTES
- * ------------------------------
+ * ------------------------------------------------------------
  */
 router.get('/',
     auth.checkToken(),
@@ -85,9 +91,9 @@ router.delete('/:id',
 );
 
 /**
- * ------------------------------
+ * ------------------------------------------------------------
  * @CONTROLLERS
- * ------------------------------
+ * ------------------------------------------------------------
  */
 
 /**
@@ -226,6 +232,56 @@ function processOnePhotoToAlbum() {
         Album.processOnePhotoToAlbum(req.params.id, req.body.helpData.userIdFromAlbumModel, req.file)
             .then(function (model) {
                 res.json({ success: true, data: model });
+            }).catch(next);
+    };
+}
+
+/**
+ * @description create and attach TAG to ALBUM
+ * @hasaccess OWNER, ADMINROLES
+ * @url POST: albums/:id/create-attach-tag
+ * @request {"name": "string"}
+ */
+function createAndAttachTagToAlbum() {
+    return function (req, res, next) {
+        delete req.body.helpData;
+        Tag.CREATE(req.body)
+            .then(function (tag) {
+                return Album.attachTagToAlbum(req.params.id, tag.id);
+            })
+            .then(function (tag) {
+                res.status(201).json({ success: true, data: `Tag#${tag} was created and attached to ${req.params.id}` });
+            }).catch(next);
+    };
+}
+
+/**
+ * @description attach TAG to ALBUM
+ * @hasaccess OWNER, ADMINROLES
+ * @url POST: albums/:id/attach-tag/:tag_id
+ */
+function attachTagToAlbum() {
+    return function (req, res, next) {
+        Album.checkTagByIdInAlbum(req.params.id, req.params.tag_id)
+            .then(function () {
+                return Album.attachTagToAlbum(req.params.id, req.params.tag_id);
+            })
+            .then(function (tag) {
+                res.json({ success: true, data: `Tag#${tag} was attached to Album#${req.params.id}` });
+            }).catch(next);
+    };
+}
+
+/**
+ * @description detach TAG from ALBUM
+ * @hasaccess OWNER, ADMINROLES
+ * @url POST: albums/:id/detach-tag/:tag_id
+ */
+function detachTagFromAlbum () {
+    return function (req, res, next) {
+        Album.detachTagFromAlbum(req.params.id, req.params.tag_id)
+            .then(function (tag) {
+                res.json({ success: true, data: `Tag#${tag} was detached from Album#${req.params.id}` });
             }).catch(next);
     };
 }

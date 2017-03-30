@@ -3,6 +3,7 @@
 const fsp = require('fs-promise');
 const Promise = require('bluebird');
 const jimp = require('jimp');
+const _ = require('lodash');
 
 const MainModel = require('./main');
 const Photo = require('./photo');
@@ -71,8 +72,38 @@ Album.relationMappings = {
             from: 'albums.id',
             to: 'photos.album_id'
         }
+    },
+    tags: {
+        relation: MainModel.ManyToManyRelation,
+        modelClass: __dirname + '/tag',
+        join: {
+            from: 'albums.id',
+            through: {
+                from: 'albums_tags.album_id',
+                to: 'albums_tags.tag_id'
+            },
+            to: 'tags.id'
+        }
     }
 };
+
+/**
+ * ------------------------------
+ * @HELPERS
+ * ------------------------------
+ */
+
+/**
+ * @description find TAG by id in ALBUM
+ * @param data
+ * @param tag_id
+ * @private
+ */
+function _checkExistingTags (data, tag_id) {
+    return _.find(data.tags, function(item) {
+        return +item.id === +tag_id;
+    });
+}
 
 /**
  * ------------------------------
@@ -141,18 +172,19 @@ Album.create = function (data) {
 
 /**
  * @param id
- * @return ALBUM with all related PHOTOS
+ * @return ALBUM with all related PHOTO's and TAG's
  */
 Album.getById = function (id) {
     return this.query()
         .findById(id)
         .eager('photos')
+        .mergeEager('tags')
         .then(function (data) {
-            if (!data) throw { message: 'Empty response' };
+            if (!data) throw { message: 'Empty response', status: 404 };
             return data;
         })
         .catch(function (error) {
-            throw error.message || error;
+            throw error;
         });
 };
 
@@ -292,6 +324,60 @@ Album.eraseAlbum = function (album_id) {
         })
         .catch(function (error) {
             throw error.message || error;
+        });
+};
+
+/**
+ * @description attach TAG to ALBUM
+ * @param album_id
+ * @param tag_id
+ * @return tag_id
+ */
+Album.attachTagToAlbum = function (album_id, tag_id) {
+    return this.GETbyId(album_id)
+        .then(function (album) {
+            return album.$relatedQuery('tags').relate(tag_id);
+        })
+        .catch(function (error) {
+            throw error.message || error;
+        });
+};
+
+/**
+ * @description detach TAG from ALBUM
+ * @param album_id
+ * @param tag_id
+ * @return tag_id
+ */
+Album.detachTagFromAlbum = function (album_id, tag_id) {
+    return this.query()
+        .findById(album_id)
+        .then(function (album) {
+            return album.$relatedQuery('tags').unrelate().where({ 'tag_id': tag_id });
+        })
+        .then(function () {
+            return tag_id;
+        })
+        .catch(function (error) {
+            throw error;
+        });
+};
+
+/**
+ * @description if TAG already exist in ALBUM model >> throw error message
+ * @param album_id
+ * @param tag_id
+ * @return status
+ */
+Album.checkTagByIdInAlbum = function (album_id, tag_id) {
+    return this.query()
+        .findById(album_id)
+        .eager('tags')
+        .then(function (data) {
+            if ( _checkExistingTags(data, tag_id) ) throw { message: 'Tag already presents in post', status: 422 };
+        })
+        .catch(function (error) {
+            throw error;
         });
 };
 

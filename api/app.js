@@ -34,38 +34,44 @@ app.use(function (req, res, next) {
 //routers init
 app.use(controllers);
 
+//catch 'No route found' Error
+app.use(function (req, res, next) {
+    res.status(404).json({ success: false, error: '404, No route found' });
+});
+
 // development error handler
 if (app.get('env') === 'development') {
     app.use(function (error, req, res, next) {
-        console.log('error.stack >>');
-        console.log(error.stack);
-        res.status(error.status || 500).send({
+        if (error.stack) {
+            global.console.log('error.stack >>');
+            global.console.log(error.stack);
+        }
+
+        res.status(error.status || 500).json({
             success: false,
-            description: error.message,
-            errortype: 'development/regular',
-            path: 'app.js'
+            description: error.message || error,
+            env: 'development/regular',
+            handled_in: 'app.js'
         });
     });
 }
 
-// production error handler // todo >> send email if error
-app.use(function (error, req, res, next) {
-    console.log('error.stack >>');
-    console.log(error.stack);
-    res.status(error.status || 500).send({
-        success: false,
-        description: error.message,
-        errortype: 'production/regular',
-        path: 'app.js'
-    });
-});
-
 // production uncaughtException error handler // todo >> send email if error
 process.on('uncaughtException', function(error) {
-    console.error((new Date).toUTCString() + ' uncaughtException:', error.message);
-    console.log('error.stack >>');
-    console.error(error.stack);
+    global.console.error((new Date).toUTCString() + ' uncaughtException:', error.message);
+    global.console.log('error.stack >>');
+    global.console.error(error.stack);
     process.exit(1);
+});
+
+// production error handler // todo >> send email if error
+app.use(function (error, req, res, next) {
+    res.status(error.status || 500).json({
+        success: false,
+        description: error.message || error,
+        env: 'production/regular',
+        handled_in: 'app.js'
+    });
 });
 
 module.exports = app;

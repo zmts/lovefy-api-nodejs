@@ -134,10 +134,8 @@ Album.prototype.$beforeUpdate = function () {
  */
 
 /**
- * ------------------------------
  * @description check PHOTO_DIR accessibility >> create model >> create folders in FS
  * @return ALBUM model
- * ------------------------------
  * @param data
  */
 Album.create = function (data) {
@@ -179,6 +177,9 @@ Album.getById = function (id) {
         .findById(id)
         .eager('photos')
         .mergeEager('tags')
+        .modifyEager('tags', function(builder) {
+            builder.orderBy('name');
+        })
         .then(function (data) {
             if (!data) throw { message: 'Empty response', status: 404 };
             return data;
@@ -231,9 +232,7 @@ Album.getAllOwnAndOtherPublic = function (user_id) {
 };
 
 /**
- * ------------------------------
  * @description: set in DB "cover_index" field to TRUE/FALSE
- * ------------------------------
  * @param album_id INT
  * @param status BOOLEAN
  * @return updated ALBUM model
@@ -252,9 +251,7 @@ Album.setCoverIndex = function (album_id, status) {
 };
 
 /**
- * ------------------------------
  * @description: set in DB "cover_thumbnail" field to TRUE/FALSE
- * ------------------------------
  * @param album_id INT
  * @param status BOOLEAN
  * @return updated ALBUM model
@@ -273,9 +270,7 @@ Album.setCoverThumbnail = function (album_id, status) {
 };
 
 /**
- * ------------------------------
  * @description: create thumbnail, create PHOTO model
- * ------------------------------
  * @param album_id
  * @param user_id
  * @param photoWrapper

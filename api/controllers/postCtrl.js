@@ -20,7 +20,7 @@ const sec = require('../middleware/security');
  * @RELATED_ROUTES
  * ------------------------------
  */
-router.post('/:id/attach-tag',
+router.post('/:id/create-attach-tag',
     auth.checkToken(),
     sec.checkItemAccess.tokenUIDisEqualsModelUID(Post),
     createAndAttachTagToPost()
@@ -79,7 +79,7 @@ router.delete('/:id',
 /**
  * @description create and attach Tag to Post
  * @hasaccess OWNER, SU, ADMINROLES
- * @url POST: posts/:id/attachTag/
+ * @url POST: posts/:id/create-attach-tag
  * @request {"name": "string"}
  */
 function createAndAttachTagToPost() {

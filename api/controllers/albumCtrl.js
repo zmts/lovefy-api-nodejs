@@ -44,6 +44,16 @@ router.post('/:id/upload',
     upload.photoToAlbum(),
     processOnePhotoToAlbum()
 );
+// router.post('/:id/attach-tag/:tag_id',
+//     auth.checkToken(),
+//     sec.checkItemAccess.tokenUIDisEqualsModelUID(Post),
+//     // attachTagToPost()
+// );
+// router.post('/:id/detach-tag/:tag_id',
+//     auth.checkToken(),
+//     sec.checkItemAccess.tokenUIDisEqualsModelUID(Post),
+//     // detachTagFromPost()
+// );
 
 /**
  * ------------------------------
@@ -87,14 +97,11 @@ router.delete('/:id',
  * @return Anonymous, NotOwner >> all public ALBUM's
  */
 function getAll() {
-    return function (req, res) {
+    return function (req, res, next) {
         Album.getAllAccessSwitcher(+req.body.helpData.userId, req.body.helpData.isAdmin)
             .then(function (list) {
                 res.json({ success: true, data: list });
-            })
-            .catch(function (error) {
-                res.status(error.statusCode || 404).send({ success: false, description: error });
-            });
+            }).catch(next);
     };
 }
 
@@ -105,14 +112,11 @@ function getAll() {
  * @url GET: tags/:id
  */
 function getAlbum () {
-    return function (req, res) {
+    return function (req, res, next) {
         Album.getById(req.params.id)
             .then(function (model) {
                 res.json({ success: true, data: model });
-            })
-            .catch(function (error) {
-                res.status(error.statusCode || 404).send({ success: false, description: error });
-            });
+            }).catch(next);
     };
 }
 
@@ -132,15 +136,12 @@ function getAlbum () {
  * @hasaccess EDITORROLES, ADMINROLES
  */
 function newAlbum() {
-    return function (req, res) {
+    return function (req, res, next) {
         delete req.body.helpData;
         Album.create(req.body)
             .then(function (model) {
                 res.status(201).json({ success: true, data: model });
-            })
-            .catch(function (error) {
-                res.status(error.statusCode || 404).send({ success: false, description: error });
-            });
+            }).catch(next);
     };
 }
 
@@ -160,15 +161,12 @@ function newAlbum() {
  * @hasaccess OWNER, ADMINROLES
  */
 function update() {
-    return function (req, res) {
+    return function (req, res, next) {
         delete req.body.helpData;
         Album.UPDATE(req.params.id, req.body)
             .then(function (updated_model) {
                 res.json({ success: true, data: updated_model });
-            })
-            .catch(function (error) {
-                res.status(error.statusCode || 404).send({ success: false, description: error });
-            });
+            }).catch(next);
     };
 }
 
@@ -178,14 +176,11 @@ function update() {
  * @hasaccess owner, ADMINROLES
  */
 function remove() {
-    return function (req, res) {
+    return function (req, res, next) {
         Album.eraseAlbum(req.params.id)
             .then(function () {
                 res.json({ success: true, description: `Album #${req.params.id} was removed` });
-            })
-            .catch(function (error) {
-                res.status(error.statusCode || 404).send({ success: false, description: error });
-            });
+            }).catch(next);
     };
 }
 
@@ -197,14 +192,11 @@ function remove() {
  * @return updated model
  */
 function setCoverIndex() {
-    return function (req, res) {
+    return function (req, res, next) {
         Album.setCoverIndex(req.params.id, req.query.status)
             .then(function (model) {
                 res.json({ success: true, data: model });
-            })
-            .catch(function (error) {
-                res.status(error.statusCode || 404).send({ success: false, description: error });
-            });
+            }).catch(next);
     };
 }
 
@@ -216,14 +208,11 @@ function setCoverIndex() {
  * @return updated model
  */
 function setCoverThumbnail() {
-    return function (req, res) {
+    return function (req, res, next) {
         Album.setCoverThumbnail(req.params.id, req.query.status)
             .then(function (model) {
                 res.json({ success: true, data: model });
-            })
-            .catch(function (error) {
-                res.status(error.statusCode || 404).send({ success: false, description: error });
-            });
+            }).catch(next);
     };
 }
 
@@ -233,14 +222,11 @@ function setCoverThumbnail() {
  * @request form-data-file-field "photo"
  */
 function processOnePhotoToAlbum() {
-    return function (req, res) {
+    return function (req, res, next) {
         Album.processOnePhotoToAlbum(req.params.id, req.body.helpData.userIdFromAlbumModel, req.file)
             .then(function (model) {
                 res.json({ success: true, data: model });
-            })
-            .catch(function (error) {
-                res.status(error.statusCode || 404).send({ success: false, description: error });
-            });
+            }).catch(next);
     };
 }
 

@@ -33,10 +33,6 @@ app.use(function (req, res, next) {
 
 //routers init
 app.use(controllers);
-//catch 404 and forward to error handler
-app.use(function (req, res) {
-    res.status(404).json({success: false, error: '404, No route found'});
-});
 
 // development error handler
 if (app.get('env') === 'development') {

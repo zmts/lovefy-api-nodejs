@@ -196,9 +196,24 @@ Album.GetById = function (id) {
  * @param isAdmin BOOLEAN
  */
 Album.GetAllAccessSwitcher = function (user_id, isAdmin) {
-    if (isAdmin) return this.GETall(); // return full list(private and public) of all USER's
+    if (isAdmin) return this.GetAll(); // return full list(private and public) of all USER's
     if (user_id) return this.GetAllOwnAndOtherPublic(user_id);
     return this.GetAllPub();
+};
+
+/**
+ * @return all mix ALBUM's
+ */
+Album.GetAll = function () {
+    return this.query()
+        .eager('tags')
+        .then(function (data) {
+            if (!data.length) throw { message: 'Empty response' };
+            return data;
+        })
+        .catch(function (error) {
+            throw error.message || error;
+        });
 };
 
 /**
@@ -207,6 +222,7 @@ Album.GetAllAccessSwitcher = function (user_id, isAdmin) {
 Album.GetAllPub = function () {
     return this.query()
         .where({ private: false })
+        .eager('tags')
         .then(function (data) {
             if (!data.length) throw { message: 'Empty response' };
             return data;
@@ -224,6 +240,7 @@ Album.GetAllOwnAndOtherPublic = function (user_id) {
     return this.query()
         .where({ user_id: user_id })
         .orWhere({ private: false })
+        .eager('tags')
         .then(function (data) {
             if (!data.length) throw { message: 'Empty response' };
             return data;

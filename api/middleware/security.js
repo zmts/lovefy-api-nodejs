@@ -75,7 +75,7 @@ function _isOwnerIdInBody(req) {
  */
 
 /**
- * @description if user is ADMINROLES >> add isAdmin = true to helpData
+ * @description if user is ADMINROLES >> add { isAdmin: true } to helpData
  */
 module.exports.isAdmin = function () {
     return function (req, res, next) {

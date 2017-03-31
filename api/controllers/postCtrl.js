@@ -41,13 +41,10 @@ router.post('/:id/detach-tag/:tag_id',
  * @BASE_ROUTES
  * ------------------------------
  */
-router.get('/all',
+router.get('/',
     auth.checkToken(),
-    sec.checkSUAccess(),
-    getAllMix()
-);
-router.get('/public',
-    getAllPub()
+    sec.isAdmin(),
+    getAll()
 );
 router.get('/:id',
     auth.checkToken(),
@@ -83,18 +80,15 @@ router.delete('/:id',
  * @request {"name": "string"}
  */
 function createAndAttachTagToPost() {
-    return function (req, res) {
+    return function (req, res, next) {
         delete req.body.helpData;
         Tag.CREATE(req.body)
             .then(function (tag) {
-                return Post.attachTagToPost(req.params.id, tag.id);
+                return Post.AttachTagToPost(req.params.id, tag.id);
             })
             .then(function (post) {
                 res.json({ success: true, data: post });
-            })
-            .catch(function (error) {
-                res.status(error.statusCode || 403).send({ success: false, description: error });
-            });
+            }).catch(next);
     };
 }
 
@@ -104,17 +98,14 @@ function createAndAttachTagToPost() {
  * @url POST: posts/:id/attachTag/:tag_id
  */
 function attachTagToPost() {
-    return function (req, res) {
-        Post.checkTagByIdInPost(req.params.id, req.params.tag_id)
+    return function (req, res, next) {
+        Post.CheckTagByIdInPost(req.params.id, req.params.tag_id)
             .then(function () {
-                return Post.attachTagToPost(req.params.id, req.params.tag_id);
+                return Post.AttachTagToPost(req.params.id, req.params.tag_id);
             })
             .then(function (post) {
                 res.json({ success: true, data: post });
-            })
-            .catch(function (error) {
-                res.status(error.statusCode || 403).send({ success: false, description: error });
-            });
+            }).catch(next);
     };
 }
 
@@ -124,48 +115,26 @@ function attachTagToPost() {
  * @url POST: posts/:id/detachTag/:tag_id
  */
 function detachTagFromPost () {
-    return function (req, res) {
-        Post.detachTagFromPost(req.params.id, req.params.tag_id)
+    return function (req, res, next) {
+        Post.DetachTagFromPost(req.params.id, req.params.tag_id)
             .then(function () {
-                res.json({ success: true, data: 'Tag#' + req.params.tag_id + ' is detached from ' + 'Post#' + req.params.id });
-            })
-            .catch(function (error) {
-                res.status(error.statusCode || 403).send({ success: false, description: error });
-            });
+                res.json({ success: true, data: `Tag#${req.params.tag_id} is detached from Post#${req.params.id}` });
+            }).catch(next);
     };
 }
 
 /**
- * @description get all Posts of All users(public and private)
- * @hasaccess only SU
- * @url GET: posts/all
+ * @description get all Posts of All users
+ * @url GET: posts/
+ * @return if ADMINROLES >> All mix POST's
+ * @return if not ADMINROLES >> All public POST's
  */
-function getAllMix() {
-    return function (req, res) {
-        Post.getAllMix()
+function getAll() {
+    return function (req, res, next) {
+        Post.GetAllPostsAccessSwitcher(req.body.helpData.isAdmin)
             .then(function (list) {
                 res.json({ success: true, data: list });
-            })
-            .catch(function (error) {
-                res.status(error.statusCode || 404).send({ success: false, description: error });
-            });
-    };
-}
-
-/**
- * @description get all public Posts of All Users
- * @hasaccess All
- * @url GET: posts/public
- */
-function getAllPub() {
-    return function (req, res) {
-        Post.getAllPub()
-            .then(function (list) {
-                res.json({ success: true, data: list });
-            })
-            .catch(function (error) {
-                res.status(error.statusCode || 404).send({ success: false, description: error });
-            });
+            }).catch(next);
     };
 }
 
@@ -176,15 +145,12 @@ function getAllPub() {
  * @request {"user_id": "int", "title": "string", "content": "string"}
  */
 function newPost() {
-    return function (req, res) {
+    return function (req, res, next) {
         delete req.body.helpData;
         Post.CREATE(req.body)
             .then(function (post) {
                 res.status(201).json({ success: true, data: post });
-            })
-            .catch(function (error) {
-                res.status(error.statusCode || 404).send({ success: false, description: error });
-            });
+            }).catch(next);
     };
 }
 
@@ -195,14 +161,11 @@ function newPost() {
  * @url GET: posts/:id
  */
 function getPost() {
-    return function (req, res) {
-        Post.getById(req.params.id)
+    return function (req, res, next) {
+        Post.GetById(req.params.id)
             .then(function (post) {
                 res.json({ success: true, data: post });
-            })
-            .catch(function (error) {
-                res.status(error.statusCode || 404).send({ success: false, description: error });
-            });
+            }).catch(next);
     };
 }
 
@@ -213,15 +176,12 @@ function getPost() {
  * @request {"title": "string", "content": "string"}
  */
 function update() {
-    return function (req, res) {
+    return function (req, res, next) {
         delete req.body.helpData;
         Post.UPDATE(req.params.id, req.body)
             .then(function (updated_post) {
                 res.json({ success: true, data: updated_post });
-            })
-            .catch(function (error) {
-                res.status(error.statusCode || 404).send({ success: false, description: error });
-            });
+            }).catch(next);
     };
 }
 
@@ -231,14 +191,11 @@ function update() {
  * @url DELETE posts/:id
  */
 function remove() {
-    return function (req, res) {
+    return function (req, res, next) {
         Post.REMOVE(req.params.id)
             .then(function () {
-                res.json({ success: true, description: 'Post #' + req.params.id + ' was removed' });
-            })
-            .catch(function (error) {
-                res.status(error.statusCode || 404).send({ success: false, description: error });
-            });
+                res.json({ success: true, description: `Post #${req.params.id} was removed` });
+            }).catch(next);
     };
 }
 

@@ -74,7 +74,7 @@ function _checkExistingTags (data, tag_id) {
  * ------------------------------
  */
 
-Post.getById = function (id) {
+Post.GetById = function (id) {
     return this.query()
         .findById(id)
         .eager('tags')
@@ -87,7 +87,12 @@ Post.getById = function (id) {
         });
 };
 
-Post.getAllPub = function () {
+Post.GetAllPostsAccessSwitcher = function (isAdmin) {
+    if (isAdmin) return this.GetAllMix();
+    return this.GetAllPub();
+};
+
+Post.GetAllPub = function () {
     return this.query()
         .where({ private: false })
         .eager('tags')
@@ -100,7 +105,7 @@ Post.getAllPub = function () {
         });
 };
 
-Post.getAllMix = function () {
+Post.GetAllMix = function () {
     return this.query()
         .eager('tags')
         .then(function (data) {
@@ -112,7 +117,7 @@ Post.getAllMix = function () {
         });
 };
 
-Post.attachTagToPost = function (post_id, tag_id) {
+Post.AttachTagToPost = function (post_id, tag_id) {
     return this.query()
         .findById(post_id)
         .then(function (post) {
@@ -123,7 +128,7 @@ Post.attachTagToPost = function (post_id, tag_id) {
         });
 };
 
-Post.detachTagFromPost = function (post_id, tag_id) {
+Post.DetachTagFromPost = function (post_id, tag_id) {
     return this.query()
         .findById(post_id)
         .then(function (post) {
@@ -137,7 +142,7 @@ Post.detachTagFromPost = function (post_id, tag_id) {
 /**
  * @description if TAG already exist in POST model >> throw error message
  */
-Post.checkTagByIdInPost = function (post_id, tag_id) {
+Post.CheckTagByIdInPost = function (post_id, tag_id) {
     return this.query()
         .findById(post_id)
         .eager('tags')

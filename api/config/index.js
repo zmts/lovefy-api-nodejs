@@ -34,7 +34,7 @@ module.exports = {
         port: 5432,
         user: 'zandr',
         password: '',
-        db_name: 'lovefi_db',
+        db_name: 'lovefy3_db',
         charset: 'utf8'
     },
 

@@ -75,18 +75,14 @@ function _isOwnerIdInBody(req) {
  */
 
 /**
- * @description check Authorization status and role
+ * @description if user is ADMINROLES >> add isAdmin = true to helpData
  */
-module.exports.isLogin = function () {
+module.exports.isAdmin = function () {
     return function (req, res, next) {
         if ( _isAdminUser(req) ) {
             req.body.helpData.isAdmin = true;
             return next();
         }
-        // if user is login
-        if ( req.body.helpData ) return next();
-        // else user is Anonymous
-        req.body.helpData.userId = false;
         next();
     };
 };
@@ -193,7 +189,6 @@ module.exports.checkItemAccess = {
 
     create: function () {
         return function (req, res, next) {
-            if ( _isAdminUser(req) ) return next();
             if ( _isOwnerIdInBody(req) ) return next();
             res.status(403).send({
                 success: false,

@@ -25,7 +25,7 @@ router.get('/find',
  */
 router.get('/:id/posts',
     auth.checkToken(),
-    sec.isLogin(),
+    sec.isAdmin(),
     getPostsByTagId()
 );
 

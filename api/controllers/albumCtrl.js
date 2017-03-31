@@ -67,7 +67,7 @@ router.post('/:id/detach-tag/:tag_id',
  */
 router.get('/',
     auth.checkToken(),
-    sec.isLogin(),
+    sec.isAdmin(),
     getAll()
 );
 router.get('/:id',

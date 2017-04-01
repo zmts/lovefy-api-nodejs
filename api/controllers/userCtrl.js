@@ -52,12 +52,13 @@ router.get('/check-email-availability',
  */
 
 /**
- * @return ADMINROLES or OWNER >> all mix POSTs by user_id
- * @return Anonymous or NotOwner >> all public POST's by user_id
+ * @description get POST's by user_id
+ * @return OWNER >> all mix POST's by :user_id
+ * @return not OWNER >> all public POST's by user_id
  */
 router.get('/:id/posts/',
     auth.checkToken(),
-    sec.checkOwnerIdInParams(),
+    sec.isOwnerIdInParams(),
     getPostsByUserId()
 );
 
@@ -87,7 +88,8 @@ router.get('/:id',
 /**
  * @description create new User(Registration)
  * @hasaccess only Anonymous
- * @request {"name": "string", "email": "string", "password": "string"}
+ * @return new USER model
+ * @request { [name: string], [email: string], [password: string] }
  * "password" field from request transfers and saves to DB as "password_hash"
  */
 router.post('/',
@@ -125,100 +127,80 @@ router.delete('/:id',
  */
 
 function getAllUsers() {
-    return function (req, res) {
+    return function (req, res, next) {
         User.GETall()
             .then(function (list) {
                 res.json({ success: true, data: list });
-            })
-            .catch(function (error) {
-                res.status(error.statusCode || 404).send({ success: false, description: error.message || error });
-            });
+            }).catch(next);
     };
 }
 
 function getPostsByUserId() {
-    return function (req, res) {
-        User.getPostsByUserIdAccessSwitcher(req.params.id, req.body.helpData.isOwner)
+    return function (req, res, next) {
+        User.GETbyId(req.params.id)
+            .then(function () {
+                if (req.body.helpData.isOwner) return User.GetMixPostsByUserId(req.params.id);
+                return User.GetPubPostsByUserId(req.params.id);
+            })
             .then(function (list) {
                 res.json({ success: true, data: list });
-            })
-            .catch(function (error) {
-                res.status(error.statusCode || 404).send({ success: false, description: error.message || error });
-            });
+            }).catch(next);
     };
 }
 
 function newUser() {
-    return function (req, res) {
+    return function (req, res, next) {
         delete req.body.helpData;
         User.CREATE(req.body)
             .then(function (user) {
                 res.json(user);
-            })
-            .catch(function (error) {
-                res.status(error.statusCode || 404).send({ success: false, description: error.message || error });
-            });
+            }).catch(next);
     };
 }
 
 function getUser() {
-    return function (req, res) {
+    return function (req, res, next) {
         User.GETbyId(req.params.id)
             .then(function (user) {
                 res.json({ success: true, data: user });
-            })
-            .catch(function (error) {
-                res.status(error.statusCode || 404).send({ success: false, description: error.message || error });
-            });
+            }).catch(next);
     };
 }
 
 function update() {
-    return function (req, res) {
+    return function (req, res, next) {
         delete req.body.helpData;
         User.UPDATE(req.params.id, req.body)
             .then(function (updated_user) {
                 res.json({ success: true, data: updated_user });
-            })
-            .catch(function (error) {
-                res.status(error.statusCode || 404).send({ success: false, description: error.message || error });
-            });
+            }).catch(next);
     };
 }
 
 function remove() {
-    return function (req, res) {
+    return function (req, res, next) {
         User.REMOVE(req.params.id)
             .then(function () {
                 res.json({ success: true, description: 'User #'+ req.params.id +' was removed' });
-            })
-            .catch(function (error) {
-                res.status(error.statusCode || 404).send({ success: false, description: error.message || error });
-            });
+            }).catch(next);
     };
 }
 
 function checkNameAvailability() {
-    return function (req, res) {
-        User.getByName(req.query.q)
+    return function (req, res, next) {
+        User.GetByName(req.query.q)
             .then(function (user) {
                 res.json({ success: true, data: user });
-            })
-            .catch(function (error) {
-                res.status(error.statusCode || 404).send({ success: false, description: error.message || error });
-            });
+            }).catch(next);
     };
 }
 
 function checkEmailAvailability() {
-    return function (req, res) {
-        User.getByEmail(req.query.q)
+    return function (req, res, next) {
+        User.GetByEmail(req.query.q)
             .then(function (user) {
                 res.json({ success: true, data: user });
-            })
-            .catch(function (error) {
-                res.status(error.statusCode || 404).send({ success: false, description: error.message || error });
-            });
+            }).catch(next);
     };
 }
 

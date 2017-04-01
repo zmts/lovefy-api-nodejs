@@ -75,7 +75,7 @@ function _isOwnerIdInBody(req) {
  */
 
 /**
- * @description if user is ADMINROLES >> add { isAdmin: true } to helpData
+ * @description if token.userRole is ADMINROLES >> add { isAdmin: true } to helpData
  */
 module.exports.isAdmin = function () {
     return function (req, res, next) {
@@ -88,10 +88,9 @@ module.exports.isAdmin = function () {
 };
 
 /**
- * @description check Owner status
- * and grant access to read public or full items list
+ * @description if token.userId === params.user_id >> add { isOwner: true } to helpData
  */
-module.exports.checkOwnerIdInParams = function () {
+module.exports.isOwnerIdInParams = function () {
     return function (req, res, next) {
         _tokenUIDisEqualsParamsUID(req) ? req.body.helpData.isOwner = true : req.body.helpData.isOwner = false;
         return next();
@@ -100,7 +99,6 @@ module.exports.checkOwnerIdInParams = function () {
 
 /**
  * @description check ADMINROLES permission
- * @required: 'auth.checkToken' middleware
  */
 module.exports.checkAdminRoleAccess = function () {
     return function (req, res, next) {
@@ -114,7 +112,6 @@ module.exports.checkAdminRoleAccess = function () {
 
 /**
  * @description check SUPERUSER permission
- * @required: 'auth.checkToken' middleware
  */
 module.exports.checkSUAccess = function () {
     return function (req, res, next) {

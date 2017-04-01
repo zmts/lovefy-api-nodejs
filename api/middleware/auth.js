@@ -29,7 +29,7 @@ function _decryptToken(str) {
 
 module.exports.makeToken = function () {
     return function (req, res) {
-        User.getByEmail(req.body.email)
+        User.GetByEmail(req.body.email)
             .then(function (user) {
                 var playload = {
                     username: user.name,
@@ -130,7 +130,7 @@ module.exports.hashPassword = function () {
 
 module.exports.checkPassword = function () {
     return function (req, res, next) {
-        User.getByEmail(req.body.email)
+        User.GetByEmail(req.body.email)
             .then(function (user) {
                 bcrypt.compare(req.body.password, user.password_hash, function(error, result) {
                     if (result) return next();

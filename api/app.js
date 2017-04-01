@@ -49,7 +49,7 @@ if (app.get('env') === 'development') {
 
         res.status(error.status || 500).json({
             success: false,
-            description: error.message || error,
+            description: error,
             env: 'development/regular',
             handled_in: 'app.js'
         });

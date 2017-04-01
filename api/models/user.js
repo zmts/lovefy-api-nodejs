@@ -20,7 +20,7 @@ User.jsonSchema = {
         name: { type: 'string', minLength: 3, maxLength: 30 },
         email: { type: 'string', format: 'email', minLength: 5, maxLength: 50 },
         password_hash: { type: 'string' },
-        role: { type: 'string' },
+        // role: { type: 'string' }, user don't have ability to set "role" via registration process
         created_at: { type: 'string', format: 'date-time' },
         updated_at: { type: 'string', format: 'date-time' }
     }
@@ -50,7 +50,8 @@ User.prototype.$formatJson = function (json) {
     return json;
 };
 
-User.prototype.$beforeInsert = function () {
+User.prototype.$beforeInsert = function (json) {
+    global.console.log(json);
     // this.$validate();
 };
 
@@ -64,7 +65,7 @@ User.prototype.$beforeUpdate = function () {
  * ------------------------------
  */
 
-User.getByEmail = function (email) {
+User.GetByEmail = function (email) {
     if (!email) return Promise.reject('Query not defined');
     return this.query().where({ email: email })
         .then(function (data) {
@@ -76,7 +77,7 @@ User.getByEmail = function (email) {
         });
 };
 
-User.getByName = function (name) {
+User.GetByName = function (name) {
     if (!name) return Promise.reject('Query not defined');
     return this.query().where({ name: name })
         .then(function (data) {
@@ -88,20 +89,7 @@ User.getByName = function (name) {
         });
 };
 
-User.getPostsByUserIdAccessSwitcher = function (user_id, isOwner) {
-    let that = this;
-
-    return this.GETbyId(user_id)
-        .then(function () {
-            if (isOwner) return that.getMixPostsByUserId(user_id);
-            return that.getPubPostsByUserId(user_id);
-        })
-        .catch(function (error) {
-            throw error.message || error;
-        });
-};
-
-User.getMixPostsByUserId = function (id) {
+User.GetMixPostsByUserId = function (id) {
     return this.query()
         .where({ id: id })
         .eager('posts')
@@ -114,7 +102,7 @@ User.getMixPostsByUserId = function (id) {
         });
 };
 
-User.getPubPostsByUserId = function (id) {
+User.GetPubPostsByUserId = function (id) {
     return this.query()
         .where({ id: id })
         .eager('posts')

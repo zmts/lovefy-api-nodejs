@@ -7,7 +7,6 @@ const _ = require('lodash');
 
 const MainModel = require('./main');
 const Photo = require('./photo');
-const Tag = require('./tag');
 const PHOTO_DIR = require('../config/').photoDir;
 
 function Album() {
@@ -191,17 +190,6 @@ Album.GetById = function (id) {
 };
 
 /**
- * @description look getAllPub(), getAllOwnAndOtherPublic()
- * @param user_id
- * @param isAdmin BOOLEAN
- */
-Album.GetAllAccessSwitcher = function (user_id, isAdmin) {
-    if (isAdmin) return this.GetAll(); // return full list(private and public) of all USER's
-    if (user_id) return this.GetAllOwnAndOtherPublic(user_id);
-    return this.GetAllPub();
-};
-
-/**
  * @return all mix ALBUM's
  */
 Album.GetAll = function () {
@@ -222,24 +210,6 @@ Album.GetAll = function () {
 Album.GetAllPub = function () {
     return this.query()
         .where({ private: false })
-        .eager('tags')
-        .then(function (data) {
-            if (!data.length) throw { message: 'Empty response' };
-            return data;
-        })
-        .catch(function (error) {
-            throw error.message || error;
-        });
-};
-
-/**
- * @param user_id
- * @return all own ALBUM's + all public ALBUM's others USER's
- */
-Album.GetAllOwnAndOtherPublic = function (user_id) {
-    return this.query()
-        .where({ user_id: user_id })
-        .orWhere({ private: false })
         .eager('tags')
         .then(function (data) {
             if (!data.length) throw { message: 'Empty response' };
@@ -338,45 +308,6 @@ Album.EraseAlbum = function (album_id) {
         })
         .catch(function (error) {
             throw error.message || error;
-        });
-};
-
-/**
- * @description create TAG >> attach TAG to ALBUM
- * @param tagBody
- * @param album_id
- * @return tag_id
- */
-Album.CreateAndAttachTagToAlbum = function (tagBody, album_id) {
-    let that = this;
-
-    return Tag.CREATE(tagBody)
-        .then(function (tag) {
-            return that.AttachTagToAlbum(album_id, tag.id);
-        })
-        .catch(function (error) {
-            throw error;
-        });
-};
-
-/**
- * @description check TAG existing in ALBUM >> attach TAG to ALBUM
- * @param album_id
- * @param tag_id
- * @return tag_id
- */
-Album.AttachTagToAlbumWrapper = function (album_id, tag_id) {
-    let that = this;
-
-    return this.CheckTagByIdInAlbum(album_id, tag_id)
-        .then(function () {
-            return that.AttachTagToAlbum(album_id, tag_id);
-        })
-        .then(function (tag_id) {
-            return tag_id;
-        })
-        .catch(function (error) {
-            throw error;
         });
 };
 

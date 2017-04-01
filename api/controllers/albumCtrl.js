@@ -4,6 +4,7 @@ const express = require('express');
 const router = express.Router();
 
 const Album = require('../models/album');
+const Tag = require('../models/tag');
 const auth = require('../middleware/auth');
 const sec = require('../middleware/security');
 const upload = require('../middleware/upload');
@@ -98,16 +99,25 @@ router.delete('/:id',
 /**
  * @description get all Albums list
  * @url GET: albums/
- * @return owner, ADMINROLES >> all own ALBUM's + all public ALBUM's others USER's
- * @return Anonymous, NotOwner >> all public ALBUM's
+ * @return ADMINROLES >> fetch all mix ALBUM's of all users
+ * @return not ADMINROLES >> fetch all public ALBUM's of all users
  */
 function getAll() {
     return function (req, res, next) {
-        Album.GetAllAccessSwitcher(+req.body.helpData.userId, req.body.helpData.isAdmin)
+        _getAllAccessSwitcher(req.body.helpData.isAdmin)
             .then(function (list) {
                 res.json({ success: true, data: list });
             }).catch(next);
     };
+}
+
+/**
+ * @description getAll access helper
+ * @param isAdmin BOOLEAN
+ */
+function _getAllAccessSwitcher(isAdmin) {
+    if (isAdmin) return Album.GetAll();
+    return Album.GetAllPub();
 }
 
 /**
@@ -244,7 +254,10 @@ function processOnePhotoToAlbum() {
 function createAndAttachTagToAlbum() {
     return function (req, res, next) {
         delete req.body.helpData;
-        Album.CreateAndAttachTagToAlbum(req.body, req.params.id)
+        Tag.CREATE(req.body)
+            .then(function (tag) {
+                return Album.AttachTagToAlbum(req.params.id, tag.id);
+            })
             .then(function (tag_id) {
                 res.status(201).json({ success: true, data: `Tag#${tag_id} was created and attached to ${req.params.id}` });
             }).catch(next);
@@ -252,13 +265,16 @@ function createAndAttachTagToAlbum() {
 }
 
 /**
- * @description attach TAG to ALBUM
+ * @description check TAG existing in ALBUM >> attach TAG to ALBUM
  * @hasaccess OWNER, ADMINROLES
  * @url POST: albums/:id/attach-tag/:tag_id
  */
 function attachTagToAlbum() {
     return function (req, res, next) {
-        Album.AttachTagToAlbumWrapper(req.params.id, req.params.tag_id)
+        Album.CheckTagByIdInAlbum(req.params.id, req.params.tag_id)
+            .then(function () {
+                return Album.AttachTagToAlbum(req.params.id, req.params.tag_id);
+            })
             .then(function (tag_id) {
                 res.json({ success: true, data: `Tag#${tag_id} was attached to Album#${req.params.id}` });
             }).catch(next);

@@ -116,7 +116,7 @@ router.post('/',
  */
 router.patch('/:id',
     auth.checkToken(),
-    sec.checkUserProfileAccess(),
+    sec.checkOwnerIdInParams(),
     auth.hashPassword(),
     update()
 );
@@ -127,7 +127,7 @@ router.patch('/:id',
  */
 router.delete('/:id',
     auth.checkToken(),
-    sec.checkUserProfileAccess(),
+    sec.checkOwnerIdInParams(),
     remove()
 );
 

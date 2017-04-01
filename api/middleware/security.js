@@ -98,6 +98,19 @@ module.exports.isOwnerIdInParams = function () {
 };
 
 /**
+ * @description check logged in user permission
+ */
+module.exports.checkLoggedInUserAccess = function () {
+    return function (req, res, next) {
+        if (req.body.helpData.userId) return next();
+        res.status(403).send({
+            success: false,
+            description: 'Forbidden. Only for logged in users'
+        });
+    };
+};
+
+/**
  * @description check ADMINROLES permission
  */
 module.exports.checkAdminRoleAccess = function () {
@@ -129,7 +142,7 @@ module.exports.checkSUAccess = function () {
  * @hasaccess: ADMINROLES, OWNER
  * @required: 'auth.checkToken' middleware
  */
-module.exports.checkUserProfileAccess = function () {
+module.exports.checkOwnerIdInParams = function () {
     return function (req, res, next) {
         if ( _tokenUIDisEqualsParamsUID(req) ) return next();
         res.status(403).send({

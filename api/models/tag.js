@@ -35,6 +35,18 @@ Tag.relationMappings = {
             },
             to: 'tags.id'
         }
+    },
+    albums: {
+        relation: MainModel.ManyToManyRelation,
+        modelClass: __dirname + '/album',
+        join: {
+            from: 'albums.id',
+            through: {
+                from: 'albums_tags.album_id',
+                to: 'albums_tags.tag_id'
+            },
+            to: 'tags.id'
+        }
     }
 };
 
@@ -65,114 +77,58 @@ Tag.prototype.$beforeUpdate = function () {
  * ------------------------------
  */
 
-Tag.findByString = function (str) {
+Tag.FindByString = function (str) {
     if (!str) return Promise.reject('Query not defined');
     return this.query()
         .where('name', 'like', `%${str}%`)
         .limit(10)
         .then(function (data) {
-            if (!data.length) throw { message: 'Empty response' };
+            if (!data.length) throw { message: 'Empty response', status: 404 };
             return data;
         })
         .catch(function (error) {
-            throw error.message || error;
+            throw error;
         });
 };
 
 /**
- * @param tagId
- * @returns All Mix POSTS list
- * @hasaccess ADMINROLES only
+ * @param tag_id
+ * @returns only public POST's list
  */
-Tag.getAllMixPostsByTagId = function (tagId) {
+Tag.GetPubPostsByTagId = function (tag_id) {
     return this.query()
-        .findById(tagId)
-        .eager('posts')
-        .then(function (data) {
-            if (!data) throw { message: 'Empty response' };
-            return data;
-        })
-        .catch(function (error) {
-            throw error.message || error;
-        });
-};
-
-/**
- * @param tagId
- * @returns only public POSTS list
- */
-Tag.getAllPublicPostsByTagId = function (tagId) {
-    return this.query()
-        .findById(tagId)
+        .findById(tag_id)
         .modifyEager('posts', function(builder) {
             builder.where({ private: false }).orderBy('user_id', 'updated_at');
         })
         .eager('posts')
         .then(function (data) {
-            if (!data) throw { message: 'Empty response' };
+            if (!data) throw { message: 'Empty response', status: 404 };
             return data;
         })
         .catch(function (error) {
-            throw error.message || error;
+            throw error;
         });
 };
 
 /**
- * @param userId
- * @param tagId
- * @returns only Own(mixed) POSTS
+ * @param tag_id
+ * @returns only public ALBUM's list
  */
-Tag.getOwnPostsByTagId = function (userId, tagId) {
+Tag.GetPubAlbumsByTagId = function (tag_id) {
     return this.query()
-        .findById(tagId)
-        .eager('posts')
-        .modifyEager('posts', function(builder) {
-            builder.where({ user_id: userId }).orderBy('updated_at');
+        .findById(tag_id)
+        .modifyEager('albums', function(builder) {
+            builder.where({ private: false }).orderBy('user_id', 'updated_at');
         })
+        .eager('albums')
         .then(function (data) {
-            if (!data) throw { message: 'Empty response' };
+            if (!data) throw { message: 'Empty response', status: 404 };
             return data;
         })
         .catch(function (error) {
-            throw error.message || error;
+            throw error;
         });
-};
-
-/**
- * @param userId
- * @param tagId
- * @returns All Own(mixed) POSTS + other USERS public POSTS
- */
-Tag.getOwnAndOtherPubPostsByTagId = function (userId, tagId) {
-    return this.query()
-        .findById(tagId)
-        .eager('posts')
-        .modifyEager('posts', function(builder) {
-            builder.where({ user_id: userId })
-                .orWhere({ private: false })
-                .orderBy('user_id', 'updated_at');
-        })
-        .then(function (data) {
-            if (!data) throw { message: 'Empty response' };
-            return data;
-        })
-        .catch(function (error) {
-            throw error.message || error;
-        });
-};
-
-/**
- * @description check permissions and response with related data
- * @param options(userId, tagId, isOwn, isAdmin)
- */
-Tag.getPostsByTagIdAccessSwitcher = function (options) {
-    if ( options.isAdmin && options.isOwn) return this.getOwnPostsByTagId(options.userId, options.tagId);
-    if ( options.isAdmin ) return this.getAllMixPostsByTagId(options.tagId);
-
-    if ( options.userId && options.isOwn ) return this.getOwnPostsByTagId(options.userId, options.tagId);
-    if ( options.userId ) return this.getOwnAndOtherPubPostsByTagId(options.userId, options.tagId);
-
-    return this.getAllPublicPostsByTagId(options.tagId);
 };
 
 module.exports = Tag;

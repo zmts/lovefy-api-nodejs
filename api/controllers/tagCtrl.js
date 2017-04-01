@@ -8,46 +8,87 @@ const auth = require('../middleware/auth');
 const sec = require('../middleware/security');
 
 /**
- * ------------------------------
+ * ------------------------------------------------------------
  * @BASE_URL: tags/
- * ------------------------------
+ * ------------------------------------------------------------
  */
 
 /**
  * @OTHER_ROUTES
+ */
+
+/**
+ * @description find tag by substring
+ * @url GET: tags/find?q=sometagname
+ * @hasaccess: All
  */
 router.get('/find',
     findByString()
 );
 
 /**
+ * ------------------------------------------------------------
  * @RELATED_ROUTES
+ * ------------------------------------------------------------
+ */
+
+/**
+ * @return all public POST's of all Users by tag_id
  */
 router.get('/:id/posts',
-    auth.checkToken(),
-    sec.isAdmin(),
     getPostsByTagId()
 );
 
 /**
+ * @return all public ALBUM's of all users by tag_id
+ */
+router.get('/:id/albums',
+    getAlbumsByTagId()
+);
+
+/**
+ * ------------------------------------------------------------
  * @BASE_ROUTES
+ * ------------------------------------------------------------
+ */
+
+/**
+ * @description get all Tags list
  */
 router.get('/',
     getAll()
 );
+
+/**
+ * @description get Tag by id
+ */
 router.get('/:id',
     getTag()
 );
+
+/**
+ * @description create Tag
+ * @request {"name": "string"}
+ */
 router.post('/',
     auth.checkToken(),
-    sec.checkAdminRoleAccess(),
+    sec.checkLoggedInUserAccess(),
     newTag()
 );
+
+/**
+ * @description update Tag by id
+ * @request {"name": "string"}
+ */
 router.patch('/:id',
     auth.checkToken(),
     sec.checkAdminRoleAccess(),
     update()
 );
+
+/**
+ * @description remove Tag from db by id
+ */
 router.delete('/:id',
     auth.checkToken(),
     sec.checkAdminRoleAccess(),
@@ -55,114 +96,68 @@ router.delete('/:id',
 );
 
 /**
- * @description find tag by substring
- * @url GET: tags/find?q=sometagname
- * @hasaccess: All
+ * ------------------------------------------------------------
+ * @CONTROLLERS
+ * ------------------------------------------------------------
  */
+
 function findByString() {
-    return function (req, res) {
-        Tag.findByString(req.query.q)
+    return function (req, res, next) {
+        Tag.FindByString(req.query.q)
             .then(function (list) {
                 res.json({ success: true, data: list });
-            })
-            .catch(function (error) {
-                res.status(error.statusCode || 404).send({ success: false, description: error });
-            });
+            }).catch(next);
     };
 }
 
-/**
- * @description get Tag by id
- * @hasaccess All
- * @url GET: tags/:id
- */
 function getTag () {
-    return function (req, res) {
+    return function (req, res, next) {
         Tag.GETbyId(req.params.id)
             .then(function (model) {
                 res.json({ success: true, data: model });
-            })
-            .catch(function (error) {
-                res.status(error.statusCode || 404).send({ success: false, description: error });
-            });
+            }).catch(next);
     };
 }
 
-/**
- * @description get Posts by tag id
- *
- * @url GET: tags/:id/posts
- * @hasaccess Owner of POST model >> response with own POST's list and other USERS public POST's
- * @hasaccess ADMINROLES >> response All mixed POSTS of all USER's
- * @hasaccess Anonymous, NotOwner >> response only with public POSTS of all USER's
- *
- * @url GET: tags/:id/posts?own=true
- * @hasaccess Owner of POST model >> response only with own POST's list
- * @hasaccess ADMINROLES >> response only with own POST's list
- * @hasaccess Anonymous, NotOwner >> response only with public POSTS of all USER's
- */
 function getPostsByTagId () {
-    return function (req, res) {
-        let requestOptions = {
-            userId: req.body.helpData.userId,
-            tagId: req.params.id,
-            isOwn: req.query.own ? JSON.parse(req.query.own) : false,
-            isAdmin: req.body.helpData.isAdmin
-        };
-
-        Tag.getPostsByTagIdAccessSwitcher(requestOptions)
+    return function (req, res, next) {
+        Tag.GetPubPostsByTagId(req.params.id)
             .then(function (list) {
                 res.json({ success: true, data: list });
-            })
-            .catch(function (error) {
-                res.status(error.statusCode || 404).send({ success: false, description: error });
-            });
+            }).catch(next);
     };
 }
 
-/**
- * @description get all Tags list
- * @url GET: tags/
- * @hasaccess All
- */
+function getAlbumsByTagId() {
+    return function (req, res, next) {
+        Tag.GetPubAlbumsByTagId(req.params.id)
+            .then(function (list) {
+                res.json({ success: true, data: list });
+            }).catch(next);
+    };
+}
+
 function getAll() {
-    return function (req, res) {
+    return function (req, res, next) {
         Tag.GETall()
             .then(function (list) {
                 res.json({ success: true, data: list });
-            })
-            .catch(function (error) {
-                res.status(error.statusCode || 404).send({ success: false, description: error });
-            });
+            }).catch(next);
     };
 }
 
-/**
- * @description create Tag
- * @url POST: tags/
- * @request {"name": "string"}
- * @hasaccess ADMINROLES
- */
 function newTag() {
-    return function (req, res) {
+    return function (req, res, next) {
+        delete req.body.helpData;
         Tag.CREATE(req.body)
             .then(function (tag) {
                 res.json({ success: true, data: tag });
-            })
-            .catch(function (error) {
-                res.status(error.statusCode || 400).send({ success: false, description: error });
-            });
+            }).catch(next);
     };
 }
 
-/**
- * @description update Tag by id
- * @url PATCH: tags/:id
- * @request {"name": "string"}
- * @hasaccess ADMINROLES
- */
 function update() {
-    return function (req, res) {
+    return function (req, res, next) {
         delete req.body.helpData;
         Tag.GETbyId(req.params.id)
             .then(function (tag) {
@@ -170,30 +165,19 @@ function update() {
             })
             .then(function (updated_tag) {
                 res.json({ success: true, data: updated_tag });
-            })
-            .catch(function (error) {
-                res.status(error.statusCode || 404).send({ success: false, description: error });
-            });
+            }).catch(next);
     };
 }
 
-/**
- * @description remove Tag from db by id
- * @url: DELETE: tags/:id
- * @hasaccess ADMINROLES
- */
 function remove() {
-    return function (req, res) {
+    return function (req, res, next) {
         Tag.GETbyId(req.params.id)
             .then(function (model) {
                 return Tag.REMOVE(model.id);
             })
             .then(function () {
-                res.json({ success: true, description: 'Tag #' + req.params.id + ' was removed' });
-            })
-            .catch(function (error) {
-                res.status(error.statusCode || 404).send({ success: false, description: error });
-            });
+                res.json({ success: true, description: `Tag #${req.params.id} was removed` });
+            }).catch(next);
     };
 }
 

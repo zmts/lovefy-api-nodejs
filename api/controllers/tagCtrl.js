@@ -112,7 +112,7 @@ function findByString() {
 
 function getTag () {
     return function (req, res, next) {
-        Tag.GETbyId(req.params.id)
+        Tag.GetById(req.params.id)
             .then(function (model) {
                 res.json({ success: true, data: model });
             }).catch(next);

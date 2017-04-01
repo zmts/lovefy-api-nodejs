@@ -92,6 +92,30 @@ Tag.FindByString = function (str) {
 };
 
 /**
+ * @param id
+ * @return ALBUM with all related PHOTO's and TAG's
+ */
+Tag.GetById = function (id) {
+    return this.query()
+        .findById(id)
+        .eager('posts')
+        .mergeEager('albums')
+        .modifyEager('posts', function(builder) { // TODO test is
+            builder.orderBy('updated_at');
+        })
+        .modifyEager('albums', function(builder) { // TODO test is
+            builder.orderBy('updated_at');
+        })
+        .then(function (data) {
+            if (!data) throw { message: 'Empty response', status: 404 };
+            return data;
+        })
+        .catch(function (error) {
+            throw error;
+        });
+};
+
+/**
  * @param tag_id
  * @returns only public POST's list
  */

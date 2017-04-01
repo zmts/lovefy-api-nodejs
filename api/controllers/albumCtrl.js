@@ -72,6 +72,8 @@ router.get('/',
     getAll()
 );
 router.get('/:id',
+    auth.checkToken(),
+    sec.checkItemAccess.read(Album),
     getAlbum()
 );
 router.post('/',

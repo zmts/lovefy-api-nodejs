@@ -34,6 +34,14 @@ User.relationMappings = {
             from: 'users.id',
             to: 'posts.user_id'
         }
+    },
+    albums: {
+        relation: MainModel.HasManyRelation,
+        modelClass: __dirname + '/album',
+        join: {
+            from: 'users.id',
+            to: 'albums.user_id'
+        }
     }
 };
 
@@ -50,8 +58,7 @@ User.prototype.$formatJson = function (json) {
     return json;
 };
 
-User.prototype.$beforeInsert = function (json) {
-    global.console.log(json);
+User.prototype.$beforeInsert = function () {
     // this.$validate();
 };
 
@@ -89,10 +96,14 @@ User.GetByName = function (name) {
         });
 };
 
+/**
+ * @param id
+ * @return mix POST's by user_id (with related TAG's)
+ */
 User.GetMixPostsByUserId = function (id) {
     return this.query()
         .where({ id: id })
-        .eager('posts')
+        .eager('posts.tags')
         .then(function (data) {
             if (!data[0].posts.length) throw { message: 'Empty response' };
             return data[0].posts;
@@ -102,16 +113,57 @@ User.GetMixPostsByUserId = function (id) {
         });
 };
 
+/**
+ * @param id
+ * @return public POST's by user_id (with related TAG's)
+ */
 User.GetPubPostsByUserId = function (id) {
     return this.query()
         .where({ id: id })
-        .eager('posts')
+        .eager('posts.tags')
         .modifyEager('posts', function(builder) {
             builder.where({ private: false });
         })
         .then(function (data) {
             if (!data[0].posts.length) throw { message: 'Empty response' };
             return data[0].posts;
+        })
+        .catch(function (error) {
+            throw error.message || error;
+        });
+};
+
+/**
+ * @param id
+ * @return mix ALBUM's by user_id (with related TAG's)
+ */
+User.GetMixAlbumsByUserId = function (id) {
+    return this.query()
+        .where({ id: id })
+        .eager('albums.tags')
+        .then(function (data) {
+            if (!data[0].albums.length) throw { message: 'Empty response' };
+            return data[0].albums;
+        })
+        .catch(function (error) {
+            throw error.message || error;
+        });
+};
+
+/**
+ * @param id
+ * @return public ALBUM's by user_id (with related TAG's)
+ */
+User.GetPubAlbumsByUserId = function (id) {
+    return this.query()
+        .where({ id: id })
+        .eager('albums.tags')
+        .modifyEager('albums', function(builder) {
+            builder.where({ private: false });
+        })
+        .then(function (data) {
+            if (!data[0].albums.length) throw { message: 'Empty response' };
+            return data[0].albums;
         })
         .catch(function (error) {
             throw error.message || error;

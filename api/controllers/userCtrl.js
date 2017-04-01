@@ -63,6 +63,17 @@ router.get('/:id/posts/',
 );
 
 /**
+ * @description get ALBUM's by user_id
+ * @return OWNER >> all mix ALBUM's by :user_id
+ * @return not OWNER >> all public ALBUM's by user_id
+ */
+router.get('/:id/albums/',
+    auth.checkToken(),
+    sec.isOwnerIdInParams(),
+    getAlbumsByUserId()
+);
+
+/**
  * ------------------------------------------------------------
  * @BASE_ROUTES
  * ------------------------------------------------------------
@@ -141,6 +152,19 @@ function getPostsByUserId() {
             .then(function () {
                 if (req.body.helpData.isOwner) return User.GetMixPostsByUserId(req.params.id);
                 return User.GetPubPostsByUserId(req.params.id);
+            })
+            .then(function (list) {
+                res.json({ success: true, data: list });
+            }).catch(next);
+    };
+}
+
+function getAlbumsByUserId() {
+    return function (req, res, next) {
+        User.GETbyId(req.params.id)
+            .then(function () {
+                if (req.body.helpData.isOwner) return User.GetMixAlbumsByUserId(req.params.id);
+                return User.GetPubAlbumsByUserId(req.params.id);
             })
             .then(function (list) {
                 res.json({ success: true, data: list });

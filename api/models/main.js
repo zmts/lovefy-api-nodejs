@@ -18,7 +18,7 @@ MainModel.CREATE = function (data) {
 };
 
 MainModel.GETall = function () {
-    return this.query()
+    return this.query().orderBy('updated_at', 'desc')
         .then(function (data) {
             if (!data.length) throw { message: 'Empty response', status: 404 };
             return data;

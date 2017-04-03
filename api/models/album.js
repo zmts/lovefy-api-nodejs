@@ -164,7 +164,7 @@ Album.Create = function (data) {
             return model;
         })
         .catch(function (error) {
-            throw error.message;
+            throw error;
         });
 };
 
@@ -193,14 +193,14 @@ Album.GetById = function (id) {
  * @return all mix ALBUM's
  */
 Album.GetAll = function () {
-    return this.query()
+    return this.query().orderBy('updated_at', 'desc')
         .eager('tags')
         .then(function (data) {
-            if (!data.length) throw { message: 'Empty response' };
+            if (!data.length) throw { message: 'Empty response', status: 404 };
             return data;
         })
         .catch(function (error) {
-            throw error.message || error;
+            throw error;
         });
 };
 
@@ -208,15 +208,15 @@ Album.GetAll = function () {
  * @return all public ALBUM's
  */
 Album.GetAllPub = function () {
-    return this.query()
+    return this.query().orderBy('updated_at', 'desc')
         .where({ private: false })
         .eager('tags')
         .then(function (data) {
-            if (!data.length) throw { message: 'Empty response' };
+            if (!data.length) throw { message: 'Empty response', status: 404 };
             return data;
         })
         .catch(function (error) {
-            throw error.message || error;
+            throw error;
         });
 };
 
@@ -235,7 +235,7 @@ Album.SetCoverIndex = function (album_id, status) {
             return that.query().patchAndFetchById(model.id, { cover_index: JSON.parse(status) });
         })
         .catch(function (error) {
-            throw error.message || error;
+            throw error;
         });
 };
 
@@ -254,7 +254,7 @@ Album.SetCoverThumbnail = function (album_id, status) {
             return that.query().patchAndFetchById(model.id, { cover_thumbnail: JSON.parse(status) });
         })
         .catch(function (error) {
-            throw error.message || error;
+            throw error;
         });
 };
 
@@ -287,7 +287,7 @@ Album.ProcessOnePhotoToAlbum = function (album_id, user_id, photoWrapper) {
             });
         })
         .catch(function (error) {
-            throw error.message || error;
+            throw error;
         });
 };
 
@@ -307,7 +307,7 @@ Album.EraseAlbum = function (album_id) {
             return that.REMOVE(album_id);
         })
         .catch(function (error) {
-            throw error.message || error;
+            throw error;
         });
 };
 
@@ -323,7 +323,7 @@ Album.AttachTagToAlbum = function (album_id, tag_id) {
             return album.$relatedQuery('tags').relate(tag_id);
         })
         .catch(function (error) {
-            throw error.message || error;
+            throw error;
         });
 };
 

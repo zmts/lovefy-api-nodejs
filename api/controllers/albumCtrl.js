@@ -116,6 +116,7 @@ function getAll() {
 /**
  * @description getAll access helper
  * @param isAdmin BOOLEAN
+ * @private
  */
 function _getAllAccessSwitcher(isAdmin) {
     if (isAdmin) return Album.GetAll();

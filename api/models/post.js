@@ -87,14 +87,9 @@ Post.GetById = function (id) {
         });
 };
 
-Post.GetAllPostsAccessSwitcher = function (isAdmin) {
-    if (isAdmin) return this.GetAllMix();
-    return this.GetAllPub();
-};
-
 Post.GetAllPub = function () {
     return this.query()
-        .where({ private: false })
+        .where({ private: false }).orderBy('updated_at', 'desc')
         .eager('tags')
         .then(function (data) {
             if (!data.length) throw { message: 'Empty response' };
@@ -106,7 +101,7 @@ Post.GetAllPub = function () {
 };
 
 Post.GetAllMix = function () {
-    return this.query()
+    return this.query().orderBy('updated_at', 'desc')
         .eager('tags')
         .then(function (data) {
             if (!data.length) throw { message: 'Empty response' };

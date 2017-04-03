@@ -124,18 +124,28 @@ function detachTagFromPost () {
 }
 
 /**
- * @description get all Posts of All users
+ * @description get all POST's list
  * @url GET: posts/
- * @return if ADMINROLES >> All mix POST's
- * @return if not ADMINROLES >> All public POST's
+ * @return ADMINROLES >> fetch all mix POSTS's of all users
+ * @return not ADMINROLES >> fetch all public POST's of all users
  */
 function getAll() {
     return function (req, res, next) {
-        Post.GetAllPostsAccessSwitcher(req.body.helpData.isAdmin)
+        _getAllAccessSwitcher(req.body.helpData.isAdmin)
             .then(function (list) {
                 res.json({ success: true, data: list });
             }).catch(next);
     };
+}
+
+/**
+ * @description getAll access helper
+ * @param isAdmin BOOLEAN
+ * @private
+ */
+function _getAllAccessSwitcher(isAdmin) {
+    if (isAdmin) return Post.GetAllMix();
+    return Post.GetAllPub();
 }
 
 /**

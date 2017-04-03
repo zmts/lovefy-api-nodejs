@@ -71,6 +71,9 @@ router.get('/',
     sec.isAdmin(),
     getAll()
 );
+router.get('/last',
+    getLastAlbum()
+);
 router.get('/:id',
     auth.checkToken(),
     sec.checkItemAccess.read(Album),
@@ -294,6 +297,18 @@ function detachTagFromAlbum () {
         Album.DetachTagFromAlbum(req.params.id, req.params.tag_id)
             .then(function (tag_id) {
                 res.json({ success: true, data: `Tag#${tag_id} was detached from Album#${req.params.id}` });
+            }).catch(next);
+    };
+}
+
+/**
+ * @return last public added ALBUM model
+ */
+function getLastAlbum() {
+    return function (req, res, next) {
+        Album.GetLastAlbum()
+            .then(function (model) {
+                res.json({ success: true, data: model });
             }).catch(next);
     };
 }

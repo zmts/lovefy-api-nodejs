@@ -101,10 +101,10 @@ Tag.GetById = function (id) {
         .eager('posts')
         .mergeEager('albums')
         .modifyEager('posts', function(builder) {
-            builder.where({ private: false }).orderBy('updated_at', 'desc');
+            builder.where({ private: false }).orderBy('id', 'desc');
         })
         .modifyEager('albums', function(builder) {
-            builder.where({ private: false }).orderBy('updated_at', 'desc');
+            builder.where({ private: false }).orderBy('id', 'desc');
         })
         .then(function (data) {
             if (!data) throw { message: 'Empty response', status: 404 };
@@ -122,10 +122,10 @@ Tag.GetById = function (id) {
 Tag.GetPubPostsByTagId = function (tag_id) {
     return this.query()
         .findById(tag_id)
-        .modifyEager('posts', function(builder) {
-            builder.where({ private: false }).orderBy('updated_at', 'desc');
-        })
         .eager('posts')
+        .modifyEager('posts', function(builder) {
+            builder.where({ private: false }).orderBy('id', 'desc');
+        })
         .then(function (data) {
             if (!data) throw { message: 'Empty response', status: 404 };
             return data;
@@ -142,10 +142,10 @@ Tag.GetPubPostsByTagId = function (tag_id) {
 Tag.GetPubAlbumsByTagId = function (tag_id) {
     return this.query()
         .findById(tag_id)
-        .modifyEager('albums', function(builder) {
-            builder.where({ private: false }).orderBy('updated_at', 'desc');
-        })
         .eager('albums')
+        .modifyEager('albums', function(builder) {
+            builder.where({ private: false }).orderBy('id', 'desc');
+        })
         .then(function (data) {
             if (!data) throw { message: 'Empty response', status: 404 };
             return data;

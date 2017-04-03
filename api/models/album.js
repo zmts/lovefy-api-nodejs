@@ -177,9 +177,6 @@ Album.GetById = function (id) {
         .findById(id)
         .eager('photos')
         .mergeEager('tags')
-        .modifyEager('tags', function(builder) {
-            builder.orderBy('name');
-        })
         .then(function (data) {
             if (!data) throw { message: 'Empty response', status: 404 };
             return data;
@@ -193,7 +190,7 @@ Album.GetById = function (id) {
  * @return all mix ALBUM's
  */
 Album.GetAll = function () {
-    return this.query().orderBy('updated_at', 'desc')
+    return this.query().orderBy('id', 'desc')
         .eager('tags')
         .then(function (data) {
             if (!data.length) throw { message: 'Empty response', status: 404 };
@@ -208,7 +205,7 @@ Album.GetAll = function () {
  * @return all public ALBUM's
  */
 Album.GetAllPub = function () {
-    return this.query().orderBy('updated_at', 'desc')
+    return this.query().orderBy('id', 'desc')
         .where({ private: false })
         .eager('tags')
         .then(function (data) {
@@ -248,7 +245,7 @@ Album.SetCoverIndex = function (album_id, status) {
 Album.SetCoverThumbnail = function (album_id, status) {
     let that = this;
 
-    if (!status) return Promise.reject('>>> \'status\' <<< field in query not defined');
+    if (!status) return Promise.reject({ message: '>>> \'status\' <<< field in query not defined', status: 400 });
     return this.GETbyId(album_id)
         .then(function (model) {
             return that.query().patchAndFetchById(model.id, { cover_thumbnail: JSON.parse(status) });
@@ -357,11 +354,15 @@ Album.CheckTagByIdInAlbum = function (album_id, tag_id) {
         .findById(album_id)
         .eager('tags')
         .then(function (data) {
-            if ( _checkExistingTags(data, tag_id) ) throw { message: 'Tag already presents in post', status: 422 };
+            if ( _checkExistingTags(data, tag_id) ) throw { message: 'Tag already presents in post', status: 403 };
         })
         .catch(function (error) {
             throw error;
         });
+};
+
+Album.GetLastAlbum = function () {
+    return this.query().where({ private: false }).orderBy('id', 'desc').limit(1);
 };
 
 module.exports = Album;

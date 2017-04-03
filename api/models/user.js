@@ -104,6 +104,9 @@ User.GetMixPostsByUserId = function (id) {
     return this.query()
         .where({ id: id })
         .eager('posts.tags')
+        .modifyEager('posts', function(builder) {
+            builder.orderBy('id', 'desc');
+        })
         .then(function (data) {
             if (!data[0].posts.length) throw { message: 'Empty response' };
             return data[0].posts;
@@ -122,7 +125,7 @@ User.GetPubPostsByUserId = function (id) {
         .where({ id: id })
         .eager('posts.tags')
         .modifyEager('posts', function(builder) {
-            builder.where({ private: false });
+            builder.where({ private: false }).orderBy('id', 'desc');
         })
         .then(function (data) {
             if (!data[0].posts.length) throw { message: 'Empty response' };
@@ -141,6 +144,9 @@ User.GetMixAlbumsByUserId = function (id) {
     return this.query()
         .where({ id: id })
         .eager('albums.tags')
+        .modifyEager('albums', function(builder) {
+            builder.orderBy('id', 'desc');
+        })
         .then(function (data) {
             if (!data[0].albums.length) throw { message: 'Empty response' };
             return data[0].albums;
@@ -159,7 +165,7 @@ User.GetPubAlbumsByUserId = function (id) {
         .where({ id: id })
         .eager('albums.tags')
         .modifyEager('albums', function(builder) {
-            builder.where({ private: false });
+            builder.where({ private: false }).orderBy('id', 'desc');
         })
         .then(function (data) {
             if (!data[0].albums.length) throw { message: 'Empty response' };

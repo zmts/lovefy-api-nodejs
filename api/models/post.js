@@ -79,36 +79,36 @@ Post.GetById = function (id) {
         .findById(id)
         .eager('tags')
         .then(function (data) {
-            if (!data) throw { message: 'Empty response' };
+            if (!data) throw { message: 'Empty response', status: 404 };
             return data;
         })
         .catch(function (error) {
-            throw error.message || error;
+            throw error;
         });
 };
 
 Post.GetAllPub = function () {
     return this.query()
-        .where({ private: false }).orderBy('updated_at', 'desc')
+        .where({ private: false }).orderBy('id', 'desc')
         .eager('tags')
         .then(function (data) {
-            if (!data.length) throw { message: 'Empty response' };
+            if (!data.length) throw { message: 'Empty response', status: 404 };
             return data;
         })
         .catch(function (error) {
-            throw error.message || error;
+            throw error;
         });
 };
 
 Post.GetAllMix = function () {
-    return this.query().orderBy('updated_at', 'desc')
+    return this.query().orderBy('id', 'desc')
         .eager('tags')
         .then(function (data) {
-            if (!data.length) throw { message: 'Empty response' };
+            if (!data.length) throw { message: 'Empty response', status: 404 };
             return data;
         })
         .catch(function (error) {
-            throw error.message || error;
+            throw error;
         });
 };
 
@@ -119,7 +119,7 @@ Post.AttachTagToPost = function (post_id, tag_id) {
             return post.$relatedQuery('tags').relate(tag_id);
         })
         .catch(function (error) {
-            throw error.message || error;
+            throw error;
         });
 };
 
@@ -130,7 +130,7 @@ Post.DetachTagFromPost = function (post_id, tag_id) {
             return post.$relatedQuery('tags').unrelate().where({ 'tag_id': tag_id });
         })
         .catch(function (error) {
-            throw error.message || error;
+            throw error;
         });
 };
 
@@ -142,10 +142,10 @@ Post.CheckTagByIdInPost = function (post_id, tag_id) {
         .findById(post_id)
         .eager('tags')
         .then(function (data) {
-            if ( _checkExistingTags(data, tag_id) ) throw { message: 'Tag already presents in post' };
+            if ( _checkExistingTags(data, tag_id) ) throw { message: 'Tag already presents in post', status: 403 };
         })
         .catch(function (error) {
-            throw error.message || error;
+            throw error;
         });
 };
 

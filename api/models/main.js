@@ -20,22 +20,22 @@ MainModel.CREATE = function (data) {
 MainModel.GETall = function () {
     return this.query()
         .then(function (data) {
-            if (!data.length) throw { message: 'Empty response' };
+            if (!data.length) throw { message: 'Empty response', status: 404 };
             return data;
         })
         .catch(function (error) {
-            throw error.message || error;
+            throw error;
         });
 };
 
 MainModel.GETbyId = function (id) {
     return this.query().findById(id)
         .then(function (data) {
-            if (!data) throw { message: 'Empty response' };
+            if (!data) throw { message: 'Empty response', status: 404 };
             return data;
         })
         .catch(function (error) {
-            throw error.message || error;
+            throw error;
         });
 };
 

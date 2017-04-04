@@ -87,12 +87,20 @@ Post.GetById = function (id) {
         });
 };
 
-Post.GetAllPub = function () {
+/**
+ * @param queryPage INT
+ * @return public POSTs list
+ */
+Post.GetPubList = function (queryPage) {
+    let pageNumber = _.isInteger(queryPage) ? queryPage : 0;
+
     return this.query()
-        .where({ private: false }).orderBy('id', 'desc')
+        .where({ private: false })
         .eager('tags')
+        .orderBy('id', 'desc')
+        .page(pageNumber, process.env.PAGE_SIZE)
         .then(function (data) {
-            if (!data.length) throw { message: 'Empty response', status: 404 };
+            if (!data.results.length) throw { message: 'Empty response', status: 404 };
             return data;
         })
         .catch(function (error) {
@@ -100,11 +108,19 @@ Post.GetAllPub = function () {
         });
 };
 
-Post.GetAllMix = function () {
-    return this.query().orderBy('id', 'desc')
+/**
+ * @param queryPage INT
+ * @return mix POSTs list
+ */
+Post.GetMixList = function (queryPage) {
+    let pageNumber = _.isInteger(queryPage) ? queryPage : 0;
+
+    return this.query()
         .eager('tags')
+        .orderBy('id', 'desc')
+        .page(pageNumber, process.env.PAGE_SIZE)
         .then(function (data) {
-            if (!data.length) throw { message: 'Empty response', status: 404 };
+            if (!data.results.length) throw { message: 'Empty response', status: 404 };
             return data;
         })
         .catch(function (error) {

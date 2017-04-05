@@ -103,7 +103,7 @@ router.delete('/:id',
 
 /**
  * @description get all Albums list
- * @url GET: albums/
+ * @url GET: albums?page=0
  * @return ADMINROLES >> fetch all mix ALBUM's of all users
  * @return not ADMINROLES >> fetch all public ALBUM's of all users
  */

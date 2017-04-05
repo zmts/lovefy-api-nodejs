@@ -187,13 +187,18 @@ Album.GetById = function (id) {
 };
 
 /**
+ * @param queryPage INT
  * @return all mix ALBUM's
  */
-Album.GetAll = function () {
-    return this.query().orderBy('id', 'desc')
+Album.GetMixList = function (queryPage) {
+    let pageNumber = _.isInteger(queryPage) ? queryPage : 0;
+
+    return this.query()
         .eager('tags')
+        .orderBy('id', 'desc')
+        .page(pageNumber, process.env.PAGE_SIZE)
         .then(function (data) {
-            if (!data.length) throw { message: 'Empty response', status: 404 };
+            if (!data.results.length) throw { message: 'Empty response', status: 404 };
             return data;
         })
         .catch(function (error) {
@@ -202,14 +207,19 @@ Album.GetAll = function () {
 };
 
 /**
+ * @param queryPage INT
  * @return all public ALBUM's
  */
-Album.GetAllPub = function () {
-    return this.query().orderBy('id', 'desc')
+Album.GetPubList = function (queryPage) {
+    let pageNumber = _.isInteger(queryPage) ? queryPage : 0;
+
+    return this.query()
         .where({ private: false })
         .eager('tags')
+        .orderBy('id', 'desc')
+        .page(pageNumber, process.env.PAGE_SIZE)
         .then(function (data) {
-            if (!data.length) throw { message: 'Empty response', status: 404 };
+            if (!data.results.length) throw { message: 'Empty response', status: 404 };
             return data;
         })
         .catch(function (error) {

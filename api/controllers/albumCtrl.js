@@ -109,7 +109,7 @@ router.delete('/:id',
  */
 function getAll() {
     return function (req, res, next) {
-        _getAllAccessSwitcher(req.body.helpData.isAdmin)
+        _getAllAccessSwitcher(req.body.helpData.isAdmin, +req.query.page)
             .then(function (list) {
                 res.json({ success: true, data: list });
             }).catch(next);
@@ -119,11 +119,12 @@ function getAll() {
 /**
  * @description getAll access helper
  * @param isAdmin BOOLEAN
+ * @param pageNumber INT
  * @private
  */
-function _getAllAccessSwitcher(isAdmin) {
-    if (isAdmin) return Album.GetAll();
-    return Album.GetAllPub();
+function _getAllAccessSwitcher(isAdmin, pageNumber) {
+    if (isAdmin) return Album.GetMixList(pageNumber);
+    return Album.GetPubList(pageNumber);
 }
 
 /**

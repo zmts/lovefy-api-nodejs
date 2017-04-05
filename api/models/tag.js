@@ -92,30 +92,6 @@ Tag.FindByString = function (str) {
 };
 
 /**
- * @param id
- * @return TAG model with all public related ALBUM's and POST's
- */
-Tag.GetById = function (id) {
-    return this.query()
-        .findById(id)
-        .eager('posts')
-        .mergeEager('albums')
-        .modifyEager('posts', function(builder) {
-            builder.where({ private: false }).orderBy('id', 'desc');
-        })
-        .modifyEager('albums', function(builder) {
-            builder.where({ private: false }).orderBy('id', 'desc');
-        })
-        .then(function (data) {
-            if (!data) throw { message: 'Empty response', status: 404 };
-            return data;
-        })
-        .catch(function (error) {
-            throw error;
-        });
-};
-
-/**
  * @param tag_id
  * @returns only public POST's list
  */

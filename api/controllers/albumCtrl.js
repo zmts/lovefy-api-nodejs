@@ -119,12 +119,12 @@ function getAll() {
 /**
  * @description getAll access helper
  * @param isAdmin BOOLEAN
- * @param pageNumber INT
+ * @param queryPage INT
  * @private
  */
-function _getAllAccessSwitcher(isAdmin, pageNumber) {
-    if (isAdmin) return Album.GetMixList(pageNumber);
-    return Album.GetPubList(pageNumber);
+function _getAllAccessSwitcher(isAdmin, queryPage) {
+    if (isAdmin) return Album.GetMixList(queryPage);
+    return Album.GetPubList(queryPage);
 }
 
 /**

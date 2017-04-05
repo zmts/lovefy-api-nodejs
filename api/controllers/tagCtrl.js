@@ -60,13 +60,6 @@ router.get('/',
 );
 
 /**
- * @description get Tag by id
- */
-router.get('/:id',
-    getTag()
-);
-
-/**
  * @description create Tag
  * @request {"name": "string"}
  */
@@ -106,15 +99,6 @@ function findByString() {
         Tag.FindByString(req.query.q)
             .then(function (list) {
                 res.json({ success: true, data: list });
-            }).catch(next);
-    };
-}
-
-function getTag () {
-    return function (req, res, next) {
-        Tag.GetById(req.params.id)
-            .then(function (model) {
-                res.json({ success: true, data: model });
             }).catch(next);
     };
 }

@@ -23,6 +23,8 @@ const sec = require('../middleware/security');
  * @hasaccess: All
  */
 router.get('/find',
+    auth.checkToken(),
+    sec.checkLoggedInUserAccess(),
     findByString()
 );
 

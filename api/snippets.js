@@ -15,3 +15,12 @@ Album.GetAllOwnAndOtherPublic = function (user_id) {
             throw error.message || error;
         });
 };
+
+// Get Albums By Tag Id with pagination
+// by @koskimas
+this.query().findById(tag_id).then(tag => {
+    return tag.$relatedQuery('posts')
+        .orderBy('id', 'desc')
+        .page(pageNumber, process.env.PAGE_SIZE)
+        .then(posts => tag.posts = posts);
+})

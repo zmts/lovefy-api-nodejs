@@ -36,6 +36,7 @@ router.get('/find',
 
 /**
  * @return all public POST's of all Users by tag_id
+ * @url /tags/:id/posts?page=0
  */
 router.get('/:id/posts',
     getPostsByTagId()
@@ -43,6 +44,7 @@ router.get('/:id/posts',
 
 /**
  * @return all public ALBUM's of all users by tag_id
+ * @url /tags/:id/albums?page=0
  */
 router.get('/:id/albums',
     getAlbumsByTagId()
@@ -107,7 +109,7 @@ function findByString() {
 
 function getPostsByTagId () {
     return function (req, res, next) {
-        Tag.GetPubPostsByTagId(req.params.id)
+        Tag.GetPubPostsByTagId(req.params.id, +req.query.page)
             .then(function (list) {
                 res.json({ success: true, data: list });
             }).catch(next);
@@ -116,7 +118,7 @@ function getPostsByTagId () {
 
 function getAlbumsByTagId() {
     return function (req, res, next) {
-        Tag.GetPubAlbumsByTagId(req.params.id)
+        Tag.GetPubAlbumsByTagId(req.params.id, +req.query.page)
             .then(function (list) {
                 res.json({ success: true, data: list });
             }).catch(next);

@@ -1,6 +1,7 @@
 'use strict';
 
 const Promise = require('bluebird');
+const _ = require('lodash');
 
 const MainModel = require('./main');
 
@@ -93,14 +94,23 @@ Tag.FindByString = function (str) {
 
 /**
  * @param tag_id
+ * @param queryPage
  * @returns only public POST's list
  */
-Tag.GetPubPostsByTagId = function (tag_id) {
+Tag.GetPubPostsByTagId = function (tag_id, queryPage) {
+    let pageNumber = _.isInteger(queryPage) ? queryPage : 0;
+
     return this.query()
         .findById(tag_id)
-        .eager('posts')
-        .modifyEager('posts', function(builder) {
-            builder.where({ private: false }).orderBy('id', 'desc');
+        .then(function (tag) {
+            return tag.$relatedQuery('posts')
+                .where({ private: false })
+                .orderBy('id', 'desc')
+                .page(pageNumber, process.env.PAGE_SIZE)
+                .then(function (posts) {
+                    if (!posts.results.length) throw { message: 'Empty response', status: 404 };
+                    return posts;
+                });
         })
         .then(function (data) {
             if (!data) throw { message: 'Empty response', status: 404 };
@@ -113,14 +123,23 @@ Tag.GetPubPostsByTagId = function (tag_id) {
 
 /**
  * @param tag_id
+ * @param queryPage
  * @returns only public ALBUM's list
  */
-Tag.GetPubAlbumsByTagId = function (tag_id) {
+Tag.GetPubAlbumsByTagId = function (tag_id, queryPage) {
+    let pageNumber = _.isInteger(queryPage) ? queryPage : 0;
+
     return this.query()
         .findById(tag_id)
-        .eager('albums')
-        .modifyEager('albums', function(builder) {
-            builder.where({ private: false }).orderBy('id', 'desc');
+        .then(function (tag) {
+            return tag.$relatedQuery('albums')
+                .where({ private: false })
+                .orderBy('id', 'desc')
+                .page(pageNumber, process.env.PAGE_SIZE)
+                .then(function (albums) {
+                    if (!albums.results.length) throw { message: 'Empty response', status: 404 };
+                    return albums;
+                });
         })
         .then(function (data) {
             if (!data) throw { message: 'Empty response', status: 404 };

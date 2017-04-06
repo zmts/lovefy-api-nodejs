@@ -3,6 +3,7 @@
 const Promise = require('bluebird');
 
 const MainModel = require('./main');
+const CONFIG = require('../config');
 
 function User() {
     MainModel.apply(this, arguments);
@@ -20,7 +21,7 @@ User.jsonSchema = {
         name: { type: 'string', minLength: 3, maxLength: 30 },
         email: { type: 'string', format: 'email', minLength: 5, maxLength: 50 },
         password_hash: { type: 'string' },
-        // role: { type: 'string' }, user don't have ability to set "role" via registration process
+        role: { type: 'string' },
         created_at: { type: 'string', format: 'date-time' },
         updated_at: { type: 'string', format: 'date-time' }
     }
@@ -54,7 +55,6 @@ User.relationMappings = {
 User.prototype.$formatJson = function (json) {
     json = MainModel.prototype.$formatJson.call(this, json);
     delete json.password_hash;
-    delete json.role;
     return json;
 };
 
@@ -68,6 +68,24 @@ User.prototype.$beforeUpdate = function () {
 
 /**
  * ------------------------------
+ * @HELPERS
+ * ------------------------------
+ */
+
+/**
+ * @description the name of the data.role should only be as specified in the config.roles
+ * @param data
+ * @return {boolean}
+ * @private
+ */
+function _validateRoleName(data) {
+    if ( CONFIG.roles.adminRoles.indexOf(data.role) >= 0 ) return true;
+    if ( CONFIG.roles.editorRoles.indexOf(data.role) >= 0 ) return true;
+    if ( CONFIG.roles.user === data.role ) return true;
+}
+
+/**
+ * ------------------------------
  * @METHODS
  * ------------------------------
  */
@@ -76,11 +94,11 @@ User.GetByEmail = function (email) {
     if (!email) return Promise.reject('Query not defined');
     return this.query().where({ email: email })
         .then(function (data) {
-            if (!data.length) throw { message: 'Empty response' };
+            if (!data.length) throw { message: 'Empty response', status: 404 };
             return data[0]; // email field is unique and should pass only one first item
         })
         .catch(function (error) {
-            throw error.message || error;
+            throw error;
         });
 };
 
@@ -88,11 +106,11 @@ User.GetByName = function (name) {
     if (!name) return Promise.reject('Query not defined');
     return this.query().where({ name: name })
         .then(function (data) {
-            if (!data.length) throw { message: 'Empty response' };
+            if (!data.length) throw { message: 'Empty response', status: 404 };
             return data[0];
         })
         .catch(function (error) {
-            throw error.message || error;
+            throw error;
         });
 };
 
@@ -108,11 +126,11 @@ User.GetMixPostsByUserId = function (id) {
             builder.orderBy('id', 'desc');
         })
         .then(function (data) {
-            if (!data[0].posts.length) throw { message: 'Empty response' };
+            if (!data[0].posts.length) throw { message: 'Empty response', status: 404 };
             return data[0].posts;
         })
         .catch(function (error) {
-            throw error.message || error;
+            throw error;
         });
 };
 
@@ -128,11 +146,11 @@ User.GetPubPostsByUserId = function (id) {
             builder.where({ private: false }).orderBy('id', 'desc');
         })
         .then(function (data) {
-            if (!data[0].posts.length) throw { message: 'Empty response' };
+            if (!data[0].posts.length) throw { message: 'Empty response', status: 404 };
             return data[0].posts;
         })
         .catch(function (error) {
-            throw error.message || error;
+            throw error;
         });
 };
 
@@ -148,11 +166,11 @@ User.GetMixAlbumsByUserId = function (id) {
             builder.orderBy('id', 'desc');
         })
         .then(function (data) {
-            if (!data[0].albums.length) throw { message: 'Empty response' };
+            if (!data[0].albums.length) throw { message: 'Empty response', status: 404 };
             return data[0].albums;
         })
         .catch(function (error) {
-            throw error.message || error;
+            throw error;
         });
 };
 
@@ -168,11 +186,29 @@ User.GetPubAlbumsByUserId = function (id) {
             builder.where({ private: false }).orderBy('id', 'desc');
         })
         .then(function (data) {
-            if (!data[0].albums.length) throw { message: 'Empty response' };
+            if (!data[0].albums.length) throw { message: 'Empty response', status: 404 };
             return data[0].albums;
         })
         .catch(function (error) {
-            throw error.message || error;
+            throw error;
+        });
+};
+
+/**
+ * @param user_id
+ * @param data
+ * @return updated model with new role
+ */
+User.ChangeUserRole = function (user_id, data) {
+    let that = this;
+    if (!_validateRoleName(data)) return Promise.reject('Invalid role');
+
+    return this.GETbyId(user_id)
+        .then(function (user) {
+            return that.UPDATE(user.id, data);
+        })
+        .catch(function (error) {
+            throw error;
         });
 };
 

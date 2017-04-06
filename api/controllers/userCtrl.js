@@ -22,12 +22,13 @@ const sec = require('../middleware/security');
 /**
  * @description change User Role
  * @hasaccess SU
- * @request {user_id: "role"}
+ * @request {role: "user" || "moderator" || "editor" ...}
  */
-// router.post('/:id/change-user-role',
-//     sec.checkSUAccess(),
-//     changeUserRole()
-// );
+router.post('/:id/change-user-role',
+    // auth.checkToken(),
+    // sec.checkSUAccess(),
+    changeUserRole()
+);
 
 /**
  * @description check User name availability
@@ -228,10 +229,13 @@ function checkEmailAvailability() {
     };
 }
 
-// function changeUserRole() { // TODO
-//     return function (req, res) {
-//         res.json({success: true});
-//     }
-// }
+function changeUserRole() {
+    return function (req, res, next) {
+        User.ChangeUserRole(req.params.id, req.body)
+            .then(function (data) {
+                res.json({ success: true, data: data });
+            }).catch(next);
+    };
+}
 
 module.exports = router;

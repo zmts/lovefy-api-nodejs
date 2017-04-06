@@ -60,7 +60,7 @@ router.post('/:id/detach-tag/:tag_id',
 
 /**
  * @description get all POST's list
- * @url GET: posts?page=0
+ * @url posts?page=0
  * @return ADMINROLES >> fetch all mix POSTS's of all users
  * @return not ADMINROLES >> fetch all public POST's of all users
  */

@@ -8,15 +8,21 @@ const auth = require('../middleware/auth');
 const sec = require('../middleware/security');
 
 /**
- * ------------------------------
+ * ------------------------------------------------------------
  * @BASE_URL: photos/
- * ------------------------------
+ * ------------------------------------------------------------
  */
 
 /**
- * ------------------------------
+ * ------------------------------------------------------------
  * @OTHER_ROUTES
- * ------------------------------
+ * ------------------------------------------------------------
+ */
+
+/**
+ * @description set "best" status to TRUE/FALSE
+ * @url GET: photos/:id/set-best?status=true
+ * @url GET: photos/:id/set-best?status=false
  */
 router.post('/:id/set-best',
     auth.checkToken(),
@@ -25,11 +31,24 @@ router.post('/:id/set-best',
 );
 
 /**
+ * ------------------------------------------------------------
  * @BASE_ROUTES
+ * ------------------------------------------------------------
+ */
+
+/**
+ * @description get PHOTO by id
+ * @hasaccess All
  */
 router.get('/:id',
     getPhoto()
 );
+
+/**
+ * @description remove PHOTO From ALBUM
+ * @hasaccess OWNER, ADMINROLES
+ * @return success status
+ */
 router.delete('/:id',
     auth.checkToken(),
     sec.checkItemAccess.tokenUIDisEqualsModelUID(Photo),
@@ -37,16 +56,11 @@ router.delete('/:id',
 );
 
 /**
- * ------------------------------
+ * ------------------------------------------------------------
  * @CONTROLLERS
- * ------------------------------
+ * ------------------------------------------------------------
  */
 
-/**
- * @description get PHOTO by id
- * @hasaccess All
- * @url GET: photos/:id
- */
 function getPhoto () {
     return function (req, res) {
         Photo.getByIdAndIncrementViews(req.params.id)
@@ -59,11 +73,6 @@ function getPhoto () {
     };
 }
 
-/**
- * @description set "best" status to TRUE/FALSE
- * @url GET: photos/:id/set-best?status=true
- * @url GET: photos/:id/set-best?status=false
- */
 function setBestStatus() {
     return function (req, res) {
         Photo.setBestStatus(req.params.id, req.query.status)
@@ -76,12 +85,6 @@ function setBestStatus() {
     };
 }
 
-/**
- * @description remove PHOTO From ALBUM
- * @hasaccess OWNER, ADMINROLES
- * @url DELETE: photos/:id
- * @return success status
- */
 function removePhotoFromAlbum() {
     return function (req, res) {
         Photo.erasePhoto(req.params.id)

@@ -21,6 +21,14 @@ const validate = require('../middleware/validateReq');
  * @OTHER_ROUTES
  * ------------------------------------------------------------
  */
+
+/**
+ * @description set cover index picture
+ * @url albums/:id/cover/index?status=true
+ * @url albums/:id/cover/index?status=false // to disable cover
+ * @hasaccess owner, ADMINROLES
+ * @return updated model
+ */
 router.post('/:id/cover/index',
     auth.checkToken(),
     sec.checkItemAccess.tokenUIDisEqualsModelUID(Album),
@@ -28,6 +36,14 @@ router.post('/:id/cover/index',
     validate.albumCover(),
     setCoverIndex()
 );
+
+/**
+ * @description set cover thumbnail picture
+ * @url albums/:id/cover/thumbnail?status=true
+ * @url albums/:id/cover/thumbnail?status=false // to disable cover
+ * @hasaccess owner, ADMINROLES
+ * @return updated model
+ */
 router.post('/:id/cover/thumbnail',
     auth.checkToken(),
     sec.checkItemAccess.tokenUIDisEqualsModelUID(Album),
@@ -41,20 +57,41 @@ router.post('/:id/cover/thumbnail',
  * @RELATED_ROUTES
  * ------------------------------------------------------------
  */
+
+/**
+ * @description adds ONLY one image(JPG/JPEG) to ALBUM
+ * @request form-data-file-field "photo"
+ */
 router.post('/:id/upload',
     upload.photoToAlbum(),
     processOnePhotoToAlbum()
 );
+
+/**
+ * @description create and attach TAG to ALBUM
+ * @hasaccess OWNER, ADMINROLES
+ * @request {"name": "string"}
+ */
 router.post('/:id/create-attach-tag',
     auth.checkToken(),
     sec.checkItemAccess.tokenUIDisEqualsModelUID(Album),
     createAndAttachTagToAlbum()
 );
+
+/**
+ * @description check TAG existing in ALBUM >> attach TAG to ALBUM
+ * @hasaccess OWNER, ADMINROLES
+ */
 router.post('/:id/attach-tag/:tag_id',
     auth.checkToken(),
     sec.checkItemAccess.tokenUIDisEqualsModelUID(Album),
     attachTagToAlbum()
 );
+
+/**
+ * @description detach TAG from ALBUM
+ * @hasaccess OWNER, ADMINROLES
+ */
 router.post('/:id/detach-tag/:tag_id',
     auth.checkToken(),
     sec.checkItemAccess.tokenUIDisEqualsModelUID(Album),
@@ -66,29 +103,81 @@ router.post('/:id/detach-tag/:tag_id',
  * @BASE_ROUTES
  * ------------------------------------------------------------
  */
+
+/**
+ * @url albums?page=0
+ * @return ADMINROLES >> fetch all mix ALBUM's of all users
+ * @return not ADMINROLES >> fetch all public ALBUM's of all users
+ */
 router.get('/',
     auth.checkToken(),
     sec.isAdmin(),
     getAll()
 );
+
+/**
+ * @return last public added ALBUM model
+ */
 router.get('/last',
     getLastAlbum()
 );
+
+/**
+ * @description get ALBUM by id
+ * @return owner, ADMINROLES >> public or private ALBUM
+ * @return Anonymous, NotOwner >> only public ALBUM
+ */
 router.get('/:id',
     auth.checkToken(),
     sec.checkItemAccess.read(Album),
     getAlbum()
 );
+
+/**
+ * @description create ALBUM
+ * @request
+ * {
+ * title: "string"
+ * [description: "string"]
+ * [cover_index: "string"]
+ * cover_thumbnail: "string"
+ * [private: "boolean"]
+ * [event_location: "int"] tag_id
+ * [event_date: "string"]
+ * }
+ * @hasaccess EDITORROLES, ADMINROLES
+ */
 router.post('/',
     auth.checkToken(),
     sec.checkItemAccess.create(),
     newAlbum()
 );
+
+/**
+ * @description update ALBUM by id
+ * @request
+ * {
+ * title: "string"
+ * [description: "string"]
+ * [cover_index: "string"]
+ * cover_thumbnail: "string"
+ * [private: "boolean"]
+ * [event_location: "int"] tag_id
+ * [event_date: "string"]
+ * }
+ * @hasaccess OWNER, ADMINROLES
+ */
 router.patch('/:id',
     auth.checkToken(),
     sec.checkItemAccess.update(Album),
     update()
 );
+
+
+/**
+ * @description remove ALBUM entity
+ * @hasaccess owner, ADMINROLES
+ */
 router.delete('/:id',
     auth.checkToken(),
     sec.checkItemAccess.tokenUIDisEqualsModelUID(Album),
@@ -101,12 +190,6 @@ router.delete('/:id',
  * ------------------------------------------------------------
  */
 
-/**
- * @description get all Albums list
- * @url GET: albums?page=0
- * @return ADMINROLES >> fetch all mix ALBUM's of all users
- * @return not ADMINROLES >> fetch all public ALBUM's of all users
- */
 function getAll() {
     return function (req, res, next) {
         _getAllAccessSwitcher(req.body.helpData.isAdmin, +req.query.page)
@@ -127,12 +210,6 @@ function _getAllAccessSwitcher(isAdmin, queryPage) {
     return Album.GetPubList(queryPage);
 }
 
-/**
- * @description get ALBUM by id
- * @return owner, ADMINROLES >> public or private ALBUM
- * @return Anonymous, NotOwner >> only public ALBUM
- * @url GET: tags/:id
- */
 function getAlbum () {
     return function (req, res, next) {
         Album.GetById(req.params.id)
@@ -142,21 +219,6 @@ function getAlbum () {
     };
 }
 
-/**
- * @description create ALBUM
- * @url POST: albums/
- * @request
- * {
- * title: "string"
- * [description: "string"]
- * [cover_index: "string"]
- * cover_thumbnail: "string"
- * [private: "boolean"]
- * [event_location: "int"] tag_id
- * [event_date: "string"]
- * }
- * @hasaccess EDITORROLES, ADMINROLES
- */
 function newAlbum() {
     return function (req, res, next) {
         delete req.body.helpData;
@@ -167,21 +229,6 @@ function newAlbum() {
     };
 }
 
-/**
- * @description update ALBUM by id
- * @url PATCH: albums/:id
- * @request
- * {
- * title: "string"
- * [description: "string"]
- * [cover_index: "string"]
- * cover_thumbnail: "string"
- * [private: "boolean"]
- * [event_location: "int"] tag_id
- * [event_date: "string"]
- * }
- * @hasaccess OWNER, ADMINROLES
- */
 function update() {
     return function (req, res, next) {
         delete req.body.helpData;
@@ -192,11 +239,6 @@ function update() {
     };
 }
 
-/**
- * @description remove ALBUM entity
- * @url DELETE: albums/:id
- * @hasaccess owner, ADMINROLES
- */
 function remove() {
     return function (req, res, next) {
         Album.EraseAlbum(req.params.id)
@@ -206,13 +248,6 @@ function remove() {
     };
 }
 
-/**
- * @description set cover index picture
- * @url POST: /albums/:id/cover/index?status=true
- * @url POST: /albums/:id/cover/index?status=false // to disable cover
- * @hasaccess owner, ADMINROLES
- * @return updated model
- */
 function setCoverIndex() {
     return function (req, res, next) {
         Album.SetCoverIndex(req.params.id, req.query.status)
@@ -222,13 +257,6 @@ function setCoverIndex() {
     };
 }
 
-/**
- * @description set cover thumbnail picture
- * @url POST: albums/:id/cover/thumbnail?status=true
- * @url POST: albums/:id/cover/thumbnail?status=false // to disable cover
- * @hasaccess owner, ADMINROLES
- * @return updated model
- */
 function setCoverThumbnail() {
     return function (req, res, next) {
         Album.SetCoverThumbnail(req.params.id, req.query.status)
@@ -238,11 +266,6 @@ function setCoverThumbnail() {
     };
 }
 
-/**
- * @description adds ONLY one image(JPG/JPEG) to ALBUM
- * @url POST: albums/:id/upload
- * @request form-data-file-field "photo"
- */
 function processOnePhotoToAlbum() {
     return function (req, res, next) {
         Album.ProcessOnePhotoToAlbum(req.params.id, req.body.helpData.userIdFromAlbumModel, req.file)
@@ -252,12 +275,6 @@ function processOnePhotoToAlbum() {
     };
 }
 
-/**
- * @description create and attach TAG to ALBUM
- * @hasaccess OWNER, ADMINROLES
- * @url POST: albums/:id/create-attach-tag
- * @request {"name": "string"}
- */
 function createAndAttachTagToAlbum() {
     return function (req, res, next) {
         delete req.body.helpData;
@@ -271,11 +288,6 @@ function createAndAttachTagToAlbum() {
     };
 }
 
-/**
- * @description check TAG existing in ALBUM >> attach TAG to ALBUM
- * @hasaccess OWNER, ADMINROLES
- * @url POST: albums/:id/attach-tag/:tag_id
- */
 function attachTagToAlbum() {
     return function (req, res, next) {
         Album.CheckTagByIdInAlbum(req.params.id, req.params.tag_id)
@@ -288,11 +300,6 @@ function attachTagToAlbum() {
     };
 }
 
-/**
- * @description detach TAG from ALBUM
- * @hasaccess OWNER, ADMINROLES
- * @url POST: albums/:id/detach-tag/:tag_id
- */
 function detachTagFromAlbum () {
     return function (req, res, next) {
         Album.DetachTagFromAlbum(req.params.id, req.params.tag_id)
@@ -302,9 +309,6 @@ function detachTagFromAlbum () {
     };
 }
 
-/**
- * @return last public added ALBUM model
- */
 function getLastAlbum() {
     return function (req, res, next) {
         Album.GetLastAlbum()

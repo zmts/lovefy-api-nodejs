@@ -23,10 +23,11 @@ const sec = require('../middleware/security');
  * @description change User Role
  * @hasaccess SU
  * @request {role: "user" || "moderator" || "editor" ...}
+ * @return updated USER model with new role
  */
 router.post('/:id/change-user-role',
-    // auth.checkToken(),
-    // sec.checkSUAccess(),
+    auth.checkToken(),
+    sec.checkSUAccess(),
     changeUserRole()
 );
 
@@ -176,7 +177,7 @@ function getAlbumsByUserId() {
 function newUser() {
     return function (req, res, next) {
         delete req.body.helpData;
-        User.CREATE(req.body)
+        User.Create(req.body)
             .then(function (user) {
                 res.json(user);
             }).catch(next);
@@ -231,6 +232,7 @@ function checkEmailAvailability() {
 
 function changeUserRole() {
     return function (req, res, next) {
+        delete req.body.helpData;
         User.ChangeUserRole(req.params.id, req.body)
             .then(function (data) {
                 res.json({ success: true, data: data });

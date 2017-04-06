@@ -90,6 +90,14 @@ function _validateRoleName(data) {
  * ------------------------------
  */
 
+User.Create = function (data) {
+    if (data.role || data.role === '') return Promise.reject({
+        message: 'Forbidden.\'role\' field not acceptable',
+        status: 403
+    });
+    return this.CREATE(data);
+};
+
 User.GetByEmail = function (email) {
     if (!email) return Promise.reject('Query not defined');
     return this.query().where({ email: email })
@@ -201,7 +209,7 @@ User.GetPubAlbumsByUserId = function (id) {
  */
 User.ChangeUserRole = function (user_id, data) {
     let that = this;
-    if (!_validateRoleName(data)) return Promise.reject('Invalid role');
+    if (!_validateRoleName(data)) return Promise.reject({ message: 'Invalid role', status: 403 });
 
     return this.GETbyId(user_id)
         .then(function (user) {

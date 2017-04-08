@@ -30,10 +30,11 @@ const validate = require('../middleware/validateReq');
  * @return updated model
  */
 router.post('/:id/cover/index',
+    validate.id(),
+    validate.query(Album.rules.SetCover),
     auth.checkToken(),
     sec.checkItemAccess.tokenUIDisEqualsModelUID(Album),
     upload.albumCover('cover_index'),
-    validate.albumCover(),
     setCoverIndex()
 );
 
@@ -45,10 +46,11 @@ router.post('/:id/cover/index',
  * @return updated model
  */
 router.post('/:id/cover/thumbnail',
+    validate.id(),
+    validate.query(Album.rules.SetCover),
     auth.checkToken(),
     sec.checkItemAccess.tokenUIDisEqualsModelUID(Album),
     upload.albumCover('cover_thumbnail'),
-    validate.albumCover(),
     setCoverThumbnail()
 );
 
@@ -63,6 +65,9 @@ router.post('/:id/cover/thumbnail',
  * @request form-data-file-field "photo"
  */
 router.post('/:id/upload',
+    validate.id(),
+    auth.checkToken(),
+    sec.checkItemAccess.tokenUIDisEqualsModelUID(Album),
     upload.photoToAlbum(),
     processOnePhotoToAlbum()
 );
@@ -73,6 +78,7 @@ router.post('/:id/upload',
  * @request {"name": "string"}
  */
 router.post('/:id/create-attach-tag',
+    validate.id(),
     auth.checkToken(),
     sec.checkItemAccess.tokenUIDisEqualsModelUID(Album),
     createAndAttachTagToAlbum()
@@ -83,6 +89,7 @@ router.post('/:id/create-attach-tag',
  * @hasaccess OWNER, ADMINROLES
  */
 router.post('/:id/attach-tag/:tag_id',
+    validate.id(),
     auth.checkToken(),
     sec.checkItemAccess.tokenUIDisEqualsModelUID(Album),
     attachTagToAlbum()
@@ -93,6 +100,7 @@ router.post('/:id/attach-tag/:tag_id',
  * @hasaccess OWNER, ADMINROLES
  */
 router.post('/:id/detach-tag/:tag_id',
+    validate.id(),
     auth.checkToken(),
     sec.checkItemAccess.tokenUIDisEqualsModelUID(Album),
     detachTagFromAlbum()
@@ -128,6 +136,7 @@ router.get('/last',
  * @return Anonymous, NotOwner >> only public ALBUM
  */
 router.get('/:id',
+    validate.id(),
     auth.checkToken(),
     sec.checkItemAccess.read(Album),
     getAlbum()
@@ -148,6 +157,7 @@ router.get('/:id',
  * @hasaccess EDITORROLES, ADMINROLES
  */
 router.post('/',
+    validate.body(Album.rules.CreateUpdate),
     auth.checkToken(),
     sec.checkItemAccess.create(),
     newAlbum()
@@ -168,6 +178,8 @@ router.post('/',
  * @hasaccess OWNER, ADMINROLES
  */
 router.patch('/:id',
+    validate.id(),
+    validate.body(Album.rules.CreateUpdate),
     auth.checkToken(),
     sec.checkItemAccess.update(Album),
     update()
@@ -179,6 +191,7 @@ router.patch('/:id',
  * @hasaccess owner, ADMINROLES
  */
 router.delete('/:id',
+    validate.id(),
     auth.checkToken(),
     sec.checkItemAccess.tokenUIDisEqualsModelUID(Album),
     remove()

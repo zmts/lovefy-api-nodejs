@@ -18,12 +18,16 @@ module.exports.id = function () {
 /**
  * @description validate 'q' from query via Joi schema
  */
-module.exports.q = function () {
-    return celebrate({
+module.exports.query = function (schema) {
+    let defaultSchema = {
         query: Joi.object().keys({
             q: Joi.string().min(2).max(50).required(),
         })
-    });
+    };
+
+    schema = schema || defaultSchema;
+
+    return celebrate(schema);
 };
 
 /**
@@ -32,22 +36,4 @@ module.exports.q = function () {
  */
 module.exports.body = function (schema) {
     return celebrate(schema);
-};
-
-/**
- * ------------------------------
- * @description: validate image type for cover uploading
- * acceptable only JPEG
- * ------------------------------
- */
-module.exports.albumCover = function () {
-    return function (req, res, next) {
-        if (req.file.mimetype !== 'image/jpeg') {
-            return res.status(400).send({
-                success: false,
-                description: 'File must be .jpg'
-            });
-        }
-        next();
-    };
 };

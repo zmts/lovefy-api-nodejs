@@ -39,7 +39,7 @@ router.post('/:id/change-user-role',
  * @hasaccess: All
  */
 router.get('/check-name-availability',
-    validate.q(),
+    validate.query(),
     checkNameAvailability()
 );
 
@@ -48,7 +48,7 @@ router.get('/check-name-availability',
  * @hasaccess All
  */
 router.get('/check-email-availability',
-    validate.q(),
+    validate.query(),
     checkEmailAvailability()
 );
 

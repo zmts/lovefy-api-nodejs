@@ -4,10 +4,28 @@ const fsp = require('fs-promise');
 const Promise = require('bluebird');
 const jimp = require('jimp');
 const _ = require('lodash');
+const Joi = require('joi');
 
 const MainModel = require('./main');
 const Photo = require('./photo');
 const PHOTO_DIR = require('../config/').photoDir;
+
+/**
+ * @model
+ * id
+ * user_id
+ * title
+ * description
+ * private
+ * event_location
+ * event_date
+ * cover_index
+ * cover_thumbnail
+ * created_at
+ * updated_at
+ * _cover_thumbnail
+ * _cover_index
+ */
 
 function Album() {
     MainModel.apply(this, arguments);
@@ -18,25 +36,28 @@ MainModel.extend(Album);
 
 /**
  * ------------------------------
- * @VALIDATION_SCHEMA
+ * @VALIDATION_RULES
  * ------------------------------
  */
-Album.jsonSchema = {
-    type: 'object',
-    required: ['user_id'],
-    additionalProperties: false,
-    properties: {
-        id: { type: 'integer' },
-        user_id: { type: 'integer' },
-        title: { type: 'string', minLength: 3, maxLength: 100 },
-        description: { type: 'string', minLength: 5, maxLength: 1000 },
-        private: { type: 'boolean' }, // default TRUE
-        event_location: { type: 'integer' }, // tag_id
-        event_date: { type: 'string', format: 'date-time' },
-        cover_index: { type: 'boolean' },
-        cover_thumbnail: { type: 'boolean' },
-        created_at: { type: 'string', format: 'date-time' },
-        updated_at: { type: 'string', format: 'date-time' }
+
+Album.rules = {
+    CreateUpdate: {
+        body: Joi.object().keys({
+            name: Joi.string().min(3).max(30),
+            user_id: Joi.number().integer().required(),
+            title: Joi.string().min(3).max(100),
+            description: Joi.string().min(5).max(1000),
+            private: Joi.boolean(),
+            event_location: Joi.number().integer(),
+            event_date: Joi.date().iso(),
+            cover_index: Joi.boolean(),
+            cover_thumbnail: Joi.boolean()
+        })
+    },
+    SetCover: {
+        query: Joi.object().keys({
+            status: Joi.boolean().required()
+        })
     }
 };
 
@@ -63,6 +84,12 @@ Album.prototype._cover_index = function () {
     }
     return null;
 };
+
+/**
+ * ------------------------------
+ * @RELATION_MAPPINGS
+ * ------------------------------
+ */
 
 Album.relationMappings = {
     photos: {
@@ -118,13 +145,8 @@ Album.prototype.$formatJson = function (json) {
     return json;
 };
 
-Album.prototype.$beforeInsert = function (/*json*/) {
-    // this.$validate();
-};
-
 Album.prototype.$beforeUpdate = function () {
     this.updated_at = new Date().toISOString();
-    // this.$validate();
 };
 
 /**
@@ -236,7 +258,6 @@ Album.GetPubList = function (queryPage) {
 Album.SetCoverIndex = function (album_id, status) {
     let that = this;
 
-    if (!status) return Promise.reject('>>> \'status\' <<< field in query not defined');
     return this.GETbyId(album_id)
         .then(function (model) {
             return that.query().patchAndFetchById(model.id, { cover_index: JSON.parse(status) });
@@ -255,7 +276,6 @@ Album.SetCoverIndex = function (album_id, status) {
 Album.SetCoverThumbnail = function (album_id, status) {
     let that = this;
 
-    if (!status) return Promise.reject({ message: '>>> \'status\' <<< field in query not defined', status: 400 });
     return this.GETbyId(album_id)
         .then(function (model) {
             return that.query().patchAndFetchById(model.id, { cover_thumbnail: JSON.parse(status) });
@@ -287,7 +307,7 @@ Album.ProcessOnePhotoToAlbum = function (album_id, user_id, photoWrapper) {
                 .write(`${PHOTO_DIR}/uid-${user_id}/${album_id}/thumbnail-low/${photoWrapper.filename}`);
         })
         .then(function () {
-            return Photo.create({
+            return Photo.CREATE({
                 filename: photoWrapper.filename,
                 album_id: +album_id,
                 user_id: +user_id

@@ -79,6 +79,7 @@ router.post('/:id/upload',
  */
 router.post('/:id/create-attach-tag',
     validate.id(),
+    validate.body(Tag.rules.CreateUpdate),
     auth.checkToken(),
     sec.checkItemAccess.tokenUIDisEqualsModelUID(Album),
     createAndAttachTagToAlbum()

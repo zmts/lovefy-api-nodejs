@@ -2,9 +2,17 @@
 
 const Promise = require('bluebird');
 const _ = require('lodash');
+const Joi = require('joi');
 
 const MainModel = require('./main');
 
+/**
+ * @model
+ * id
+ * name
+ * created_at
+ * updated_at
+ */
 function Tag() {
     MainModel.apply(this, arguments);
 }
@@ -12,17 +20,25 @@ function Tag() {
 Tag.tableName = 'tags';
 MainModel.extend(Tag);
 
-Tag.jsonSchema = {
-    type: 'object',
-    required: ['name'],
-    additionalProperties: false,
-    properties: {
-        id: { type: 'integer' },
-        name: { type: 'string', minLength: 3, maxLength: 30 },
-        created_at: { type: 'string', format: 'date-time' },
-        updated_at: { type: 'string', format: 'date-time' }
+/**
+ * ------------------------------
+ * @VALIDATION_RULES
+ * ------------------------------
+ */
+
+Tag.rules = {
+    CreateUpdate: {
+        body: Joi.object().keys({
+            name: Joi.string().min(3).max(30).required(),
+        })
     }
 };
+
+/**
+ * ------------------------------
+ * @RELATION_MAPPINGS
+ * ------------------------------
+ */
 
 Tag.relationMappings = {
     posts: {
@@ -62,10 +78,6 @@ Tag.prototype.$formatJson = function (json) {
     delete json.created_at;
     delete json.updated_at;
     return json;
-};
-
-Tag.prototype.$beforeInsert = function () {
-    // this.$validate();
 };
 
 Tag.prototype.$beforeUpdate = function () {

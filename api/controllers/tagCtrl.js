@@ -6,6 +6,7 @@ const router = express.Router();
 const Tag = require('../models/tag');
 const auth = require('../middleware/auth');
 const sec = require('../middleware/security');
+const validate = require('../middleware/validateReq');
 
 /**
  * ------------------------------------------------------------
@@ -23,6 +24,7 @@ const sec = require('../middleware/security');
  * @hasaccess: All
  */
 router.get('/find',
+    validate.query(),
     auth.checkToken(),
     sec.checkLoggedInUserAccess(),
     findByString()
@@ -39,6 +41,7 @@ router.get('/find',
  * @url /tags/:id/posts?page=0
  */
 router.get('/:id/posts',
+    validate.id(),
     getPostsByTagId()
 );
 
@@ -47,6 +50,7 @@ router.get('/:id/posts',
  * @url /tags/:id/albums?page=0
  */
 router.get('/:id/albums',
+    validate.id(),
     getAlbumsByTagId()
 );
 
@@ -68,6 +72,7 @@ router.get('/',
  * @request {"name": "string"}
  */
 router.post('/',
+    validate.body(Tag.rules.CreateUpdate),
     auth.checkToken(),
     sec.checkLoggedInUserAccess(),
     newTag()
@@ -76,8 +81,11 @@ router.post('/',
 /**
  * @description update Tag by id
  * @request {"name": "string"}
+ * access only for ADMINROLES
  */
 router.patch('/:id',
+    validate.id(),
+    validate.body(Tag.rules.CreateUpdate),
     auth.checkToken(),
     sec.checkAdminRoleAccess(),
     update()
@@ -85,8 +93,10 @@ router.patch('/:id',
 
 /**
  * @description remove Tag from db by id
+ * access only for ADMINROLES
  */
 router.delete('/:id',
+    validate.id(),
     auth.checkToken(),
     sec.checkAdminRoleAccess(),
     remove()

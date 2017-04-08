@@ -8,6 +8,7 @@ const Tag = require('../models/tag');
 
 const auth = require('../middleware/auth');
 const sec = require('../middleware/security');
+const validate = require('../middleware/validateReq');
 
 /**
  * ------------------------------------------------------------
@@ -27,6 +28,8 @@ const sec = require('../middleware/security');
  * @request {"name": "string"}
  */
 router.post('/:id/create-attach-tag',
+    validate.id(),
+    validate.body(Tag.rules.CreateUpdate),
     auth.checkToken(),
     sec.checkItemAccess.tokenUIDisEqualsModelUID(Post),
     createAndAttachTagToPost()
@@ -37,6 +40,7 @@ router.post('/:id/create-attach-tag',
  * @hasaccess owner, SU, ADMINROLES
  */
 router.post('/:id/attach-tag/:tag_id',
+    validate.id(),
     auth.checkToken(),
     sec.checkItemAccess.tokenUIDisEqualsModelUID(Post),
     attachTagToPost()
@@ -47,6 +51,7 @@ router.post('/:id/attach-tag/:tag_id',
  * @hasaccess owner, SU, ADMINROLES
  */
 router.post('/:id/detach-tag/:tag_id',
+    validate.id(),
     auth.checkToken(),
     sec.checkItemAccess.tokenUIDisEqualsModelUID(Post),
     detachTagFromPost()
@@ -76,6 +81,7 @@ router.get('/',
  * @hasaccess private posts for OWNER, SU, ADMINROLES
  */
 router.get('/:id',
+    validate.id(),
     auth.checkToken(),
     sec.checkItemAccess.read(Post),
     getPost()
@@ -87,6 +93,7 @@ router.get('/:id',
  * @request {"user_id": "int", "title": "string", "content": "string"}
  */
 router.post('/',
+    validate.body(Post.rules.CreateUpdate),
     auth.checkToken(),
     sec.checkItemAccess.create(),
     newPost()
@@ -98,6 +105,8 @@ router.post('/',
  * @request {"title": "string", "content": "string"}
  */
 router.patch('/:id',
+    validate.id(),
+    validate.body(Post.rules.CreateUpdate),
     auth.checkToken(),
     sec.checkItemAccess.update(Post),
     update()
@@ -108,6 +117,7 @@ router.patch('/:id',
  * @hasaccess OWNER, SU, ADMINROLES
  */
 router.delete('/:id',
+    validate.id(),
     auth.checkToken(),
     sec.checkItemAccess.tokenUIDisEqualsModelUID(Post),
     remove()

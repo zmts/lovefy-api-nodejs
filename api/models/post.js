@@ -1,9 +1,20 @@
 'use strict';
 
 const _ = require('lodash');
+const Joi = require('joi');
 
 const MainModel = require('./main');
 
+/**
+ * @model
+ * id
+ * user_id
+ * title
+ * content
+ * private
+ * created_at
+ * updated_at
+ */
 function Post() {
     MainModel.apply(this, arguments);
 }
@@ -11,20 +22,22 @@ function Post() {
 Post.tableName = 'posts';
 MainModel.extend(Post);
 
-Post.jsonSchema = {
-    type: 'object',
-    required: ['user_id', 'title', 'content'],
-    additionalProperties: false,
-    properties: {
-        id: { type: 'integer' },
-        user_id: { type: 'integer' },
-        title: { type: 'string', minLength: 5, maxLength: 50 },
-        content: { type: 'string', minLength: 5, maxLength: 1000 },
-        private: { type: 'boolean' },
-        created_at: { type: 'string', format: 'date-time' },
-        updated_at: { type: 'string', format: 'date-time' }
+Post.rules = {
+    CreateUpdate: {
+        body: Joi.object().keys({
+            user_id: Joi.number().integer().required(),
+            title: Joi.string().min(5).max(50).required(),
+            content: Joi.string().min(5).max(10000).required(),
+            private: Joi.boolean(), // default FALSE
+        })
     }
 };
+
+/**
+ * ------------------------------
+ * @RELATION_MAPPINGS
+ * ------------------------------
+ */
 
 Post.relationMappings = {
     tags: {

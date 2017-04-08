@@ -6,6 +6,7 @@ const router = express.Router();
 const User = require('../models/user');
 const auth = require('../middleware/auth');
 const sec = require('../middleware/security');
+const validate = require('../middleware/validateReq');
 
 /**
  * ------------------------------------------------------------
@@ -26,6 +27,8 @@ const sec = require('../middleware/security');
  * @return updated USER model with new role
  */
 router.post('/:id/change-user-role',
+    validate.id(),
+    validate.body(User.rules.ChangeUserRole),
     auth.checkToken(),
     sec.checkSUAccess(),
     changeUserRole()
@@ -107,6 +110,7 @@ router.get('/:id',
  */
 router.post('/',
     auth.hashPassword(),
+    validate.body(User.rules.CreateUpdate),
     newUser()
 );
 
@@ -120,6 +124,7 @@ router.patch('/:id',
     auth.checkToken(),
     sec.checkOwnerIdInParams(),
     auth.hashPassword(),
+    validate.body(User.rules.CreateUpdate),
     update()
 );
 
@@ -177,7 +182,7 @@ function getAlbumsByUserId() {
 function newUser() {
     return function (req, res, next) {
         delete req.body.helpData;
-        User.Create(req.body)
+        User.CREATE(req.body)
             .then(function (user) {
                 res.json(user);
             }).catch(next);

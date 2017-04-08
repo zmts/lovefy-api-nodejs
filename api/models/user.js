@@ -1,9 +1,21 @@
 'use strict';
 
 const Promise = require('bluebird');
+const Joi = require('joi');
 
 const MainModel = require('./main');
 const CONFIG = require('../config');
+
+/**
+ * @model
+ * id {string},
+ * name: {type: string, minLength: 3, maxLength: 30},
+ * email: {type: string, format: email, minLength: 5, maxLength: 50},
+ * password_hash: {type: string},
+ * role: {type: string},
+ * created_at: {type: string, format: date-time},
+ * updated_at: {type: string, format: date-time}}
+ */
 
 function User() {
     MainModel.apply(this, arguments);
@@ -12,20 +24,33 @@ function User() {
 User.tableName = 'users';
 MainModel.extend(User);
 
-User.jsonSchema = {
-    type: 'object',
-    required: ['name', 'email', 'password_hash'],
-    additionalProperties: false,
-    properties: {
-        id: { type: 'integer' },
-        name: { type: 'string', minLength: 3, maxLength: 30 },
-        email: { type: 'string', format: 'email', minLength: 5, maxLength: 50 },
-        password_hash: { type: 'string' },
-        role: { type: 'string' },
-        created_at: { type: 'string', format: 'date-time' },
-        updated_at: { type: 'string', format: 'date-time' }
+/**
+ * ------------------------------
+ * @VALIDATION_RULES
+ * ------------------------------
+ */
+
+User.rules = {
+    CreateUpdate: {
+        body: Joi.object().keys({
+            name: Joi.string().min(3).max(30).required(),
+            email: Joi.string().email().min(6).max(30).required(),
+            password_hash: Joi.string().required()
+        })
+    },
+
+    ChangeUserRole: {
+        body: Joi.object().keys({
+            role: Joi.string().required()
+        })
     }
 };
+
+/**
+ * ------------------------------
+ * @RELATION_MAPPINGS
+ * ------------------------------
+ */
 
 User.relationMappings = {
     posts: {
@@ -89,14 +114,6 @@ function _validateRoleName(data) {
  * @METHODS
  * ------------------------------
  */
-
-User.Create = function (data) {
-    if (data.role || data.role === '') return Promise.reject({
-        message: 'Forbidden.\'role\' field not acceptable',
-        status: 403
-    });
-    return this.CREATE(data);
-};
 
 User.GetByEmail = function (email) {
     if (!email) return Promise.reject('Query not defined');

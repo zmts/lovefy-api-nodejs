@@ -1,15 +1,26 @@
-const _ = require('lodash');
+const Joi = require('joi');
+const celebrate = require('celebrate');
 
+/**
+ * @description validate params IDs via Joi schema
+ */
 module.exports.id = function () {
-    return function (req, res, next) {
-        if ( _.isNaN(+req.params.id) ) {
-            return res.status(400).send({
-                success: false,
-                description: 'Invalid request param id >> ' + req.params.id
-            });
-        }
-        next();
-    };
+    return celebrate({
+        params: Joi.object().keys({
+            id: Joi.number().integer(),
+            tag_id: Joi.number().integer(),
+            post_id: Joi.number().integer(),
+            album_id: Joi.number().integer()
+        })
+    });
+};
+
+/**
+ * @description validate response body via Joi schema
+ * @param schema
+ */
+module.exports.body = function (schema) {
+    return celebrate(schema);
 };
 
 /**

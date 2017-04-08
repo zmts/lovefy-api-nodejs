@@ -4,7 +4,7 @@ require('dotenv').config();
 
 const express = require('express');
 const path = require('path');
-const favicon = require('serve-favicon');
+// const favicon = require('serve-favicon');
 const logger = require('morgan');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
@@ -26,8 +26,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // enable CORS only for local client
 app.use(function (req, res, next) {
-    res.header("Access-Control-Allow-Origin", config.client.host + ':' + config.client.port);
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    res.header('Access-Control-Allow-Origin', config.client.host + ':' + config.client.port);
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
     next();
 });
 
@@ -47,7 +47,7 @@ if (app.get('env') === 'development') {
             global.console.log(error.stack);
         }
 
-        res.status(error.status || 500).json({
+        res.status( error.status || (error.isJoi ? 400 : 500) ).json({
             success: false,
             description: error,
             env: 'development/regular',

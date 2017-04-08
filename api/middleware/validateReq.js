@@ -16,6 +16,17 @@ module.exports.id = function () {
 };
 
 /**
+ * @description validate 'q' from query via Joi schema
+ */
+module.exports.q = function () {
+    return celebrate({
+        query: Joi.object().keys({
+            q: Joi.string().min(2).max(50).required(),
+        })
+    });
+};
+
+/**
  * @description validate response body via Joi schema
  * @param schema
  */

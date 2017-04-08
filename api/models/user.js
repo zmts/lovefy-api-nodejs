@@ -116,7 +116,6 @@ function _validateRoleName(data) {
  */
 
 User.GetByEmail = function (email) {
-    if (!email) return Promise.reject('Query not defined');
     return this.query().where({ email: email })
         .then(function (data) {
             if (!data.length) throw { message: 'Empty response', status: 404 };
@@ -128,7 +127,6 @@ User.GetByEmail = function (email) {
 };
 
 User.GetByName = function (name) {
-    if (!name) return Promise.reject('Query not defined');
     return this.query().where({ name: name })
         .then(function (data) {
             if (!data.length) throw { message: 'Empty response', status: 404 };

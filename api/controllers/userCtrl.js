@@ -39,6 +39,7 @@ router.post('/:id/change-user-role',
  * @hasaccess: All
  */
 router.get('/check-name-availability',
+    validate.q(),
     checkNameAvailability()
 );
 
@@ -47,6 +48,7 @@ router.get('/check-name-availability',
  * @hasaccess All
  */
 router.get('/check-email-availability',
+    validate.q(),
     checkEmailAvailability()
 );
 
@@ -62,6 +64,7 @@ router.get('/check-email-availability',
  * @return not OWNER >> all public POST's by user_id
  */
 router.get('/:id/posts/',
+    validate.id(),
     auth.checkToken(),
     sec.isOwnerIdInParams(),
     getPostsByUserId()
@@ -73,6 +76,7 @@ router.get('/:id/posts/',
  * @return not OWNER >> all public ALBUM's by user_id
  */
 router.get('/:id/albums/',
+    validate.id(),
     auth.checkToken(),
     sec.isOwnerIdInParams(),
     getAlbumsByUserId()
@@ -98,6 +102,7 @@ router.get('/',
  * @return Anonymous or NotOwner >> only public profile data TODO
  */
 router.get('/:id',
+    validate.id(),
     getUser()
 );
 
@@ -121,6 +126,7 @@ router.post('/',
  * "password" field from request transfers and saves to DB as "password_hash"
  */
 router.patch('/:id',
+    validate.id(),
     auth.checkToken(),
     sec.checkOwnerIdInParams(),
     auth.hashPassword(),
@@ -133,6 +139,7 @@ router.patch('/:id',
  * @hasaccess OWNER, ADMINROLES
  */
 router.delete('/:id',
+    validate.id(),
     auth.checkToken(),
     sec.checkOwnerIdInParams(),
     remove()

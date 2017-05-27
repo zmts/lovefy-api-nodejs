@@ -1,6 +1,6 @@
 'use strict';
 
-const fsp = require('fs-promise');
+const fse = require('fs-extra');
 const Promise = require('bluebird');
 const jimp = require('jimp');
 const _ = require('lodash');
@@ -164,17 +164,17 @@ Album.Create = function (data) {
     let that = this;
     let uid = '/uid-' + data.user_id + '/';
 
-    return fsp.stat(PHOTO_DIR) // check root-photo dir accessibility
+    return fse.stat(PHOTO_DIR) // check root-photo dir accessibility
         .then(function () {
             return that.CREATE(data);
         })
         .then(function (model) {
             Promise.all([ // ensure folders
-                fsp.ensureDir(PHOTO_DIR + uid),
-                fsp.ensureDir(PHOTO_DIR + uid + model.id),
-                fsp.ensureDir(PHOTO_DIR + uid + model.id + '/src'),
-                fsp.ensureDir(PHOTO_DIR + uid + model.id + '/thumbnail-mid'),
-                fsp.ensureDir(PHOTO_DIR + uid + model.id + '/thumbnail-low')
+                fse.ensureDir(PHOTO_DIR + uid),
+                fse.ensureDir(PHOTO_DIR + uid + model.id),
+                fse.ensureDir(PHOTO_DIR + uid + model.id + '/src'),
+                fse.ensureDir(PHOTO_DIR + uid + model.id + '/thumbnail-mid'),
+                fse.ensureDir(PHOTO_DIR + uid + model.id + '/thumbnail-low')
             ]).catch(function (error) {
                 global.console.error( (new Date).toUTCString() );
                 global.console.error(`ERROR: ${error.message}`);
@@ -328,7 +328,7 @@ Album.EraseAlbum = function (album_id) {
 
     return this.GETbyId(album_id)
         .then(function (album) {
-            return fsp.remove(`${PHOTO_DIR}/uid-${album.user_id}/${album.id}`);
+            return fse.remove(`${PHOTO_DIR}/uid-${album.user_id}/${album.id}`);
         })
         .then(function () {
             return that.REMOVE(album_id);

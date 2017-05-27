@@ -1,6 +1,6 @@
 'use strict';
 
-const fsp = require('fs-promise');
+const fse = require('fs-extra');
 const Joi = require('joi');
 
 const MainModel = require('./main');
@@ -130,12 +130,12 @@ Photo.setBestStatus = function (id, status) {
 Photo.erasePhoto = function (photo_id) {
     let that = this;
 
-    return this.getById(photo_id)
+    return this.GETbyId(photo_id)
         .then(function (photo) {
             return Promise.all([
-                fsp.remove(`${PHOTO_DIR}/uid-${photo.user_id}/${photo.album_id}/src/${photo.filename}`),
-                fsp.remove(`${PHOTO_DIR}/uid-${photo.user_id}/${photo.album_id}/thumbnail-mid/${photo.filename}`),
-                fsp.remove(`${PHOTO_DIR}/uid-${photo.user_id}/${photo.album_id}/thumbnail-low/${photo.filename}`)
+                fse.remove(`${PHOTO_DIR}/uid-${photo.user_id}/${photo.album_id}/src/${photo.filename}`),
+                fse.remove(`${PHOTO_DIR}/uid-${photo.user_id}/${photo.album_id}/thumbnail-mid/${photo.filename}`),
+                fse.remove(`${PHOTO_DIR}/uid-${photo.user_id}/${photo.album_id}/thumbnail-low/${photo.filename}`)
             ]);
         })
         .then(function () {

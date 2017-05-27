@@ -1,9 +1,25 @@
 'use strict';
 
 const fsp = require('fs-promise');
+const Joi = require('joi');
 
 const MainModel = require('./main');
 const PHOTO_DIR = require('../config/').photoDir;
+
+/**
+ * @model
+ * id
+ * album_id
+ * user_id
+ * views
+ * updated_at
+ * created_at
+ * best
+ * filename
+ * _src
+ * _thumbnail_mid
+ * _thumbnail_low
+ */
 
 function Photo() {
     MainModel.apply(this, arguments);
@@ -12,19 +28,25 @@ function Photo() {
 Photo.tableName = 'photos';
 MainModel.extend(Photo);
 
-Photo.jsonSchema = {
-    type: 'object',
-    required: ['filename', 'user_id', 'album_id'],
-    additionalProperties: false,
-    properties: {
-        id: { type: 'integer' },
-        filename: { type: 'string' },
-        user_id: { type: 'integer' },
-        album_id: { type: 'integer' },
-        views: { type: 'integer' },
-        best: { type: 'boolean' },
-        created_at: { type: 'string', format: 'date-time' },
-        updated_at: { type: 'string', format: 'date-time' }
+/**
+ * ------------------------------
+ * @VALIDATION_RULES
+ * ------------------------------
+ */
+
+Photo.rules = {
+    CreateUpdate: {
+        body: Joi.object().keys({
+            user_id: Joi.number().integer().required(),
+            album_id: Joi.number().integer().required(),
+            filename: Joi.string().min(10).max(500).required(),
+            best: Joi.boolean()
+        })
+    },
+    SetBest: {
+        query: Joi.object().keys({
+            status: Joi.boolean().required()
+        })
     }
 };
 

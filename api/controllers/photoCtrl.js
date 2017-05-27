@@ -6,6 +6,7 @@ const router = express.Router();
 const Photo = require('../models/photo');
 const auth = require('../middleware/auth');
 const sec = require('../middleware/security');
+const validate = require('../middleware/validateReq');
 
 /**
  * ------------------------------------------------------------
@@ -25,6 +26,7 @@ const sec = require('../middleware/security');
  * @url GET: photos/:id/set-best?status=false
  */
 router.post('/:id/set-best',
+    validate.query(Photo.rules.SetBest),
     auth.checkToken(),
     sec.checkItemAccess.tokenUIDisEqualsModelUID(Photo),
     setBestStatus()
@@ -41,6 +43,7 @@ router.post('/:id/set-best',
  * @hasaccess All
  */
 router.get('/:id',
+    validate.id(),
     getPhoto()
 );
 

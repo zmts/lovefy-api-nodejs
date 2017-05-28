@@ -21,12 +21,11 @@ const PHOTO_DIR = require('../config/').photoDir;
  * _thumbnail_low
  */
 
-function Photo() {
-    MainModel.apply(this, arguments);
+class Photo extends MainModel {
+    static get tableName() {
+        return 'photos';
+    }
 }
-
-Photo.tableName = 'photos';
-MainModel.extend(Photo);
 
 /**
  * ------------------------------

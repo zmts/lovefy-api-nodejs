@@ -15,12 +15,12 @@ const MainModel = require('./main');
  * created_at
  * updated_at
  */
-function Post() {
-    MainModel.apply(this, arguments);
-}
 
-Post.tableName = 'posts';
-MainModel.extend(Post);
+class Post extends MainModel {
+    static get tableName() {
+        return 'posts';
+    }
+}
 
 Post.rules = {
     CreateUpdate: {

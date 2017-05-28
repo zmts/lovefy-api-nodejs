@@ -7,11 +7,9 @@ const Model = require('../config/db');
  * extends other models by own basic methods
  */
 
-function MainModel() {
-    Model.apply(this, arguments);
-}
+class MainModel extends Model {
 
-Model.extend(MainModel);
+}
 
 MainModel.CREATE = function (data) {
     return this.query().insert(data);

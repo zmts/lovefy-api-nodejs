@@ -17,12 +17,12 @@ const CONFIG = require('../config');
  * updated_at: {type: string, format: date-time}}
  */
 
-function User() {
-    MainModel.apply(this, arguments);
+class User extends MainModel {
+    static get tableName() {
+        return 'users';
+    }
 }
 
-User.tableName = 'users';
-MainModel.extend(User);
 
 /**
  * ------------------------------

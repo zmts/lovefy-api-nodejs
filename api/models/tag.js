@@ -13,12 +13,12 @@ const MainModel = require('./main');
  * created_at
  * updated_at
  */
-function Tag() {
-    MainModel.apply(this, arguments);
-}
 
-Tag.tableName = 'tags';
-MainModel.extend(Tag);
+class Tag extends MainModel {
+    static get tableName() {
+        return 'tags';
+    }
+}
 
 /**
  * ------------------------------

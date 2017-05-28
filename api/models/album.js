@@ -27,12 +27,37 @@ const PHOTO_DIR = require('../config/').photoDir;
  * _cover_index
  */
 
-function Album() {
-    MainModel.apply(this, arguments);
-}
+class Album extends MainModel {
+    static get tableName() {
+        return 'albums';
+    }
 
-Album.tableName = 'albums';
-MainModel.extend(Album);
+    static relationMappings() {
+        return {
+            photos: {
+                relation: MainModel.HasManyRelation,
+                modelClass: __dirname + '/photo',
+                join: {
+                    from: 'albums.id',
+                    to: 'photos.album_id'
+                }
+            },
+            tags: {
+                relation: MainModel.ManyToManyRelation,
+                modelClass: __dirname + '/tag',
+                join: {
+                    from: 'albums.id',
+                    through: {
+                        from: 'albums_tags.album_id',
+                        to: 'albums_tags.tag_id'
+                    },
+                    to: 'tags.id'
+                }
+            }
+        };
+
+    }
+}
 
 /**
  * ------------------------------
@@ -83,35 +108,6 @@ Album.prototype._cover_index = function () {
         return `${process.env.PROTOCOL}://${process.env.HOST}:${process.env.PORT}/photos/uid-${this.user_id}/${this.id}/cover_index.jpg`;
     }
     return null;
-};
-
-/**
- * ------------------------------
- * @RELATION_MAPPINGS
- * ------------------------------
- */
-
-Album.relationMappings = {
-    photos: {
-        relation: MainModel.HasManyRelation,
-        modelClass: __dirname + '/photo',
-        join: {
-            from: 'albums.id',
-            to: 'photos.album_id'
-        }
-    },
-    tags: {
-        relation: MainModel.ManyToManyRelation,
-        modelClass: __dirname + '/tag',
-        join: {
-            from: 'albums.id',
-            through: {
-                from: 'albums_tags.album_id',
-                to: 'albums_tags.tag_id'
-            },
-            to: 'tags.id'
-        }
-    }
 };
 
 /**

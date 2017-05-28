@@ -27,9 +27,16 @@ ajv-keywords@^1.0.0:
   version "1.5.1"
   resolved "https://registry.yarnpkg.com/ajv-keywords/-/ajv-keywords-1.5.1.tgz#314dd0a4b3368fad3dfcdc54ede6171b886daf3c"
 
-ajv@^4.7.0, ajv@^4.8.2, ajv@^4.9.1:
+ajv@^4.7.0, ajv@^4.9.1:
   version "4.11.4"
   resolved "https://registry.yarnpkg.com/ajv/-/ajv-4.11.4.tgz#ebf3a55d4b132ea60ff5847ae85d2ef069960b45"
+  dependencies:
+    co "^4.6.0"
+    json-stable-stringify "^1.0.1"
+
+ajv@^5.1.1:
+  version "5.1.4"
+  resolved "https://registry.yarnpkg.com/ajv/-/ajv-5.1.4.tgz#56f4ab21d42c2ae59e07de655dca6f8f3549809b"
   dependencies:
     co "^4.6.0"
     json-stable-stringify "^1.0.1"
@@ -128,7 +135,7 @@ babel-code-frame@^6.16.0:
     esutils "^2.0.2"
     js-tokens "^3.0.0"
 
-babel-runtime@^6.11.6, babel-runtime@^6.6.1:
+babel-runtime@^6.11.6:
   version "6.23.0"
   resolved "https://registry.yarnpkg.com/babel-runtime/-/babel-runtime-6.23.0.tgz#0a9489f144de70efb3ce4300accdb329e2fc543b"
   dependencies:
@@ -1465,7 +1472,7 @@ lodash.once@^4.0.0:
   version "4.1.1"
   resolved "https://registry.yarnpkg.com/lodash.once/-/lodash.once-4.1.1.tgz#0dd3971213c7c56df880977d504c88fb471a97ac"
 
-lodash@^4.0.0, lodash@^4.16.4, lodash@^4.3.0, lodash@^4.6.0, lodash@^4.7.0:
+lodash@^4.0.0, lodash@^4.16.4, lodash@^4.17.4, lodash@^4.3.0, lodash@^4.6.0:
   version "4.17.4"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.4.tgz#78203a4d1c328ae1d86dca6460e369b57f4055ae"
 
@@ -1625,14 +1632,13 @@ object.omit@^2.0.0:
     for-own "^0.1.4"
     is-extendable "^0.1.1"
 
-objection@^0.7.5:
-  version "0.7.5"
-  resolved "https://registry.yarnpkg.com/objection/-/objection-0.7.5.tgz#dffff2738ca50ca5b68e6731bbff594de97e64cd"
+objection@^0.8.1:
+  version "0.8.1"
+  resolved "https://registry.yarnpkg.com/objection/-/objection-0.8.1.tgz#470194565ba9d7ad60381eabff49d4021179c238"
   dependencies:
-    ajv "^4.8.2"
-    babel-runtime "^6.6.1"
-    bluebird "^3.4.6"
-    lodash "^4.7.0"
+    ajv "^5.1.1"
+    bluebird "^3.5.0"
+    lodash "^4.17.4"
 
 on-finished@^2.3.0, on-finished@~2.3.0:
   version "2.3.0"

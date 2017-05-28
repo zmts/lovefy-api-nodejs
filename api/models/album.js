@@ -32,7 +32,7 @@ class Album extends MainModel {
         return 'albums';
     }
 
-    static relationMappings() {
+    static get relationMappings() {
         return {
             photos: {
                 relation: MainModel.HasManyRelation,

@@ -20,6 +20,42 @@ class Post extends MainModel {
     static get tableName() {
         return 'posts';
     }
+
+    static get relationMappings () {
+        return {
+            tags: {
+                relation: MainModel.ManyToManyRelation,
+                modelClass: __dirname + '/tag',
+                join: {
+                    from: 'posts.id',
+                    through: {
+                        from: 'posts_tags.post_id',
+                        to: 'posts_tags.tag_id'
+                    },
+                    to: 'tags.id'
+                }
+            },
+            comments: {
+                relation: MainModel.HasManyRelation,
+                modelClass: __dirname + '/commentToPost',
+                join: {
+                    from: 'posts.id',
+                    to: 'comments_to_posts.post_id'
+                }
+            }
+        };
+    }
+
+    /**
+     * ------------------------------
+     * @HOOKS
+     * ------------------------------
+     */
+
+    $beforeUpdate () {
+        this.updated_at = new Date().toISOString();
+        this.$validate();
+    }
 }
 
 Post.rules = {
@@ -31,42 +67,6 @@ Post.rules = {
             private: Joi.boolean(), // default FALSE
         })
     }
-};
-
-/**
- * ------------------------------
- * @RELATION_MAPPINGS
- * ------------------------------
- */
-
-Post.relationMappings = {
-    tags: {
-        relation: MainModel.ManyToManyRelation,
-        modelClass: __dirname + '/tag',
-        join: {
-            from: 'posts.id',
-            through: {
-                from: 'posts_tags.post_id',
-                to: 'posts_tags.tag_id'
-            },
-            to: 'tags.id'
-        }
-    }
-};
-
-/**
- * ------------------------------
- * @HOOKS
- * ------------------------------
- */
-
-Post.prototype.$beforeInsert = function (/*json*/) {
-    this.$validate();
-};
-
-Post.prototype.$beforeUpdate = function () {
-    this.updated_at = new Date().toISOString();
-    this.$validate();
 };
 
 /**
@@ -91,11 +91,12 @@ Post.GetById = function (id) {
     return this.query()
         .findById(id)
         .eager('tags')
-        .then(function (data) {
+        .mergeEager('comments')
+        .then(data => {
             if (!data) throw { message: 'Empty response', status: 404 };
             return data;
         })
-        .catch(function (error) {
+        .catch(error => {
             throw error;
         });
 };

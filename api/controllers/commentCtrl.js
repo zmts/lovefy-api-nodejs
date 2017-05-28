@@ -72,3 +72,4 @@ router.post('/comment-album/:album_id',
  * ------------------------------------------------------------
  */
 
+module.exports = router;

@@ -1,11 +1,18 @@
+.DS_Store
 node_modules/
+dist/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
 bower_components/
 tmp/
 .tmp/
 tmp_files/
-.DS_Store
+public/
 .idea
 *.ai
 *.psd
 *.pdf
+
 

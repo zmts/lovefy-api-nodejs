@@ -3,10 +3,12 @@ import Router from 'vue-router'
 
 import indexComponent from '@/components/index.component'
 import newsComponent from '@/components/news.component'
+import notFound from '@/components/not-found.component'
 
 Vue.use(Router)
 
 export default new Router({
+    linkActiveClass: 'is-active',
     mode: 'history',
     routes: [
         {
@@ -18,6 +20,10 @@ export default new Router({
             path: '/news',
             name: 'news',
             component: newsComponent
+        },
+        {
+            path: '*',
+            component: notFound
         }
     ]
 })

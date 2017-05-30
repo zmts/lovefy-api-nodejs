@@ -40,7 +40,7 @@
     - Check permissions(create, read, update, delete) middleware
 - Error handling
 
-## Implemented (Client, AngularJS)
+## Implemented (Client, VueJS)
 - Base ... wip
 
 # Conventions:

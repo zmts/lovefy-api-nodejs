@@ -1,14 +1,16 @@
 <template>
     <div class="news">
-        <div>
-            <h1>{{ newsText }}</h1>
-        </div>
-        <div class="news-list">
-            <div class="item" v-for="item in news">
-                {{item.title}}
+        <div class="wrapper">
+            <div>
+                <h1>{{ newsText }}</h1>
+            </div>
+            <div class="news-list">
+                <div class="loading" v-if="!news.length"><h1>loading...</h1></div>
+                <div class="item" v-for="item in news">
+                    {{item.title}}
+                </div>
             </div>
         </div>
-
     </div>
 </template>
 
@@ -28,11 +30,12 @@ export default {
     },
 
     beforeCreate () {
-        this.news = newsService.getNews()
+        newsService.getNews()
             .then(response => {
-                this.news = response.data
+                console.log(response)
+                this.news = response.data.data.results
             })
-            .catch(error => error)
+            .catch(error => console.log(error))
     }
 }
 

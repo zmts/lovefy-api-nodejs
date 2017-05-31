@@ -1,6 +1,8 @@
 <template>
-    <div class="main">
-        <h1>{{msg}}</h1>
+    <div class="home">
+        <div class="wrapper">
+            <h1>{{msg}}</h1>
+        </div>
     </div>
 </template>
 

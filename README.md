@@ -1,11 +1,11 @@
-# Angular.js & Express.js base portal
+# Vue2 & Express base portal
 
 ## Usage
 ### API
 - type 'node ./bin/www' or 'nodemon'
 
 ### Client
-- gulp serve
+- npm run dev
 
 ## Implemented (API, ExpressJS)
 - Routing:

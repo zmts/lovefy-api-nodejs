@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="wrapper">
     <h2>footer</h2>
     </div>
 </template>
@@ -14,6 +14,6 @@
     }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 
 </style>

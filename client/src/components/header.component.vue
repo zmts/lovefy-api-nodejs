@@ -1,9 +1,18 @@
 <template>
-    <div>
-        <h1>Menu</h1>
-        <router-link :to="{ name: 'index' }" exact>Home</router-link>
-        <router-link :to="{ name: 'news' }">News</router-link>
+    <div class="header">
+        <div class="wrapper">
+            <ul class="menu sub">
+                <li>login</li>
+                <li>profile</li>
+            </ul>
+            <ul class="menu">
+                <li><router-link :to="{ name: 'index' }" exact>Home</router-link></li>
+                <li><router-link :to="{ name: 'news' }">News</router-link></li>
+            </ul>
+        </div>
+
     </div>
+
 </template>
 
 <script>
@@ -16,6 +25,24 @@
     }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+
+    .header {
+
+        .menu {
+            display: flex;
+            justify-content: center;
+
+            li{
+                padding: 15px;
+
+            }
+
+            &.sub{
+                justify-content: flex-end;
+
+            }
+        }
+    }
 
 </style>

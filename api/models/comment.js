@@ -14,7 +14,7 @@ const MainModel = require('./main');
  * updated_at
  */
 
-class CommentToPost extends MainModel {
+class Comment extends MainModel {
     static get tableName() {
         return 'comments';
     }
@@ -24,6 +24,16 @@ class CommentToPost extends MainModel {
      * @HOOKS
      * ------------------------------
      */
+    $formatJson(json) {
+        json = super.$formatJson(json);
+
+        // delete field from json if field is NULL
+        json.post_id ? json.post_id : delete json.post_id;
+        json.album_id ? json.album_id : delete json.album_id;
+        json.photo_id ? json.photo_id : delete json.photo_id;
+
+        return json;
+    }
 
     $beforeUpdate () {
         this.updated_at = new Date().toISOString();
@@ -31,7 +41,7 @@ class CommentToPost extends MainModel {
     }
 }
 
-CommentToPost.rules = {
+Comment.rules = {
     CreateUpdate: {
         body: Joi.object().keys({
             user_id: Joi.number().integer().required(),
@@ -40,7 +50,6 @@ CommentToPost.rules = {
     }
 };
 
-
 /**
  * ------------------------------
  * @METHODS
@@ -48,4 +57,4 @@ CommentToPost.rules = {
  */
 
 
-module.exports = CommentToPost;
+module.exports = Comment;

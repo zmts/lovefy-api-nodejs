@@ -3,9 +3,7 @@
 const express = require('express');
 const router = express.Router();
 
-const CommentToPost = require('../models/commentToPost');
-// const CommentToAlbum = require('../models/commentToAlbum');
-// const CommentToPhoto = require('../models/commentToPhoto');
+const Comment = require('../models/comment');
 
 const auth = require('../middleware/auth');
 const sec = require('../middleware/security');

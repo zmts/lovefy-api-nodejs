@@ -37,10 +37,10 @@ class Post extends MainModel {
             },
             comments: {
                 relation: MainModel.HasManyRelation,
-                modelClass: __dirname + '/commentToPost',
+                modelClass: __dirname + '/comment',
                 join: {
                     from: 'posts.id',
-                    to: 'comments_to_posts.post_id'
+                    to: 'comments.post_id'
                 }
             }
         };
@@ -92,6 +92,9 @@ Post.GetById = function (id) {
         .findById(id)
         .eager('tags')
         .mergeEager('comments')
+        .modifyEager('comments', builder => {
+            builder.where({ post_id: id }).orderBy('created_at');
+        })
         .then(data => {
             if (!data) throw { message: 'Empty response', status: 404 };
             return data;

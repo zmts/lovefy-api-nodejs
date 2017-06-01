@@ -16,7 +16,7 @@ const MainModel = require('./main');
 
 class CommentToPost extends MainModel {
     static get tableName() {
-        return 'comments_to_posts';
+        return 'comments';
     }
 
     /**

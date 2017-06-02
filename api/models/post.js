@@ -4,6 +4,7 @@ const _ = require('lodash');
 const Joi = require('joi');
 
 const MainModel = require('./main');
+const Comment = require('./comment');
 
 /**
  * @model
@@ -88,16 +89,22 @@ function _checkExistingTags (data, tag_id) {
  */
 
 Post.GetById = function (id) {
+    let postDataResult;
+
     return this.query()
         .findById(id)
         .eager('tags')
-        .mergeEager('comments')
-        .modifyEager('comments', builder => {
-            builder.where({ post_id: id }).orderBy('created_at');
-        })
         .then(data => {
-            if (!data) throw { message: 'Empty response', status: 404 };
-            return data;
+            postDataResult = data;
+            return Comment.GetPostCommentsById(id);
+        })
+        .then(comments => {
+            postDataResult.comments = comments;
+            return postDataResult;
+        })
+        .then(finalData => {
+            if (!finalData) throw { message: 'Empty response', status: 404 };
+            return finalData;
         })
         .catch(error => {
             throw error;

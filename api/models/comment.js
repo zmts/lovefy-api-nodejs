@@ -26,12 +26,6 @@ class Comment extends MainModel {
      */
     $formatJson(json) {
         json = super.$formatJson(json);
-
-        // delete field from json if field is NULL
-        json.post_id ? json.post_id : delete json.post_id;
-        json.album_id ? json.album_id : delete json.album_id;
-        json.photo_id ? json.photo_id : delete json.photo_id;
-
         return json;
     }
 
@@ -49,6 +43,18 @@ Comment.rules = {
         })
     }
 };
+
+Comment.GetPostCommentsById = function (entity_id) {
+    return this.query().where({ entity_id, type: 'post' }).orderBy('created_at');
+}
+
+Comment.GetAlbumCommentsById = function (entity_id) {
+    return this.query().where({ entity_id, type: 'album' }).orderBy('created_at');
+}
+
+Comment.GetPhotoCommentsById = function (entity_id) {
+    return this.query().where({ entity_id, type: 'photo' }).orderBy('created_at');
+}
 
 /**
  * ------------------------------

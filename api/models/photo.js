@@ -25,6 +25,21 @@ class Photo extends MainModel {
     static get tableName() {
         return 'photos';
     }
+
+    static get relationMappings() {
+        return {
+            comments: {
+                relation: MainModel.HasManyRelation,
+                modelClass: __dirname + '/comment',
+                filter: { type: 'photo' },
+                join: {
+                    from: 'photos.id',
+                    to: 'comments.entity_id'
+                }
+            }
+        };
+
+    }
 }
 
 /**

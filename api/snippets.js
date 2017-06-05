@@ -24,3 +24,46 @@ this.query().findById(tag_id).then(tag => {
         .page(pageNumber, process.env.PAGE_SIZE)
         .then(posts => tag.posts = posts);
 })
+
+// Get post with TAGs and COMMENTs
+Post.GetById = function (id) {
+    let postDataResult;
+
+    return this.query()
+        .findById(id)
+        .eager('tags')
+        .then(data => {
+            postDataResult = data;
+            return Comment.GetPostCommentsById(id);
+        })
+        .then(comments => {
+            postDataResult.comments = comments;
+            return postDataResult;
+        })
+        .then(finalData => {
+            if (!finalData) throw { message: 'Empty response', status: 404 };
+            return finalData;
+        })
+        .catch(error => {
+            throw error;
+        });
+};
+
+// Get ALBUM with all related PHOTO's, TAG's, COMMENTs to ALBUM and COMMENTs to PHOTOs
+Album.GetById = function (id) {
+    return this.query()
+        .findById(id)
+        .eager('[photos.comments, tags, comments]')
+        .modifyEager('[photos.comments, comments]', builder => {
+            builder.orderBy('created_at');
+        })
+        .then(function (data) {
+            if (!data) throw { message: 'Empty response', status: 404 };
+            return data;
+        })
+        .catch(function (error) {
+            throw error;
+        });
+};
+
+

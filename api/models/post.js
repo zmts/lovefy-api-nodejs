@@ -39,9 +39,10 @@ class Post extends MainModel {
             comments: {
                 relation: MainModel.HasManyRelation,
                 modelClass: __dirname + '/comment',
+                filter: { type: 'post' },
                 join: {
                     from: 'posts.id',
-                    to: 'comments.post_id'
+                    to: 'comments.entity_id'
                 }
             }
         };
@@ -89,22 +90,15 @@ function _checkExistingTags (data, tag_id) {
  */
 
 Post.GetById = function (id) {
-    let postDataResult;
-
     return this.query()
         .findById(id)
-        .eager('tags')
+        .eager('[tags, comments]')
+        .modifyEager('comments', builder => {
+            builder.orderBy('created_at');
+        })
         .then(data => {
-            postDataResult = data;
-            return Comment.GetPostCommentsById(id);
-        })
-        .then(comments => {
-            postDataResult.comments = comments;
-            return postDataResult;
-        })
-        .then(finalData => {
-            if (!finalData) throw { message: 'Empty response', status: 404 };
-            return finalData;
+            if (!data) throw { message: 'Empty response', status: 404 };
+            return data;
         })
         .catch(error => {
             throw error;

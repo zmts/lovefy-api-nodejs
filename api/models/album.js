@@ -57,9 +57,10 @@ class Album extends MainModel {
             comments: {
                 relation: MainModel.HasManyRelation,
                 modelClass: __dirname + '/comment',
+                filter: { type: 'album' },
                 join: {
                     from: 'albums.id',
-                    to: 'comments.album_id'
+                    to: 'comments.entity_id'
                 }
             }
         };
@@ -196,16 +197,14 @@ Album.Create = function (data) {
 
 /**
  * @param id
- * @return ALBUM with all related PHOTO's and TAG's
+ * @return ALBUM with all related PHOTO's, TAG's, COMMENTs to ALBUM
  */
 Album.GetById = function (id) {
     return this.query()
         .findById(id)
-        .eager('photos')
-        .mergeEager('tags')
-        .mergeEager('comments')
+        .eager('[photos, tags, comments]')
         .modifyEager('comments', builder => {
-            builder.where({ album_id: id }).orderBy('created_at');
+            builder.orderBy('created_at');
         })
         .then(function (data) {
             if (!data) throw { message: 'Empty response', status: 404 };

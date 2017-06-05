@@ -25,7 +25,7 @@ this.query().findById(tag_id).then(tag => {
         .then(posts => tag.posts = posts);
 })
 
-// Get post with TAGs and COMMENTs
+// Get post with TAGs and COMMENTs (wrong way)
 Post.GetById = function (id) {
     let postDataResult;
 

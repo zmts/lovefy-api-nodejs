@@ -114,13 +114,18 @@ Photo.prototype.$beforeUpdate = function () {
  * @return model with updated views counter
  */
 Photo.getByIdAndIncrementViews = function (id) {
-    let that = this;
-
-    return this.GETbyId(id)
-        .then(function (model) {
-            return that.UPDATE(id, { views: model.views + 1 });
+    return this.query()
+        .findById(id)
+        .eager('comments')
+        .modifyEager('comments', builder => {
+            builder.orderBy('created_at');
         })
-        .catch(function (error) {
+        .then(data => {
+            if (!data) throw { message: 'Empty response', status: 404 };
+            return data;
+        })
+        .tap(model => this.UPDATE(id, { views: model.views + 1 }) )
+        .catch(error => {
             throw error.message || error;
         });
 };

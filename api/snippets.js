@@ -66,4 +66,23 @@ Album.GetById = function (id) {
         });
 };
 
+// tap example
+Photo.getByIdAndIncrementViews = function (id) {
+    return this.query()
+        .findById(id)
+        .eager('comments')
+        .modifyEager('comments', builder => {
+            builder.orderBy('created_at');
+        })
+        .then(data => {
+            if (!data) throw { message: 'Empty response', status: 404 };
+            return data;
+        })
+        .tap(model => this.UPDATE(id, { views: model.views + 1 }) )
+        .catch(error => {
+            throw error.message || error;
+        });
+};
+
+
 

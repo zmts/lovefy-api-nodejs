@@ -120,11 +120,12 @@ Photo.getByIdAndIncrementViews = function (id) {
         .modifyEager('comments', builder => {
             builder.orderBy('created_at');
         })
+        .increment('views', 1)
+        .returning('*')
         .then(data => {
             if (!data) throw { message: 'Empty response', status: 404 };
             return data;
         })
-        .tap(model => this.UPDATE(id, { views: model.views + 1 }) )
         .catch(error => {
             throw error.message || error;
         });

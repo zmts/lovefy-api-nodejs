@@ -38,7 +38,6 @@ class Comment extends MainModel {
 Comment.rules = {
     CreateUpdate: {
         body: Joi.object().keys({
-            user_id: Joi.number().integer().required(),
             content: Joi.string().min(3).max(500).required(),
         })
     }
@@ -46,15 +45,15 @@ Comment.rules = {
 
 Comment.GetPostCommentsById = function (entity_id) {
     return this.query().where({ entity_id, type: 'post' }).orderBy('created_at');
-}
+};
 
 Comment.GetAlbumCommentsById = function (entity_id) {
     return this.query().where({ entity_id, type: 'album' }).orderBy('created_at');
-}
+};
 
 Comment.GetPhotoCommentsById = function (entity_id) {
     return this.query().where({ entity_id, type: 'photo' }).orderBy('created_at');
-}
+};
 
 /**
  * ------------------------------

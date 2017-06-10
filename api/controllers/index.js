@@ -9,6 +9,7 @@ const postCtrl = require('./postCtrl');
 const tagCtrl = require('./tagCtrl');
 const albumCtrl = require('./albumCtrl');
 const photoCtrl = require('./photoCtrl');
+const commentCtrl = require('./commentCtrl');
 
 router.get('/', function (req, res) {
     res.json({ success: true, data: 'hello' });
@@ -20,5 +21,6 @@ router.use('/posts', postCtrl);
 router.use('/tags', tagCtrl);
 router.use('/albums', albumCtrl);
 router.use('/photos', photoCtrl);
+router.use('/comments', commentCtrl);
 
 module.exports = router;

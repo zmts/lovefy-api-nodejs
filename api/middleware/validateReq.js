@@ -10,7 +10,8 @@ module.exports.id = function () {
             id: Joi.number().integer(),
             tag_id: Joi.number().integer(),
             post_id: Joi.number().integer(),
-            album_id: Joi.number().integer()
+            album_id: Joi.number().integer(),
+            photo_id: Joi.number().integer()
         })
     });
 };

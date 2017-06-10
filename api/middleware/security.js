@@ -32,6 +32,18 @@ function _isEditorUser(req) {
 }
 
 /**
+ * @description helper, user_id from TOKEN and user_id from REQUEST BODY >>> MUST equals
+ * @hasaccess OWNER, ADMINROLES
+ * @param {Object} req
+ * @returns {boolean}
+ * @private
+ */
+function _isOwnerIdInBody(req) {
+    if ( _isAdminUser(req) ) return true;
+    if ( +req.body.helpData.userId === +req.body.user_id ) return true;
+}
+
+/**
  * @description: helper, user_id from TOKEN and user_id from MODEL >>> MUST equals
  * @hasaccess OWNER, ADMINROLES
  * @param {Object} req
@@ -54,18 +66,6 @@ function _tokenUIDisEqualsModelUID(req, model) {
 function _tokenUIDisEqualsParamsUID(req) {
     if ( _isAdminUser(req) ) return true;
     if ( +req.body.helpData.userId === +req.params.id ) return true;
-}
-
-/**
- * @description helper, user_id from TOKEN and user_id from REQUEST BODY >>> MUST equals
- * @hasaccess OWNER, ADMINROLES
- * @param {Object} req
- * @returns {boolean}
- * @private
- */
-function _isOwnerIdInBody(req) {
-    if ( _isAdminUser(req) ) return true;
-    if ( +req.body.helpData.userId === +req.body.user_id ) return true;
 }
 
 /**

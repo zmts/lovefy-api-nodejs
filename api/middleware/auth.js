@@ -4,8 +4,8 @@ const bcrypt = require('bcryptjs');
 const jwtp = require('../util/jwt');
 const crypto = require('crypto');
 
-const SECRET = require('../config').token.secret;
-const ENCRYPTPASSWORD = require('../config').token.encryptpassword;
+const SECRET = require('../config').tokenSecret;
+const ENCRYPTPASSWORD = require('../config').tokenSecret.encryptpassword;
 const User = require('../models/user');
 
 function _encryptToken(str) {
@@ -27,13 +27,14 @@ function _decryptToken(str) {
 
 }
 
-module.exports.makeToken = function () {
-    return function (req, res) {
+module.exports.makeTokens = () => {
+    return (req, res, next) => {
         User.GetByEmail(req.body.email)
-            .then(function (user) {
+            .then(user => {
 
                 let accessTokenConfig = {
                     payload: {
+                        accessToken: true,
                         username: user.name,
                         userRole: user.role
                     },
@@ -46,71 +47,112 @@ module.exports.makeToken = function () {
                 };
 
                 let refreshTokenConfig = {
+                    payload: {
+                        refreshToken: true
+                    },
+
                     options: {
                         algorithm: 'HS512',
                         expiresIn: '60m', // '60d'
-                        subject: user.id.toString()
                     }
                 };
 
                 let accessTokenResult;
 
-                jwtp.sign(accessTokenConfig.payload, SECRET, accessTokenConfig.options)
+                jwtp.sign(accessTokenConfig.payload, SECRET.access, accessTokenConfig.options)
                     .then(accessToken => {
-                        return accessToken;
-                    })
-                    .then((accessToken) => {
                         accessTokenResult = accessToken;
-                        return jwtp.sign({}, SECRET, refreshTokenConfig.options);
+                    })
+                    .then(() => {
+                        return jwtp.sign(refreshTokenConfig.payload, SECRET.refresh, refreshTokenConfig.options);
+                    })
+                    .tap(refreshToken => {
+                        return User.UPDATE(user.id, { refresh_token: _encryptToken(refreshToken) });
                     })
                     .then(refreshToken => {
                         res.json({
                             success: true,
                             accessToken: _encryptToken(accessTokenResult),
-                            refreshToken
+                            refreshToken: _encryptToken(refreshToken)
                         });
-                    })
-                    .catch(error => {
+                    }).catch(error => {
                         res.status(400).json({ success: false, description: error });
                     });
             })
-            .catch(function (error) {
-                res.status(404).send({ success: false, description: error });
-            });
+            .catch(error => next(error));
+    };
+};
+
+module.exports.refreshTokens = () => {
+    return (req, res, next) => {
+        let refreshToken = req.body.refreshToken || req.headers['refreshToken'];
+
+        if (refreshToken) {
+            refreshToken = _decryptToken(refreshToken);
+
+            User.GetByEmail(req.body.email)
+                .then(user => {
+                    if (user.refresh_token === refreshToken) {
+                        jwtp.verify(refreshToken, SECRET.refresh)
+                            .then(decoded => {
+
+                            });
+                    }
+
+                    res.status(401).json({
+                        success: false,
+                        description: 'Bad refresh token'
+                    });
+                }).catch(error => next(error));
+
+            // check refresh token from Client and if token is valid >>
+            // create new refreshToken and save it to DB >>
+            // create new access token and send to client
+
+        }
+        res.end();
     };
 };
 
 /**
- * ------------------------------
- * description: checks token from client request
- * ------------------------------
+ * @description: checks ACCESS token from client request
+ *
  * if token is valid define help object 'helpData' with current 'userId', 'userRole' fields
  * and pass to next middleware
+ *
+ * if access token is out of date >> send 'TokenExpiredError'
  *
  * if token is missing >> set 'helpData' object 'userId', 'userRole' fields to false
  * and pass to next middleware
  */
-module.exports.checkToken = function () {
-    return function (req, res, next) {
+module.exports.checkToken = () => {
+    return (req, res, next) => {
         let token = req.body.token || req.headers['token'];
 
         if (token) {
             token = _decryptToken(token);
 
-            jwtp.verify(token, SECRET)
+            jwtp.verify(token, SECRET.access)
                 .then(decoded => {
                     req.body.helpData = {
                         userId: decoded.sub,
                         userRole: decoded.userRole
                     };
                     return next();
-                })
-                .catch(error => {
-                    req.body.helpData = {
-                        userId: false,
-                        userRole: false
-                    };
-                    return next();
+                }).catch(error => {
+                    if (error.name === 'TokenExpiredError') {
+                        res.status(401).json({
+                            success: false,
+                            status: 'Unauthorized',
+                            accessTokenError: 'TokenExpiredError',
+                        });
+                    } else {
+                        req.body.helpData = {
+                            userId: false,
+                            userRole: false
+                        };
+                        return next();
+                    }
                 });
 
         } else {
@@ -148,7 +190,7 @@ module.exports.hashPassword = function () {
             });
         }
         else {
-            res.status(400).json({success: false, description: '\'password\' field not found'});
+            res.status(400).json({ success: false, description: '\'password\' field not found' });
         }
     };
 };

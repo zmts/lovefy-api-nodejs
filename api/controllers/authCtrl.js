@@ -7,29 +7,30 @@
  * ------------------------------
  */
 
-var express = require('express');
-var router = express.Router();
+const express = require('express');
+const router = express.Router();
 
-var auth = require('../middleware/auth');
+const auth = require('../middleware/auth');
 
 /**
- * ------------------------------
- * description: User sign in(login) system
- * ------------------------------
- * url: auth/signin
- * method: POST
- * request: {"email": "string", password: "string"}
+ * @description: User sign in(login) system
+ * @url: auth/signin
+ * @request: {"email": "string", password: "string"}
  */
-router.post('/signin', auth.checkPassword(), auth.makeToken());
+router.post('/signin', auth.checkPassword(), auth.makeTokens());
 
 /**
- * ------------------------------
  * description: User sign out(logout) system
- * ------------------------------
  * url: auth/signout
- * method: POST
  * request: {"email": "string"}
  */
 router.post('/signout', auth.signOut());
+
+/**
+ * @description: User sign in(login) system
+ * @url: auth/refresh-token
+ * @headers: 'refreshToken'
+ */
+router.post('/refresh-token', auth.refreshTokens());
 
 module.exports = router;

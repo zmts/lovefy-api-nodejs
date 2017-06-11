@@ -183,4 +183,21 @@ Post.CheckTagByIdInPost = function (post_id, tag_id) {
         });
 };
 
+/**
+ * @description remove POST entity and all related COMMENTS
+ * @param post_id
+ * @return success status
+ */
+Post.Remove = function (post_id) {
+    return this.REMOVE(post_id)
+        .then(() => {
+            return Comment.query()
+                .delete()
+                .where({ entity_id: post_id, type: 'post' });
+        })
+        .catch(error => {
+            throw error;
+        });
+};
+
 module.exports = Post;

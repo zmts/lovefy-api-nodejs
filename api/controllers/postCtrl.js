@@ -214,7 +214,7 @@ function update() {
 
 function remove() {
     return function (req, res, next) {
-        Post.REMOVE(req.params.id)
+        Post.Remove(req.params.id)
             .then(function () {
                 res.json({ success: true, description: `Post #${req.params.id} was removed` });
             }).catch(next);

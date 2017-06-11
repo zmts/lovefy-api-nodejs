@@ -8,6 +8,8 @@ const Joi = require('joi');
 
 const MainModel = require('./main');
 const Photo = require('./photo');
+const Comment = require('./comment');
+
 const PHOTO_DIR = require('../config/').photoDir;
 
 /**
@@ -326,21 +328,24 @@ Album.ProcessOnePhotoToAlbum = function (album_id, user_id, photoWrapper) {
 };
 
 /**
- * @description erase ALBUM dir from FS >> remove ALBUM row from DB
+ * @description erase ALBUM dir from FS >> remove ALBUM row from DB >> remove and all related COMMENTS
  * @param album_id
  * @return success status
  */
 Album.EraseAlbum = function (album_id) {
-    let that = this;
-
     return this.GETbyId(album_id)
-        .then(function (album) {
+        .then(album => {
             return fse.remove(`${PHOTO_DIR}/uid-${album.user_id}/${album.id}`);
         })
-        .then(function () {
-            return that.REMOVE(album_id);
+        .then(() => {
+            return this.REMOVE(album_id);
         })
-        .catch(function (error) {
+        .then(() => {
+            return Comment.query()
+                .delete()
+                .where({ entity_id: album_id, type: 'album' });
+        })
+        .catch(error => {
             throw error;
         });
 };

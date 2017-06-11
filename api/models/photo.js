@@ -4,6 +4,7 @@ const fse = require('fs-extra');
 const Joi = require('joi');
 
 const MainModel = require('./main');
+const Comment = require('./comment');
 const PHOTO_DIR = require('../config/').photoDir;
 
 /**
@@ -143,13 +144,11 @@ Photo.setBestStatus = function (id, status) {
 };
 
 /**
- * @description erase images(src and thumbnails) from FS >> removes PHOTO model from DB
+ * @description erase images(src and thumbnails) from FS >> removes PHOTO model from DB >> remove and all related COMMENTS
  * @param photo_id
  * @return success status
  */
 Photo.erasePhoto = function (photo_id) {
-    let that = this;
-
     return this.GETbyId(photo_id)
         .then(function (photo) {
             return Promise.all([
@@ -158,10 +157,15 @@ Photo.erasePhoto = function (photo_id) {
                 fse.remove(`${PHOTO_DIR}/uid-${photo.user_id}/${photo.album_id}/thumbnail-low/${photo.filename}`)
             ]);
         })
-        .then(function () {
-            return that.REMOVE(photo_id);
+        .then(() => {
+            return this.REMOVE(photo_id);
         })
-        .catch(function (error) {
+        .then(() => {
+            return Comment.query()
+                .delete()
+                .where({ entity_id: photo_id, type: 'photo' });
+        })
+        .catch(error => {
             throw error.message || error;
         });
 };

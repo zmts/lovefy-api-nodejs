@@ -8,11 +8,22 @@ const SECRET = require('../config').tokenSecret;
 const ENCRYPTPASSWORD = require('../config').tokenSecret.encryptpassword;
 const User = require('../models/user');
 
+/**
+ * ------------------------------
+ * @HELPERS
+ * ------------------------------
+ */
+
 function _encryptToken(str) {
     let cipher = crypto.createCipher('aes-256-ctr', ENCRYPTPASSWORD);
-    let crypted = cipher.update(str,'utf8','hex');
-    crypted += cipher.final('hex');
-    return crypted;
+    try {
+        let crypted = cipher.update(str,'utf8','hex');
+        crypted += cipher.final('hex');
+        return crypted;
+    } catch (error) {
+        throw { message: 'Bad encryption input string' };
+    }
+
 }
 
 function _decryptToken(str) {
@@ -22,49 +33,71 @@ function _decryptToken(str) {
         dec += decipher.final('utf8');
         return dec;
     } catch (error) {
-        throw { message: 'Check token. Bad input string' };
+        throw { message: 'Bad decryption input string' };
     }
 
 }
+
+/**
+ * @description make access token
+ * @return Promise
+ */
+
+function _makeAccessToken(userModel){
+    let accessTokenConfig = {
+        payload: {
+            accessToken: true,
+            username: userModel.name,
+            userRole: userModel.role
+        },
+
+        options: {
+            algorithm: 'HS512',
+            expiresIn: '15m',
+            subject: userModel.id.toString()
+        }
+
+    };
+    return jwtp.sign(accessTokenConfig.payload, SECRET.access, accessTokenConfig.options);
+}
+
+/**
+ * @description make refresh token
+ * @return Promise
+ */
+function _makeRefreshToken(){
+    let refreshTokenConfig = {
+        payload: {
+            refreshToken: true
+        },
+
+        options: {
+            algorithm: 'HS512',
+            expiresIn: '60m', // '60d'
+        }
+    };
+
+    return jwtp.sign(refreshTokenConfig.payload, SECRET.refresh, refreshTokenConfig.options);
+}
+
+/**
+ * ------------------------------
+ * @MIDDLEWARE
+ * ------------------------------
+ */
 
 module.exports.makeTokens = () => {
     return (req, res, next) => {
         User.GetByEmail(req.body.email)
             .then(user => {
 
-                let accessTokenConfig = {
-                    payload: {
-                        accessToken: true,
-                        username: user.name,
-                        userRole: user.role
-                    },
-
-                    options: {
-                        algorithm: 'HS512',
-                        expiresIn: '15m',
-                        subject: user.id.toString()
-                    }
-                };
-
-                let refreshTokenConfig = {
-                    payload: {
-                        refreshToken: true
-                    },
-
-                    options: {
-                        algorithm: 'HS512',
-                        expiresIn: '60m', // '60d'
-                    }
-                };
-
                 let accessTokenResult;
-
-                jwtp.sign(accessTokenConfig.payload, SECRET.access, accessTokenConfig.options)
+                _makeAccessToken(user)
                     .then(accessToken => {
                         accessTokenResult = accessToken;
                     })
                     .then(() => {
-                        return jwtp.sign(refreshTokenConfig.payload, SECRET.refresh, refreshTokenConfig.options);
+                        return _makeRefreshToken();
                     })
                     .tap(refreshToken => {
                         return User.UPDATE(user.id, { refresh_token: _encryptToken(refreshToken) });
@@ -78,8 +111,7 @@ module.exports.makeTokens = () => {
                     }).catch(error => {
                         res.status(400).json({ success: false, description: error });
                     });
-            })
-            .catch(error => next(error));
+            }).catch(error => next(error));
     };
 };
 
@@ -95,7 +127,8 @@ module.exports.refreshTokens = () => {
                     if (user.refresh_token === refreshToken) {
                         jwtp.verify(refreshToken, SECRET.refresh)
                             .then(decoded => {
-
+                                // create new refreshToken and save it to DB >>
+                                // create new access token and send to client
                             });
                     }
 
@@ -104,13 +137,7 @@ module.exports.refreshTokens = () => {
                         description: 'Bad refresh token'
                     });
                 }).catch(error => next(error));
-
-            // check refresh token from Client and if token is valid >>
-            // create new refreshToken and save it to DB >>
-            // create new access token and send to client
-
         }
-        res.end();
     };
 };
 
@@ -144,7 +171,7 @@ module.exports.checkToken = () => {
                         res.status(401).json({
                             success: false,
                             status: 'Unauthorized',
-                            accessTokenError: 'TokenExpiredError',
+                            accessTokenError: 'Access token expired',
                         });
                     } else {
                         req.body.helpData = {

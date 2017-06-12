@@ -120,22 +120,38 @@ module.exports.refreshTokens = () => {
         let refreshToken = req.body.refreshToken || req.headers['refreshToken'];
 
         if (refreshToken) {
-            refreshToken = _decryptToken(refreshToken);
+            let decryptedRefreshToken = _decryptToken(refreshToken);
 
             User.GetByEmail(req.body.email)
                 .then(user => {
                     if (user.refresh_token === refreshToken) {
-                        jwtp.verify(refreshToken, SECRET.refresh)
-                            .then(decoded => {
-                                // create new refreshToken and save it to DB >>
-                                // create new access token and send to client
-                            });
-                    }
 
-                    res.status(401).json({
-                        success: false,
-                        description: 'Bad refresh token'
-                    });
+                        let resultRefreshToken;
+                        jwtp.verify(decryptedRefreshToken, SECRET.refresh)
+                            .then(decoded => {
+                                return _makeRefreshToken();
+                            })
+                            .tap(newRefreshToken => {
+                                resultRefreshToken = newRefreshToken;
+                                return User.UPDATE(user.id, { refresh_token: _encryptToken(newRefreshToken) });
+                            })
+                            .then(() => {
+                                return _makeAccessToken(user);
+                            })
+                            .then(newAccessToken => {
+                                res.json({
+                                    success: true,
+                                    accessToken: _encryptToken(newAccessToken),
+                                    refreshToken: _encryptToken(resultRefreshToken)
+                                });
+                            });
+
+                    } else {
+                        res.status(401).json({
+                            success: false,
+                            description: 'Bad refresh token'
+                        });
+                    }
                 }).catch(error => next(error));
         }
     };

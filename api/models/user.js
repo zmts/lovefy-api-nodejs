@@ -13,6 +13,7 @@ const CONFIG = require('../config');
  * email: {type: string, format: email, minLength: 5, maxLength: 50},
  * password_hash: {type: string},
  * role: {type: string},
+ * refresh_token: {type: string},
  * created_at: {type: string, format: date-time},
  * updated_at: {type: string, format: date-time}}
  */
@@ -35,7 +36,8 @@ User.rules = {
         body: Joi.object().keys({
             name: Joi.string().min(3).max(30).required(),
             email: Joi.string().email().min(6).max(30).required(),
-            password_hash: Joi.string().required()
+            password_hash: Joi.string().required(),
+            refresh_token: Joi.string()
         })
     },
 

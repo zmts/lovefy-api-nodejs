@@ -6,8 +6,9 @@ module.exports.verify = (token, SECRET) => {
         jwt.verify(token, SECRET, (error, decoded) => {
             if (decoded) {
                 resolve(decoded);
+            } else {
+                reject(error);
             }
-            reject(error);
         });
     });
 };
@@ -17,8 +18,9 @@ module.exports.sign = (playload, SECRET, options) => {
         jwt.sign(playload, SECRET, options, function (error, token) {
             if (token) {
                 resolve(token);
+            } else {
+                reject(error);
             }
-            reject(error);
         });
     });
 };

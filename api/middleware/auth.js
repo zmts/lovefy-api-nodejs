@@ -128,7 +128,7 @@ module.exports.refreshTokens = () => {
 
                         let resultRefreshToken;
                         jwtp.verify(decryptedRefreshToken, SECRET.refresh)
-                            .then(decoded => {
+                            .then(() => {
                                 return _makeRefreshToken();
                             })
                             .tap(newRefreshToken => {
@@ -139,16 +139,31 @@ module.exports.refreshTokens = () => {
                                 return _makeAccessToken(user);
                             })
                             .then(newAccessToken => {
-                                res.json({
+                                return res.json({
                                     success: true,
                                     accessToken: _encryptToken(newAccessToken),
                                     refreshToken: _encryptToken(resultRefreshToken)
+                                });
+                            }).catch(error => {
+                                // expired refresh token error handling
+                                if (error.name === 'TokenExpiredError') {
+                                    return res.status(401).json({
+                                        success: false,
+                                        refreshTokenExpiredError: true,
+                                    });
+                                }
+                                // default error handling
+                                res.status(401).json({
+                                    success: false,
+                                    refreshTokenError: true,
+                                    description: error
                                 });
                             });
 
                     } else {
                         res.status(401).json({
                             success: false,
+                            refreshTokenError: true,
                             description: 'Bad refresh token'
                         });
                     }
@@ -184,10 +199,9 @@ module.exports.checkToken = () => {
                     return next();
                 }).catch(error => {
                     if (error.name === 'TokenExpiredError') {
-                        res.status(401).json({
+                        return res.status(401).json({
                             success: false,
-                            status: 'Unauthorized',
-                            accessTokenError: 'Access token expired',
+                            accessTokenExpiredError: true
                         });
                     } else {
                         req.body.helpData = {
@@ -209,8 +223,14 @@ module.exports.checkToken = () => {
 };
 
 module.exports.signOut = function () {
-    return function (req, res) {
-        res.json({ success: true, description: 'User sign out system' });
+    return function (req, res, next) {
+        User.GETbyId(req.params.id)
+            .then(user => {
+                return User.UPDATE(user.id, { refresh_token: null });
+            })
+            .then(() => {
+                res.json({ success: true, description: 'User sign out system' });
+            }).catch(error => next(error));
     };
 };
 

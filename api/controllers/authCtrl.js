@@ -11,6 +11,8 @@ const express = require('express');
 const router = express.Router();
 
 const auth = require('../middleware/auth');
+const sec = require('../middleware/security');
+
 
 /**
  * @description: User sign in(login) system
@@ -22,9 +24,9 @@ router.post('/signin', auth.checkPassword(), auth.makeTokens());
 /**
  * description: User sign out(logout) system
  * url: auth/signout
- * request: {"email": "string"}
+ * request: {"id": "user_id"}
  */
-router.post('/signout', auth.signOut());
+router.post('/signout/:id', auth.checkToken(), sec.checkOwnerIdInParams(), auth.signOut());
 
 /**
  * @description: User sign in(login) system

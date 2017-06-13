@@ -20,12 +20,13 @@
     - Fields visibility in model
 - Auth:
     - Sign in
-    - Sign out(todo)
+    - Sign out
     - Password hashing in DB (bcrypt.js)
     - Tokens(JWT, algorithm: 'HS512'):
         - Access-token
-        - Refresh-token(todo)
+        - Refresh-token
         - Token encryption(AES-256-CTR)
+        - https://gist.github.com/zmts/802dc9c3510d79fd40f9dc38a12bccfc
 - Security:
     - Roles
         - SU ['superuser']

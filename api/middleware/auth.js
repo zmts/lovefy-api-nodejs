@@ -58,6 +58,7 @@ function _makeAccessToken(userModel){
         }
 
     };
+
     return jwtp.sign(accessTokenConfig.payload, SECRET.access, accessTokenConfig.options);
 }
 

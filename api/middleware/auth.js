@@ -265,7 +265,13 @@ module.exports.checkPassword = function () {
             .then(function (user) {
                 bcrypt.compare(req.body.password, user.password_hash, function(error, result) {
                     if (result) return next();
-                    res.status(403).json({ success: false, description: 'Invalid password' });
+                    res.status(403).json({
+                        success: false,
+                        description: {
+                            message: 'Invalid password',
+                            status: 403
+                        }
+                    });
                 });
             })
             .catch(function (error) {

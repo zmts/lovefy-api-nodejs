@@ -1,8 +1,10 @@
 <template>
     <div class="header">
+        <app-login ref="appLoginModal"></app-login>
+
         <div class="wrapper">
             <ul class="menu sub">
-                <li>login</li>
+                <li @click="$refs.appLoginModal.open()">login</li>
                 <li>profile</li>
             </ul>
             <ul class="menu">
@@ -16,11 +18,15 @@
 </template>
 
 <script>
+    import AppLogin from '@/components/login.component'
+
     export default {
-        data () {
-            return {
-                someVar: ''
-            }
+        components: {
+            AppLogin
+        },
+
+        created () {
+        //
         }
     }
 </script>

@@ -268,7 +268,7 @@ User.ChangeUserRole = function (user_id, data) {
  * @param status BOOLEAN
  * @return updated USER model
  */
-User.SetAvatarStatus = (user_id, status) => {
+User.SetAvatarStatus = function (user_id, status) {
     return this.GETbyId(user_id)
         .then( model => {
             return this.query().patchAndFetchById(model.id, { avatar: JSON.parse(status) });

@@ -250,6 +250,9 @@ module.exports.userAvatar = () => {
         let upload = multer(_uploadOptions(uploadStorage, 1024 * 1024 * 2)).single('avatar');
 
         upload(req, res, function (error) {
+            req.body.helpData = { // pass req.body.helpData
+                userId: user_id
+            };
 
             if (error) {
 

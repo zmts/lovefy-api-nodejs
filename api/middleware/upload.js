@@ -227,7 +227,7 @@ module.exports.photoToAlbum = function () {
  * ------------------------------
  */
 module.exports.userAvatar = () => {
-    return (req, res) => {
+    return (req, res, next) => {
         let user_id = +req.body.helpData.userId;
 
         if (req.headers['content-type'].indexOf('multipart/form-data;') < 0) {
@@ -236,7 +236,6 @@ module.exports.userAvatar = () => {
                 status: 400
             });
         }
-
 
         let uploadStorage = multer.diskStorage({
             destination: function (req, file, cb) {
@@ -247,7 +246,6 @@ module.exports.userAvatar = () => {
                 cb(null, file.fieldname + '.jpg');
             }
         });
-
 
         let upload = multer(_uploadOptions(uploadStorage, 1024 * 1024 * 2)).single('avatar');
 
@@ -278,11 +276,7 @@ module.exports.userAvatar = () => {
                     }
                 });
             }
-
-            res.json({
-                success: true,
-                description: 'Avatar uploaded'
-            });
+            next();
         });
     };
 };

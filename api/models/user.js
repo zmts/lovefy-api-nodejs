@@ -46,7 +46,13 @@ User.rules = {
         body: Joi.object().keys({
             role: Joi.string().required()
         })
-    }
+    },
+
+    AvatarStatus: {
+        query: Joi.object().keys({
+            status: Joi.boolean().required()
+        })
+    },
 };
 
 /**
@@ -252,6 +258,22 @@ User.ChangeUserRole = function (user_id, data) {
             return that.UPDATE(user.id, data);
         })
         .catch(function (error) {
+            throw error;
+        });
+};
+
+/**
+ * @description: set in DB "avatar" field to TRUE/FALSE
+ * @param user_id
+ * @param status BOOLEAN
+ * @return updated USER model
+ */
+User.SetAvatarStatus = (user_id, status) => {
+    return this.GETbyId(user_id)
+        .then( model => {
+            return this.query().patchAndFetchById(model.id, { avatar: JSON.parse(status) });
+        })
+        .catch(error => {
             throw error;
         });
 };

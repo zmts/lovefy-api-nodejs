@@ -89,9 +89,11 @@ router.get('/:id/albums/',
  * @return not OWNER >> all public ALBUM's by user_id
  */
 router.post('/upload-avatar',
+    validate.query(User.rules.AvatarStatus),
     auth.checkToken(),
     sec.checkLoggedInUserAccess(),
-    upload.userAvatar()
+    upload.userAvatar(),
+    setAvatarStatus()
 );
 
 /**
@@ -260,6 +262,16 @@ function changeUserRole() {
         User.ChangeUserRole(req.params.id, req.body)
             .then(function (data) {
                 res.json({ success: true, data: data });
+            }).catch(next);
+    };
+}
+
+function setAvatarStatus () {
+    return (req, res, next) => {
+        console.log(req.body);
+        User.SetAvatarStatus(req.body.helpData.userId, req.query.status)
+            .then(user => {
+                res.json({ success: true, data: user });
             }).catch(next);
     };
 }

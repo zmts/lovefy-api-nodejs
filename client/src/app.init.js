@@ -4,6 +4,10 @@ import Vue from 'vue'
 import AppLayout from './app.layout'
 import router from './app.router'
 
+// import Promise from 'bluebird';
+// overwrite native Promise implementation with Bluebird's (for axios)
+// window.Promise = Promise;
+
 import Vuetify from 'vuetify'
 
 import 'vuetify/dist/vuetify.min.css'

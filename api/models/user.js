@@ -37,7 +37,8 @@ User.rules = {
             name: Joi.string().min(3).max(30).required(),
             email: Joi.string().email().min(6).max(30).required(),
             password_hash: Joi.string().required(),
-            refresh_token: Joi.string()
+            refresh_token: Joi.string(),
+            _avatar: Joi.string(),
         })
     },
 
@@ -75,6 +76,22 @@ User.relationMappings = {
 
 /**
  * ------------------------------
+ * @VIRTUAL_ATTRIBUTES
+ * ------------------------------
+ */
+User.virtualAttributes = [
+    '_avatar',
+];
+
+User.prototype._avatar = function () {
+    if (this.avatar) {
+        return `${process.env.PROTOCOL}://${process.env.HOST}:${process.env.PORT}/userfiles/uid-${this.id}/avatar.jpg`;
+    }
+    return null;
+};
+
+/**
+ * ------------------------------
  * @HOOKS
  * ------------------------------
  */
@@ -82,6 +99,8 @@ User.relationMappings = {
 User.prototype.$formatJson = function (json) {
     json = MainModel.prototype.$formatJson.call(this, json);
     delete json.password_hash;
+    delete json.refresh_token;
+    delete json.avatar;
     return json;
 };
 

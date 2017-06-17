@@ -6,6 +6,7 @@ const router = express.Router();
 const User = require('../models/user');
 const auth = require('../middleware/auth');
 const sec = require('../middleware/security');
+const upload = require('../middleware/upload');
 const validate = require('../middleware/validateReq');
 
 /**
@@ -80,6 +81,17 @@ router.get('/:id/albums/',
     auth.checkToken(),
     sec.isOwnerIdInParams(),
     getAlbumsByUserId()
+);
+
+/**
+ * @description get ALBUM's by user_id
+ * @return OWNER >> all mix ALBUM's by :user_id
+ * @return not OWNER >> all public ALBUM's by user_id
+ */
+router.post('/upload-avatar',
+    auth.checkToken(),
+    sec.checkLoggedInUserAccess(),
+    upload.userAvatar()
 );
 
 /**

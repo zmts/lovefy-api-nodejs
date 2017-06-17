@@ -5,7 +5,7 @@
         <div class="wrapper">
             <ul class="menu sub">
                 <li @click="$refs.appLoginModal.open()">login</li>
-                <li>profile</li>
+                <li><router-link :to="{ name: 'profile' }">profile</router-link></li>
             </ul>
             <ul class="menu">
                 <li><router-link :to="{ name: 'index' }" exact>Home</router-link></li>

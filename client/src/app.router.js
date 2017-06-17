@@ -5,6 +5,8 @@ import indexComponent from '@/components/index.component'
 import newsComponent from '@/components/news.component'
 import notFound from '@/components/not-found.component'
 
+import profilePage from '@/pages/profile.page'
+
 Vue.use(Router)
 
 export default new Router({
@@ -15,6 +17,11 @@ export default new Router({
             path: '/',
             name: 'index',
             component: indexComponent
+        },
+        {
+            path: '/profile',
+            name: 'profile',
+            component: profilePage
         },
         {
             path: '/news',

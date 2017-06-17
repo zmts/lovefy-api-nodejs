@@ -1,6 +1,46 @@
 const PHOTO_DIR = require('../config/').photoDir;
+const USERFILES_DIR = require('../config/').userfilesDir;
 const multer = require('multer');
 const Album = require('../models/album');
+// const User = require('../models/user');
+
+/**
+ * ------------------------------
+ * @HELPERS
+ * ------------------------------
+ */
+
+/**
+ * @param uploadStorage
+ * @param maxFileSize
+ * @return Object config object
+ * @private
+ */
+function _uploadOptions (uploadStorage, maxFileSize) {
+    maxFileSize = maxFileSize || 1024 * 1024 * 2;
+
+    return {
+        storage: uploadStorage,
+        limits: {
+            fileSize: maxFileSize, // max file size
+            files: 1, // max 1 file
+            fields: 0 // denny non file-type fields
+        },
+        includeEmptyFields: false,
+        fileFilter: function (req, file, cb) {
+            if (file.mimetype !== 'image/jpeg') {
+                return cb('Unsupported Media Type. Only [\'.jpg\',\'.jpeg\'] files are allowed!', false);
+            }
+            return cb(null, true);
+        }
+    };
+}
+
+/**
+ * ------------------------------
+ * @MIDDLEWARE
+ * ------------------------------
+ */
 
 /**
 * ------------------------------
@@ -10,6 +50,14 @@ const Album = require('../models/album');
 */
 module.exports.albumCover = function (coverType) {
     return function (req, res, next) {
+
+        if (req.headers['content-type'].indexOf('multipart/form-data;') < 0) {
+            throw ({
+                message: 'Content-type must be \'multipart/formdata\'',
+                status: 400
+            });
+        }
+
         Album.GETbyId(req.params.id)
             .then(function (model) {
 
@@ -63,8 +111,11 @@ module.exports.albumCover = function (coverType) {
 
                         return res.status(400).send({
                             success: false,
-                            description: error.message || error,
-                            info: errorInfoMessage
+                            description: {
+                                message: errorInfoMessage,
+                                error: error.message || error,
+                                status: 400
+                            }
                         });
                     }
 
@@ -84,6 +135,14 @@ module.exports.albumCover = function (coverType) {
  */
 module.exports.photoToAlbum = function () {
     return function (req, res, next) {
+
+        if (req.headers['content-type'].indexOf('multipart/form-data;') < 0) {
+            throw ({
+                message: 'Content-type must be \'multipart/formdata\'',
+                status: 400
+            });
+        }
+
         Album.GETbyId(req.params.id)
             .then(function (model) {
 
@@ -141,8 +200,11 @@ module.exports.photoToAlbum = function () {
 
                         return res.status(400).send({
                             success: false,
-                            description: error.message || error,
-                            info: errorInfoMessage
+                            description: {
+                                message: errorInfoMessage,
+                                error: error.message || error,
+                                status: 400
+                            }
                         });
                     }
 
@@ -156,6 +218,72 @@ module.exports.photoToAlbum = function () {
             .catch(function (error) {
                 res.status(404).send({ success: false, description: error });
             });
+    };
+};
+
+/**
+ * ------------------------------
+ * @description: upload avatar image to user profile
+ * ------------------------------
+ */
+module.exports.userAvatar = () => {
+    return (req, res) => {
+        let user_id = +req.body.helpData.userId;
+
+        if (req.headers['content-type'].indexOf('multipart/form-data;') < 0) {
+            throw ({
+                message: 'Content-type must be \'multipart/formdata\'',
+                status: 400
+            });
+        }
+
+
+        let uploadStorage = multer.diskStorage({
+            destination: function (req, file, cb) {
+                // place image to USERFILES_DIR
+                cb(null, `${USERFILES_DIR}/${user_id}`);
+            },
+            filename: function (req, file, cb) {
+                cb(null, file.fieldname + '.jpg');
+            }
+        });
+
+
+        let upload = multer(_uploadOptions(uploadStorage, 1024 * 1024 * 2)).single('avatar');
+
+        upload(req, res, function (error) {
+
+            if (error) {
+
+                let errorInfoMessage = 'Upload error';
+
+                switch (error.code) {
+                    case 'LIMIT_FILE_SIZE':
+                        errorInfoMessage = `Max file size ${_uploadOptions().limits.fileSize / 1024 / 1024}Mb`;
+                        break;
+                    case 'LIMIT_UNEXPECTED_FILE':
+                        errorInfoMessage = 'Uploading field must be named as >>> \'avatar\' <<<';
+                        break;
+                    default:
+                        errorInfoMessage = undefined;
+                        break;
+                }
+
+                return res.status(400).send({
+                    success: false,
+                    description: {
+                        message: errorInfoMessage,
+                        error: error.message || error,
+                        status: 400
+                    }
+                });
+            }
+
+            res.json({
+                success: true,
+                description: 'Avatar uploaded'
+            });
+        });
     };
 };
 

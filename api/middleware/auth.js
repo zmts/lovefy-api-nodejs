@@ -236,19 +236,39 @@ module.exports.signOut = function () {
 };
 
 /**
- * ------------------------------
- * description: help middleware
- * ------------------------------
- * makes hash for password at User creation
+ * @description: check password when User change password
+ */
+module.exports.passwordVerification = () => {
+    return (req, res, next) => {
+        User.GETbyId(req.body.helpData.userId)
+            .then(function (user) {
+                bcrypt.compare(req.body.oldPassword, user.password_hash, function(error, result) {
+                    if (result) return next();
+                    res.status(403).json({
+                        success: false,
+                        description: {
+                            message: 'Invalid password',
+                            status: 403
+                        }
+                    });
+                });
+            }).catch(error => next(error));
+    };
+};
+
+/**
+ * @description: makes hash for password at User creation and Change password
  */
 module.exports.hashPassword = function () {
     return function(req, res, next) {
-        if (req.body.password) {
+        let password = req.body.password || req.body.newPassword;
+
+        if (password) {
             bcrypt.genSalt(10, function (error, salt) {
-                bcrypt.hash(req.body.password, salt, function (error, hash) {
+                bcrypt.hash(password, salt, function (error, hash) {
                     if (error) return res.status(400).json({ success: false, description: error });
                     req.body.password_hash = hash; // 'password_hash' transfers and saves to DB
-                    delete req.body.password;
+                    delete req.body.password || req.body.newPassword;
                     next();
                 });
             });
@@ -259,6 +279,9 @@ module.exports.hashPassword = function () {
     };
 };
 
+/**
+ * @description: check password when User login in system
+ */
 module.exports.checkPassword = function () {
     return function (req, res, next) {
         User.GetByEmail(req.body.email)
@@ -273,9 +296,6 @@ module.exports.checkPassword = function () {
                         }
                     });
                 });
-            })
-            .catch(function (error) {
-                res.status(404).send({ success: false, description: error });
-            });
+            }).catch(error => next(error));
     };
 };

@@ -9,8 +9,9 @@ const CONFIG = require('../config');
 /**
  * @model
  * id {string},
- * name: {type: string, minLength: 3, maxLength: 30},
- * email: {type: string, format: email, minLength: 5, maxLength: 50},
+ * name: {type: string, min: 3, max: 30},
+ * email: {type: string, format: email, min: 5, max: 50},
+ * description {type: string, min: 5, max: 500},
  * password_hash: {type: string},
  * role: {type: string},
  * refresh_token: {type: string},
@@ -32,13 +33,32 @@ class User extends MainModel {
  */
 
 User.rules = {
-    CreateUpdate: {
+    Create: {
         body: Joi.object().keys({
             name: Joi.string().min(3).max(30).required(),
             email: Joi.string().email().min(6).max(30).required(),
+            description: Joi.string().min(5).max(300),
             password_hash: Joi.string().required(),
-            refresh_token: Joi.string(),
             _avatar: Joi.string(),
+            helpData: Joi.object()
+        })
+    },
+
+    Update: {
+        body: Joi.object().keys({
+            name: Joi.string().min(3).max(30),
+            email: Joi.string().email().min(6).max(30),
+            description: Joi.string().min(5).max(300),
+            helpData: Joi.object()
+        })
+    },
+
+    ChangePassword: {
+        body: Joi.object().keys({
+            password_hash: Joi.string().required(),
+            oldPassword: Joi.string().min(6).max(30),
+            newPassword: Joi.string().min(6).max(30),
+            helpData: Joi.object()
         })
     },
 
@@ -91,7 +111,7 @@ User.virtualAttributes = [
 
 User.prototype._avatar = function () {
     if (this.avatar) {
-        return `${process.env.PROTOCOL}://${process.env.HOST}:${process.env.PORT}/userfiles/uid-${this.id}/avatar.jpg`;
+        return `${process.env.PROTOCOL}://${process.env.HOST}:${process.env.PORT}/userfiles/${this.id}/avatar.jpg`;
     }
     return null;
 };

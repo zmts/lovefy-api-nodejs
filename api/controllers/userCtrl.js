@@ -138,7 +138,7 @@ router.post('/',
  * @hasaccess OWNER
  * @request {"oldPassword": "string", "newPassword": "string"}
  */
-router.patch('/change-password',
+router.post('/change-password',
     auth.checkToken(),
     sec.checkLoggedInUserAccess(),
     auth.passwordVerification(),
@@ -243,10 +243,7 @@ function update() {
 
 function updatePassword () {
     return (req, res, next) => {
-        let user_id = req.body.helpData.userId;
-        delete req.body.helpData;
-
-        User.UPDATE(user_id, { password_hash: req.body.password_hash })
+        User.UPDATE(req.body.helpData.userId, { password_hash: req.body.password_hash })
             .then(function (updated_user) {
                 res.json({ success: true, data: updated_user });
             }).catch(next);

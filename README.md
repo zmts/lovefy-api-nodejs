@@ -51,6 +51,8 @@
 - GETbyId(), CREATE() - basic parent-model method
 - GetById(), Create() - custom children-model method
 - getById(), create() - controller methods
+- TUID - token user id
+- MUID - model user id
 
 # Terminology:
 - Model - row in DB table

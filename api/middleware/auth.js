@@ -236,27 +236,6 @@ module.exports.signOut = function () {
 };
 
 /**
- * @description: check password when User change password
- */
-module.exports.passwordVerification = () => {
-    return (req, res, next) => {
-        User.GETbyId(req.body.helpData.userId)
-            .then(function (user) {
-                bcrypt.compare(req.body.oldPassword, user.password_hash, function(error, result) {
-                    if (result) return next();
-                    res.status(403).json({
-                        success: false,
-                        description: {
-                            message: 'Invalid password',
-                            status: 403
-                        }
-                    });
-                });
-            }).catch(error => next(error));
-    };
-};
-
-/**
  * @description: makes hash for password at User creation and Change password
  */
 module.exports.hashPassword = function () {
@@ -276,6 +255,27 @@ module.exports.hashPassword = function () {
         else {
             res.status(400).json({ success: false, description: '\'password\' field not found' });
         }
+    };
+};
+
+/**
+ * @description: check password when User change password
+ */
+module.exports.passwordVerification = () => {
+    return (req, res, next) => {
+        User.GETbyId(req.body.helpData.userId)
+            .then(function (user) {
+                bcrypt.compare(req.body.oldPassword, user.password_hash, function(error, result) {
+                    if (result) return next();
+                    res.status(403).json({
+                        success: false,
+                        description: {
+                            message: 'Invalid password',
+                            status: 403
+                        }
+                    });
+                });
+            }).catch(error => next(error));
     };
 };
 

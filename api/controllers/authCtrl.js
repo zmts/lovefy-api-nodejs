@@ -22,11 +22,10 @@ const sec = require('../middleware/security');
 router.post('/signin', auth.checkPassword(), auth.makeTokens());
 
 /**
- * description: User sign out(logout) system
- * url: auth/signout
- * request: {"id": "user_id"}
+ * @description: User sign out(logout) system by TUID
+ * @headers: token
  */
-router.post('/signout/:id', auth.checkToken(), sec.checkOwnerIdInParams(), auth.signOut());
+router.post('/signout', auth.checkToken(), sec.isLoggedIn(), auth.signOut());
 
 /**
  * @description: User sign in(login) system

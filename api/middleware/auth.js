@@ -225,10 +225,7 @@ module.exports.checkToken = () => {
 
 module.exports.signOut = function () {
     return function (req, res, next) {
-        User.GETbyId(req.params.id)
-            .then(user => {
-                return User.UPDATE(user.id, { refresh_token: null });
-            })
+        User.UPDATE(req.body.helpData.userId, { refresh_token: null })
             .then(() => {
                 res.json({ success: true, description: 'User sign out system' });
             }).catch(error => next(error));

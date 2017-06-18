@@ -91,7 +91,7 @@ router.get('/:id/albums/',
 router.post('/upload-avatar',
     validate.query(User.rules.AvatarStatus),
     auth.checkToken(),
-    sec.checkLoggedInUserAccess(),
+    sec.isLoggedIn(),
     upload.userAvatar(),
     setAvatarStatus()
 );
@@ -104,11 +104,19 @@ router.post('/upload-avatar',
 
 /**
  * @description get all Users
- * @url GET: users/
  * @hasaccess All
  */
 router.get('/',
     getAllUsers()
+);
+
+/**
+ * @description get user profile by TUID
+ */
+router.get('/profile',
+    auth.checkToken(),
+    sec.isLoggedIn(),
+    getUserProfile()
 );
 
 /**
@@ -140,7 +148,7 @@ router.post('/',
  */
 router.post('/change-password',
     auth.checkToken(),
-    sec.checkLoggedInUserAccess(),
+    sec.isLoggedIn(),
     auth.passwordVerification(),
     auth.hashPassword(),
     validate.body(User.rules.ChangePassword),
@@ -225,6 +233,15 @@ function newUser() {
 function getUser() {
     return function (req, res, next) {
         User.GETbyId(req.params.id)
+            .then(function (user) {
+                res.json({ success: true, data: user });
+            }).catch(next);
+    };
+}
+
+function getUserProfile() {
+    return (req, res, next) => {
+        User.GETbyId(req.body.helpData.userId)
             .then(function (user) {
                 res.json({ success: true, data: user });
             }).catch(next);

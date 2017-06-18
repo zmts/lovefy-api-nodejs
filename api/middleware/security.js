@@ -100,7 +100,7 @@ module.exports.isOwnerIdInParams = function () {
 /**
  * @description check logged in user permission
  */
-module.exports.checkLoggedInUserAccess = function () {
+module.exports.isLoggedIn = function () {
     return function (req, res, next) {
         if (req.body.helpData.userId) return next();
         res.status(403).send({

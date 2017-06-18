@@ -29,7 +29,7 @@ router.post('/post/:post_id',
     validate.id(),
     validate.body(Comment.rules.CreateUpdate),
     auth.checkToken(),
-    sec.checkLoggedInUserAccess(),
+    sec.isLoggedIn(),
     addCommentToPost()
 );
 
@@ -41,7 +41,7 @@ router.post('/album/:album_id',
     validate.id(),
     validate.body(Comment.rules.CreateUpdate),
     auth.checkToken(),
-    sec.checkLoggedInUserAccess(),
+    sec.isLoggedIn(),
     addCommentToAlbum()
 );
 
@@ -53,7 +53,7 @@ router.post('/photo/:photo_id',
     validate.id(),
     validate.body(Comment.rules.CreateUpdate),
     auth.checkToken(),
-    sec.checkLoggedInUserAccess(),
+    sec.isLoggedIn(),
     addCommentToPhoto()
 );
 

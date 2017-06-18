@@ -26,7 +26,7 @@ const validate = require('../middleware/validateReq');
 router.get('/find',
     validate.query(),
     auth.checkToken(),
-    sec.checkLoggedInUserAccess(),
+    sec.isLoggedIn(),
     findByString()
 );
 
@@ -74,7 +74,7 @@ router.get('/',
 router.post('/',
     validate.body(Tag.rules.CreateUpdate),
     auth.checkToken(),
-    sec.checkLoggedInUserAccess(),
+    sec.isLoggedIn(),
     newTag()
 );
 

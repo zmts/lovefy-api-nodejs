@@ -111,9 +111,9 @@ router.get('/',
 );
 
 /**
- * @description get user profile by TUID
+ * @description get current user profile by TUID
  */
-router.get('/profile',
+router.get('/current',
     auth.checkToken(),
     sec.isLoggedIn(),
     getUserProfile()

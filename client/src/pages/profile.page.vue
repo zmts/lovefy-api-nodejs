@@ -15,7 +15,7 @@
         },
 
         mounted () {
-            userService.getUser(200)
+            userService.getProfile()
                 .then(response => {
 //                    console.log(response.data)
                     this.userName = response.data.data.name

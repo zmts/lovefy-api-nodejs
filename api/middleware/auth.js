@@ -174,7 +174,7 @@ module.exports.refreshTokens = () => {
 };
 
 /**
- * @description: checks ACCESS token from client request
+ * @description: check ACCESS(Hard check) token from client request.
  *
  * if token is valid define help object 'helpData' with current 'userId', 'userRole' fields
  * and pass to next middleware
@@ -222,6 +222,50 @@ module.exports.checkToken = () => {
         }
     };
 };
+
+/**
+ * @description: check ACCESS(Soft check) token from client request
+ *
+ * if token is valid define help object 'helpData' with current 'userId', 'userRole' fields
+ * and pass to next middleware
+ *
+ * if any error with access token >> set 'helpData' object 'userId', 'userRole' fields to false
+ *
+ * if token is missing >> set 'helpData' object 'userId', 'userRole' fields to false
+ * and pass to next middleware
+ */
+module.exports.checkTokenFreePass = () => {
+    return (req, res, next) => {
+        let token = req.body.token || req.headers['token'];
+
+        if (token) {
+            token = _decryptToken(token);
+
+            jwtp.verify(token, SECRET.access)
+                .then(decoded => {
+                    req.body.helpData = {
+                        userId: decoded.sub,
+                        userRole: decoded.userRole
+                    };
+                    return next();
+                }).catch(error => {
+                    req.body.helpData = {
+                        userId: false,
+                        userRole: false
+                    };
+                    return next();
+                });
+
+        } else {
+            req.body.helpData = {
+                userId: false,
+                userRole: false
+            };
+            return next();
+        }
+    };
+};
+
 
 module.exports.signOut = function () {
     return function (req, res, next) {

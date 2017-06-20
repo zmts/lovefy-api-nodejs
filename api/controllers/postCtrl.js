@@ -70,7 +70,7 @@ router.post('/:id/detach-tag/:tag_id',
  * @return not ADMINROLES >> fetch all public POST's of all users
  */
 router.get('/',
-    auth.checkToken(),
+    auth.checkTokenFreePass(),
     sec.isAdmin(),
     getAll()
 );

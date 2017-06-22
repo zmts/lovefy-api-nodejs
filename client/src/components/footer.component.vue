@@ -1,6 +1,8 @@
 <template>
-    <div class="wrapper">
-    <h2>footer</h2>
+    <div class="app-footer">
+        <div class="wrapper">
+            Best portal © 2010 - {{ currentYear }}
+        </div>
     </div>
 </template>
 
@@ -8,12 +10,16 @@
     export default {
         data () {
             return {
-                someVar: ''
+                currentYear: new Date().getFullYear()
             }
         }
     }
 </script>
 
 <style lang="scss" scoped>
-
+    .app-footer{
+        text-align: center;
+        background-color: #ccc;
+        padding: 40px 0;
+    }
 </style>

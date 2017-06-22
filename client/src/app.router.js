@@ -29,6 +29,16 @@ export default new Router({
             component: newsComponent
         },
         {
+            path: '/photo',
+            name: 'photo',
+            component: newsComponent
+        },
+        {
+            path: '/video',
+            name: 'video',
+            component: newsComponent
+        },
+        {
             path: '*',
             component: notFound
         }

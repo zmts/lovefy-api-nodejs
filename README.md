@@ -65,3 +65,8 @@
 - Create: any member
 - Remove: ADMINROLE
 - Update: ADMINROLE
+
+### Token
+Errors:
+ - badRefreshToken
+ - refreshTokenExpiredError

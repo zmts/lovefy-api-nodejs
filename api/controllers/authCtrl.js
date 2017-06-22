@@ -32,6 +32,6 @@ router.post('/signout', auth.checkToken(), sec.isLoggedIn(), auth.signOut());
  * @url: auth/refresh-token
  * @headers: 'refreshToken'
  */
-router.post('/refresh-token', auth.refreshTokens());
+router.post('/refresh-tokens', auth.refreshTokens());
 
 module.exports = router;

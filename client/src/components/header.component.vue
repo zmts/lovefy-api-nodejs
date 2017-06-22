@@ -8,8 +8,10 @@
                 <li><router-link :to="{ name: 'profile' }">profile</router-link></li>
             </ul>
             <ul class="menu">
-                <li><router-link :to="{ name: 'index' }" exact>Home</router-link></li>
-                <li><router-link :to="{ name: 'news' }">News</router-link></li>
+                <li><router-link :to="{ name: 'index' }" exact>Главная</router-link></li>
+                <li><router-link :to="{ name: 'news' }">Новости</router-link></li>
+                <li><router-link :to="{ name: 'photo' }">Фото</router-link></li>
+                <li><router-link :to="{ name: 'video' }">Видео</router-link></li>
             </ul>
         </div>
 

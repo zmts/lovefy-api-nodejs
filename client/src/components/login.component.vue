@@ -21,7 +21,7 @@
 </template>
 
 <script>
-    import loginService from '../services/login.service'
+    import authService from '../services/auth.service'
 
     export default {
         data () {
@@ -46,7 +46,7 @@
             },
 
             makeLogin () {
-                loginService.makeLogin({
+                authService.makeLogin({
                     email: this.email,
                     password: this.password
                 }).then(res => {

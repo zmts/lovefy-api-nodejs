@@ -1,7 +1,7 @@
 import axios from 'axios'
 import jwtDecode from 'jwt-decode'
 
-import loginService from '../services/login.service'
+import authService from '../services/auth.service'
 
 // set defaults to axios
 axios.defaults.headers.common['token'] = localStorage.getItem('accessToken')
@@ -17,9 +17,9 @@ export default {
         // decode access token
         let decodedAccessToken = jwtDecode(localStorage.getItem('accessToken'))
 
-        // if access token has expired get new and send request again
+        // if access token has expired >> get new and send request again
         if (decodedAccessToken.exp <= Math.round(new Date().getTime() / 1000)) {
-            return loginService.refreshTokens({
+            return authService.refreshTokens({
                 email: 'user@user.com',
                 oldRefreshToken: localStorage.getItem('refreshToken')
             })

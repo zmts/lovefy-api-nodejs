@@ -17,7 +17,7 @@ export default {
         // decode access token
         let decodedAccessToken = jwtDecode(localStorage.getItem('accessToken'))
 
-        // if access token has expired >> get new and send request again
+        // if access token has expired >> get new token and send request
         if (decodedAccessToken.exp <= Math.round(new Date().getTime() / 1000)) {
             return authService.refreshTokens({
                 email: 'user@user.com',
@@ -31,7 +31,7 @@ export default {
                 axios.defaults.headers.common['token'] = localStorage.getItem('accessToken')
             })
             .then(() => {
-                // repeat request
+                // send request
                 return options.handler()
             }).catch(error => {
                 if (error.response.data.badRefreshToken) {
@@ -42,7 +42,7 @@ export default {
                     // hide profile button and show login button TODO
                 }
             })
-        } else { // make request
+        } else { // send request
             return options.handler()
         }
     }

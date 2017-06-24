@@ -1,10 +1,15 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 
-import indexComponent from '@/components/index.component'
 import newsComponent from '@/components/news.component'
+import loginComponent from '@/components/login.component'
+import postsComponent from '@/components/posts.component'
+import albumsComponent from '@/components/albums.component'
+import settingsComponent from '@/components/settings.component'
+
 import notFound from '@/components/not-found.component'
 
+import indexPage from '@/pages/index.page'
 import profilePage from '@/pages/profile.page'
 
 Vue.use(Router)
@@ -16,12 +21,36 @@ export default new Router({
         {
             path: '/',
             name: 'index',
-            component: indexComponent
+            component: indexPage
+        },
+        {
+            path: '/login',
+            name: 'login',
+            component: loginComponent
         },
         {
             path: '/profile',
-            name: 'profile',
-            component: profilePage
+            component: profilePage,
+            children: [
+                {
+                    name: 'profile',
+                    path: '',
+                    component: postsComponent
+                },
+                {
+                    name: 'albums',
+                    path: 'albums',
+                    component: albumsComponent
+                },
+                {
+                    path: 'posts',
+                    component: postsComponent
+                },
+                {
+                    path: 'settings',
+                    component: settingsComponent
+                }
+            ]
         },
         {
             path: '/news',

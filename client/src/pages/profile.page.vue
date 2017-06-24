@@ -1,24 +1,29 @@
 <template>
-    <div class="wrapper">
-
+    <div class="wrapper profile-container">
         <div class="profile">
-            <div>User name: {{ profile.name }}</div>
-            <div><img class="avatar" :src="profile._avatar" alt=""></div>
+            <div class="avatar">
+                <img :src="profile._avatar" alt="">
+            </div>
+
+            <div class="user-info">
+                <div class="name mixin">
+                    {{ profile.name }}
+                </div>
+                <div class="description mixin">
+                    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Architecto et ex, porro veritatis voluptas voluptatibus.
+                </div>
+            </div>
+
+            <div class="user-menu">
+                <ul>
+                    <li><router-link :to="{ path: '/profile/posts' }">Мои посты</router-link></li>
+                    <li><router-link :to="{ path: '/profile/albums' }">Мои Альбомы</router-link></li>
+                    <li><router-link :to="{ path: '/profile/settings' }">Настройки</router-link></li>
+                </ul>
+            </div>
         </div>
 
-        <div class="feed">
-            <div class="post-input">
-                <input type="text" placeholder="text me...">
-            </div>
-            <div class="app-list">
-                <div class="item">
-                    posts list
-                </div>
-                <div class="item">
-                    posts list
-                </div>
-            </div>
-        </div>
+        <router-view></router-view>
 
     </div>
 </template>
@@ -45,46 +50,79 @@
 </script>
 
 <style lang="scss" scoped>
-    .wrapper {
-        display: flex;
+    @import "../scss/style";
+
+    .is-active{
+        background-color: #e8e8e8;
     }
 
-    .profile {
-        /*display: flex;*/
-    }
-
-    .feed {
+    .profile-container {
         display: flex;
-        flex-wrap: wrap;
-        width: 100%;
-        flex-direction: column;
 
+        .profile {
+            flex-basis: 300px;
+            min-width: 300px;
+            margin-right: 10px;
 
-        .post-input{
-            text-align: center;
+            .avatar {
+                height: 400px;
+                position: relative;
 
-            input {
-                width: 100%;
-                margin: 0 25px;
-                border: 1px solid #ccc;
-                padding: 15px;
-                outline: none;
+                img{
+                    position: absolute;
+                    top: -200px;
+                    width: 800px;
+                    height: 800px;
+                }
+            }
+
+            .user-info{
+                position: relative;
+                z-index: 10;
+
+                .mixin{
+                    margin: 5px 0;
+                    border-radius: 5px;
+                    padding: 10px;
+                    background-color: rgba(255,255,255,0.5);
+                }
+
+                .name{
+                    font-size: 25px;
+                    text-transform: uppercase;
+                }
+
+                .description{
+                    font-size: 14px;
+                    line-height: 18px;
+                }
+            }
+
+            .user-menu{
+                position: relative;
+                z-index: 1;
+                border-radius: 5px;
+                border: 1px solid $color-line;
+                background-color: rgba(255,255,255,0.95);
+                padding: 10px 0;
+
+                ul > li{
+                    font-size: 15px;
+                    line-height: 30px;
+
+                    a {
+                        color: $color-font-main;
+                        display: block;
+                        text-decoration: none;
+                        padding: 0 10px;
+
+                        &:hover{
+                            background-color: #e8e8e8;
+                        }
+
+                    }
+                }
             }
         }
-
-        .app-list{
-            .item{
-                padding: 15px;
-            }
-        }
     }
-
-    .avatar {
-        width: 300px;
-        height: 280px;
-        padding: 30px;
-        border: 1px solid #ccc;
-        margin: 30px 0;
-    }
-
 </style>

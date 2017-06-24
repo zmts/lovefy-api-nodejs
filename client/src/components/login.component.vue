@@ -1,6 +1,6 @@
 <template>
     <transition name="overlay-fade">
-        <div class="login-modal" v-if="visible">
+        <div class="login">
             <div class="main">
                 <div class="header">Вход</div>
                 <div class="content">
@@ -9,7 +9,6 @@
                 </div>
                 <div class="buttons">
                     <v-btn outline @click.native="makeLogin()">вход</v-btn>
-                    <v-btn outline @click.native="close()">отмена</v-btn>
                 </div>
 
                 <div class="error" v-if="error">
@@ -28,23 +27,11 @@
             return {
                 email: '',
                 password: '',
-                visible: false,
                 error: ''
             }
         },
 
         methods: {
-            open () {
-                this.visible = true
-            },
-
-            close () {
-                this.visible = false
-                this.email = ''
-                this.password = ''
-                this.error = ''
-            },
-
             makeLogin () {
                 authService.makeLogin({
                     email: this.email,
@@ -54,7 +41,7 @@
                     this.error = ''
                     localStorage.setItem('refreshToken', res.data.refreshToken)
                     localStorage.setItem('accessToken', res.data.accessToken)
-                    this.close()
+                    this.$router.push('profile')
                 }).catch((error) => {
 //                    console.log(error.response)
                     this.error = error.response.data.description.status === 404 ? 'Пользователь с таким email не найден' : error.response.data.description.message
@@ -66,15 +53,12 @@
 </script>
 
 <style lang="scss" scoped>
-    .login-modal {
-        position: fixed;
+    .login {
         width: 100%;
-        height: 100%;
+        height: 70%;
         display: flex;
         justify-content: center;
         align-items: center;
-        background-color: rgba(0, 0, 0, .5);
-        z-index: 100;
 
         .main{
             padding: 30px 15px;

@@ -1,13 +1,16 @@
 <template>
     <div class="feed">
         <div class="post-input">
-            <input type="text" placeholder="text me...">
+            <md-input-container>
+                <label>What's here ...</label>
+                <md-textarea maxlength="1000"></md-textarea>
+            </md-input-container>
         </div>
 
         <div class="posts-list">
             <div class="item">
                 <div class="item-header">
-                    <div class="app-info">
+                    <div class="info">
                         <div class="title">
                             Title lorem ipsum dolor
                         </div>
@@ -15,8 +18,17 @@
                         <div class="date-time">
                             {{ dateTime }}
                             </div>
-                    </div>
-                    <div>edit</div>
+                        </div>
+
+                        <md-menu md-direction="bottom left">
+                            <md-button class="md-icon-button" md-menu-trigger>
+                                <md-icon>more_vert</md-icon>
+                            </md-button>
+                            <md-menu-content>
+                                <md-menu-item class="menux">Edit</md-menu-item>
+                                <md-menu-item class="menux">Remove</md-menu-item>
+                            </md-menu-content>
+                        </md-menu>
                 </div>
                 <div class="item-content">
                     Content Lorem ipsum dolor sit amet, consectetur adipisicing elit. At, blanditiis cupiditate dolor eaque eum fugit id nobis provident quae quasi soluta tempore! Ab, ad asperiores, atque deleniti dolorum error explicabo facere id impedit laboriosam nam nesciunt porro provident quas sapiente sunt temporibus vero! Commodi corporis laborum natus officiis temporibus ut.
@@ -53,16 +65,13 @@
         z-index: 1;
 
         .post-input {
+            font-size: 14px;
             border-radius: 5px;
-            background-color: #fff;
-            text-align: center;
-            padding: 45px 25px;
+            padding-bottom: 10px;
 
-            input {
-                width: 100%;
-                border: 1px solid $color-line;
-                padding: 15px;
-                outline: none;
+            textarea {
+                font-size: 14px;
+                padding-top: 20px;
             }
         }
 
@@ -89,6 +98,10 @@
 
                     .date-time {
                         font-size: 12px;
+                        color: $color-font-dim;
+                    }
+
+                    .md-button {
                         color: $color-font-dim;
                     }
                 }

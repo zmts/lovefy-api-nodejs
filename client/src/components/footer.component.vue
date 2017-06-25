@@ -1,5 +1,5 @@
 <template>
-    <div class="app-footer">
+    <div class="footer">
         <div class="wrapper">
             Best portal © 2010 - {{ currentYear }}
         </div>
@@ -17,7 +17,7 @@
 </script>
 
 <style lang="scss" scoped>
-    .app-footer{
+    .footer{
         text-align: center;
         background-color: #ccc;
         padding: 40px 0;

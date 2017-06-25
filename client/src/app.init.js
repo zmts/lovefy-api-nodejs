@@ -3,17 +3,18 @@
 import Vue from 'vue'
 import AppLayout from './app.layout'
 import router from './app.router'
+import store from './store'
 
 // import Promise from 'bluebird';
 // overwrite native Promise implementation with Bluebird's (for axios)
 // window.Promise = Promise;
 
-import Vuetify from 'vuetify'
+import VueMaterial from 'vue-material'
+import 'vue-material/dist/vue-material.css'
 
-import 'vuetify/dist/vuetify.min.css'
 import './scss/style.scss'
 
-Vue.use(Vuetify)
+Vue.use(VueMaterial)
 
 Vue.config.productionTip = false
 
@@ -24,5 +25,6 @@ new Vue({
         AppLayout
     },
     el: '#app',
-    router
+    router,
+    store
 })

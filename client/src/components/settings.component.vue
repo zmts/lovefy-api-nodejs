@@ -1,6 +1,7 @@
 <template>
     <div class="settings">
         settings
+        <div>{{ role }}</div>
     </div>
 </template>
 
@@ -12,6 +13,16 @@
             return {
                 dateTime: `${moment().format('MMM DD YYYY ')} at ${moment().format('hh:mm')}`
             }
+        },
+
+        computed: {
+            role () {
+                return this.$store.state.userData.userRole
+            }
+        },
+
+        mounted () {
+            console.log(this.$store.state.userData)
         }
     }
 </script>

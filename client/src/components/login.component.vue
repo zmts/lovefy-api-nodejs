@@ -4,11 +4,18 @@
             <div class="main">
                 <div class="header">Вход</div>
                 <div class="content">
-                    <v-text-field v-model="email" name="email" label="E-mail" required></v-text-field>
-                    <v-text-field v-model="password" @keyup.enter.native="makeLogin()" type="password" name="password" label="Пароль" required></v-text-field>
+                    <md-input-container>
+                        <label>E-mail</label>
+                        <md-input type="text" v-model="email" required></md-input>
+                    </md-input-container>
+
+                    <md-input-container md-has-password>
+                        <label>Пароль</label>
+                        <md-input type="password" v-model="password" @keyup.enter.native="makeLogin()" required></md-input>
+                    </md-input-container>
                 </div>
                 <div class="buttons">
-                    <v-btn outline @click.native="makeLogin()">вход</v-btn>
+                    <md-button class="md-raised" @click="makeLogin()">вход</md-button>
                 </div>
 
                 <div class="error" v-if="error">
@@ -37,10 +44,10 @@
                     email: this.email,
                     password: this.password
                 }).then(res => {
-//                    console.log(res)
                     this.error = ''
                     localStorage.setItem('refreshToken', res.data.refreshToken)
                     localStorage.setItem('accessToken', res.data.accessToken)
+                }).then(() => {
                     this.$router.push('profile')
                 }).catch((error) => {
 //                    console.log(error.response)
@@ -79,6 +86,7 @@
             }
 
             .error {
+                background-color: red;
                 padding: 10px;
                 font-size: 12px;
                 opacity: 1;

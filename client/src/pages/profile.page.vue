@@ -65,12 +65,15 @@
             margin-right: 10px;
 
             .avatar {
+                width: 800px;
                 height: 400px;
                 position: relative;
 
                 img{
+                    border-radius: 50%;
                     position: absolute;
                     top: -200px;
+                    left: -250px;
                     width: 800px;
                     height: 800px;
                 }

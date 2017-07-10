@@ -25,6 +25,9 @@ module.exports = {
         // allow debugger during development
         'no-debugger': process.env.NODE_ENV === 'production' ? 2 : 0,
         // allow variables like >> user_id
-        'camelcase': 0
+        'camelcase': 0,
+        'no-trailing-spaces': [
+            'error', {'skipBlankLines': true}
+        ]
     }
 }

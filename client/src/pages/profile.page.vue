@@ -42,6 +42,7 @@
             userService.getCurrentUser()
                 .then(response => {
                     this.profile = response.data.data
+                    // add to $store.state.userData >> email, desc
                 }).catch(error => {
                     console.log(error)
                 })

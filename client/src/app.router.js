@@ -4,6 +4,7 @@ import Router from 'vue-router'
 import newsComponent from '@/components/news.component'
 import loginComponent from '@/components/login.component'
 import postsComponent from '@/components/posts.component'
+import postsItemComponent from '@/components/posts-item.component'
 import albumsComponent from '@/components/albums.component'
 import settingsComponent from '@/components/settings.component'
 
@@ -33,21 +34,27 @@ export default new Router({
             component: profilePage,
             children: [
                 {
-                    name: 'profile',
                     path: '',
+                    name: 'profile',
                     component: postsComponent
                 },
                 {
-                    name: 'albums',
                     path: 'albums',
+                    name: 'albums',
                     component: albumsComponent
                 },
                 {
                     path: 'posts',
+                    name: 'posts',
                     component: postsComponent
                 },
                 {
+                    path: 'posts/:user_id',
+                    component: postsItemComponent
+                },
+                {
                     path: 'settings',
+                    name: 'settings',
                     component: settingsComponent
                 }
             ]

@@ -13,7 +13,7 @@
 </template>
 
 <script>
-import newsService from '../services/news.service'
+import postsService from '../services/posts.service'
 
 export default {
     data () {
@@ -28,7 +28,7 @@ export default {
     },
 
     beforeCreate () {
-        newsService.getNews()
+        postsService.getPosts()
             .then(response => {
                 console.log(response)
                 this.news = response.data.data.results

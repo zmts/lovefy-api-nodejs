@@ -23,6 +23,6 @@
         padding: 40px 0;
         position: absolute;
         width: 100%;
-        bottom: 0;
+        bottom: -95px;
     }
 </style>

@@ -8,15 +8,15 @@
         </div>
 
         <div class="posts-list">
-            <div class="item">
+            <div class="item" v-for="item in posts">
                 <div class="item-header">
                     <div class="info">
                         <div class="title">
-                            Title lorem ipsum dolor
+                            <router-link :to="{ path: '/profile/posts/' + item.id }">{{ item.title }}</router-link>
                         </div>
 
                         <div class="date-time">
-                            {{ dateTime }}
+                            {{ `${moment(item.created_at).format('MMM DD YYYY ')} at ${moment(item.created_at).format('hh:mm')}` }}
                             </div>
                         </div>
 
@@ -31,7 +31,7 @@
                         </md-menu>
                 </div>
                 <div class="item-content">
-                    Content Lorem ipsum dolor sit amet, consectetur adipisicing elit. At, blanditiis cupiditate dolor eaque eum fugit id nobis provident quae quasi soluta tempore! Ab, ad asperiores, atque deleniti dolorum error explicabo facere id impedit laboriosam nam nesciunt porro provident quas sapiente sunt temporibus vero! Commodi corporis laborum natus officiis temporibus ut.
+                    {{ item.content }}
                 </div>
                 <div class="item-footer">
                     Комментратии: 0
@@ -44,13 +44,25 @@
 
 <script>
     import moment from 'moment'
+    import postsService from '../services/posts.service'
 
     export default {
         data () {
             return {
-                dateTime: `${moment().format('MMM DD YYYY ')} at ${moment().format('hh:mm')}`
-
+                moment,
+                posts: []
             }
+        },
+
+        mounted () {
+            postsService.getPosts()
+                .then(response => {
+                    this.posts = response.data.data.results
+                    console.log(this.posts)
+                    // add to $store.state.userData >> email, desc
+                }).catch(error => {
+                    console.log(error)
+                })
         }
     }
 </script>
@@ -59,6 +71,8 @@
     @import "../scss/style";
 
     .feed {
+        min-height: 500px;
+        width: 100%;
         border-radius: 5px;
         background-color: rgba(255, 255, 255, 0.2);
         padding: 20px;

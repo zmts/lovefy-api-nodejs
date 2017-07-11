@@ -49,7 +49,7 @@ export default new Router({
                     component: postsComponent
                 },
                 {
-                    path: 'posts/:user_id',
+                    path: 'posts/:id',
                     component: postsItemComponent
                 },
                 {

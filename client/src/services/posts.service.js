@@ -1,4 +1,4 @@
-import http from '../services/http.init'
+import http from './http.init'
 
 import CONFIG from '../app.config'
 

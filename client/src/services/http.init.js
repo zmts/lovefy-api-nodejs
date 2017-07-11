@@ -37,9 +37,11 @@ export default {
             }).catch(error => {
                 if (error.response.data.badRefreshToken) {
                     console.log('badRefreshToken: true')
+                    location.pathname = 'login'
                 }
                 if (error.response.data.refreshTokenExpiredError) {
                     console.log('refreshTokenExpiredError: true, go to login')
+                    location.pathname = 'login'
                     // hide profile button and show login button TODO
                 }
             })

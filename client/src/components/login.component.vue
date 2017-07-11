@@ -6,12 +6,21 @@
                 <div class="content">
                     <md-input-container>
                         <label>E-mail</label>
-                        <md-input type="text" v-model="email" required></md-input>
+                        <md-input
+                            type="text"
+                            v-model="email"
+                            required>
+                        </md-input>
                     </md-input-container>
 
                     <md-input-container md-has-password>
                         <label>Пароль</label>
-                        <md-input type="password" v-model="password" @keyup.enter.native="makeLogin()" required></md-input>
+                        <md-input
+                            type="password"
+                            v-model="password"
+                            @keyup.enter.native="makeLogin()"
+                            required>
+                        </md-input>
                     </md-input-container>
                 </div>
                 <div class="buttons">
@@ -27,13 +36,14 @@
 </template>
 
 <script>
+    import http from '../services/http.init'
     import authService from '../services/auth.service'
 
     export default {
         data () {
             return {
-                email: '',
-                password: '',
+                email: 'user@user.com',
+                password: '123456',
                 error: ''
             }
         },
@@ -45,8 +55,11 @@
                     password: this.password
                 }).then(res => {
                     this.error = ''
+                    // update tokens in localStorage
                     localStorage.setItem('refreshToken', res.data.refreshToken)
                     localStorage.setItem('accessToken', res.data.accessToken)
+                    // update access token in axios defaults
+                    http.axios.defaults.headers.common['token'] = localStorage.getItem('accessToken')
                 }).then(() => {
                     this.$router.push('profile')
                 }).catch((error) => {

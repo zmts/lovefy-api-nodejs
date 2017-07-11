@@ -168,6 +168,11 @@ module.exports.refreshTokens = () => {
                         });
                     }
                 }).catch(error => next(error));
+        } else {
+            res.status(401).json({
+                success: false,
+                badRefreshToken: true
+            });
         }
     };
 };

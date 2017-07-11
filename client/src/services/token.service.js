@@ -9,10 +9,15 @@ import jwtDecode from 'jwt-decode'
 
 export default {
     decodeToken: () => {
-        // decode access token
-        let decodedAccessToken = jwtDecode(localStorage.getItem('accessToken'))
+        let decodedAccessToken = ''
+        try {
+            // decode access token
+            decodedAccessToken = jwtDecode(localStorage.getItem('accessToken'))
+        } catch (error) {
+            console.log(error)
+        }
 
-        if (decodedAccessToken.exp <= Math.round(new Date().getTime() / 1000)) {
+        if (decodedAccessToken && decodedAccessToken.exp <= Math.round(new Date().getTime() / 1000)) {
             return false
         } else {
             return decodedAccessToken

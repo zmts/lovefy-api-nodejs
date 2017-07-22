@@ -60,7 +60,10 @@
                     localStorage.setItem('accessToken', res.data.accessToken)
                     // update access token in axios defaults
                     http.axios.defaults.headers.common['token'] = localStorage.getItem('accessToken')
+                    // update user data in store
+                    // ... TODO
                 }).then(() => {
+                    console.log('userID >>>', this.$store.state.userData)
                     this.$router.push('profile')
                 }).catch((error) => {
 //                    console.log(error.response)

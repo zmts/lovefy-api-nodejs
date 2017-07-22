@@ -44,7 +44,7 @@
 
 <script>
     import moment from 'moment'
-    import postsService from '../services/posts.service'
+    import userService from '../services/user.service'
 
     export default {
         data () {
@@ -55,11 +55,9 @@
         },
 
         mounted () {
-            postsService.getPosts()
+            userService.getPostsByUserId(this.$store.state.userData.id)
                 .then(response => {
-                    this.posts = response.data.data.results
-                    console.log(this.posts)
-                    // add to $store.state.userData >> email, desc
+                    this.posts = response.data.data
                 }).catch(error => {
                     console.log(error)
                 })

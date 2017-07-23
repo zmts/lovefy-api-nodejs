@@ -1,13 +1,6 @@
 <template>
     <div class="feed">
-        <div class="post-input">
-            <md-input-container>
-                <label>What's here ...</label>
-                <md-textarea maxlength="1000"></md-textarea>
-            </md-input-container>
-        </div>
-
-        <div class="posts-list">
+        <div class="posts-list" v-if="$store.state.userData.role === 'editor'">
             <div class="item" v-for="item in posts">
                 <div class="item-header">
                     <div class="info">
@@ -75,17 +68,6 @@
         background-color: rgba(255, 255, 255, 0.2);
         padding: 20px;
         z-index: 1;
-
-        .post-input {
-            font-size: 14px;
-            border-radius: 5px;
-            padding-bottom: 10px;
-
-            textarea {
-                font-size: 14px;
-                padding-top: 20px;
-            }
-        }
 
         .posts-list {
             .item {

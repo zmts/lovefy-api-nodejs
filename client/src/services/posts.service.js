@@ -9,5 +9,13 @@ export default {
                 return http.axios.get(`${CONFIG.API_URL}/posts`)
             }
         })
+    },
+
+    getPostById (post_id) {
+        return http.request({
+            handler: () => {
+                return http.axios.get(`${CONFIG.API_URL}/posts/${post_id}`)
+            }
+        })
     }
 }

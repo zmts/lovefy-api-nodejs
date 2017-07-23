@@ -1,6 +1,5 @@
 'use strict';
 
-// const _ = require('lodash');
 const Joi = require('joi');
 
 const MainModel = require('./main');
@@ -43,17 +42,18 @@ Comment.rules = {
     }
 };
 
-Comment.GetPostCommentsById = function (entity_id) {
-    return this.query().where({ entity_id, type: 'post' }).orderBy('created_at');
-};
-
-Comment.GetAlbumCommentsById = function (entity_id) {
-    return this.query().where({ entity_id, type: 'album' }).orderBy('created_at');
-};
-
-Comment.GetPhotoCommentsById = function (entity_id) {
-    return this.query().where({ entity_id, type: 'photo' }).orderBy('created_at');
-};
+// TODO: check and remove
+// Comment.GetPostCommentsById = function (entity_id) {
+//     return this.query().where({ entity_id, type: 'post' }).orderBy('created_at');
+// };
+//
+// Comment.GetAlbumCommentsById = function (entity_id) {
+//     return this.query().where({ entity_id, type: 'album' }).orderBy('created_at');
+// };
+//
+// Comment.GetPhotoCommentsById = function (entity_id) {
+//     return this.query().where({ entity_id, type: 'photo' }).orderBy('created_at');
+// };
 
 /**
  * ------------------------------

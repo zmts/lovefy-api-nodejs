@@ -16,9 +16,25 @@
 
             <div class="user-menu">
                 <ul>
-                    <li><router-link :to="{ path: '/profile/posts' }">Мои посты</router-link></li>
-                    <li><router-link :to="{ path: '/profile/albums' }">Мои Альбомы</router-link></li>
-                    <li><router-link :to="{ path: '/profile/settings' }">Настройки</router-link></li>
+                    <li v-if="$store.state.userData.role === 'editor'">
+                        <router-link :to="{ path: '/profile/posts' }">
+                            <span>Мои посты</span>
+                            <span class="add-item-button">
+                                    <router-link :to="{ path: '/profile/posts/new' }">+</router-link>
+                                </span>
+                        </router-link>
+                    </li>
+                    <li v-if="$store.state.userData.role === 'editor'">
+                        <router-link :to="{ path: '/profile/albums' }">
+                            <span>Мои альбомы</span>
+                            <span class="add-item-button">
+                                    <router-link :to="{ path: '/profile/albums/new' }">+</router-link>
+                                </span>
+                        </router-link>
+                    </li>
+                    <li>
+                        <router-link :to="{ path: '/profile/settings' }">Настройки</router-link>
+                    </li>
                 </ul>
             </div>
         </div>
@@ -114,6 +130,7 @@
                 ul > li{
                     font-size: 15px;
                     line-height: 30px;
+                    position: relative;
 
                     a {
                         color: $color-font-main;
@@ -125,6 +142,15 @@
                             background-color: #e8e8e8;
                         }
 
+                        .add-item-button{
+                            position: absolute;
+                            right: 5px;
+                            transition: all 0.2s;
+
+                            &:hover{
+                                font-size: 25px;
+                            }
+                        }
                     }
                 }
             }

@@ -1,6 +1,6 @@
 <template>
     <div class="new-post">
-        <div>New post</div>
+        <div>{{ sectionTitle }}</div>
         <md-tabs md-fixed class="md-transparent">
             <md-tab md-label="Content">
                 <div class="post-input">
@@ -19,7 +19,7 @@
                     <div class="editor-container"></div>
 
                     <div class="buttons">
-                        <md-button class="md-raised" @click="saveUpdate()">Post/Save</md-button>
+                        <md-button class="md-raised" @click="createUpdatePost()">Post/Save</md-button>
                         <router-link tag="md-button" :to="{ path: '/profile/posts' }" class="md-raised">Cancel</router-link>
                     </div>
                 </div>
@@ -50,26 +50,34 @@
 
 <script>
     import Quill from 'quill'
+    import postsService from '../services/posts.service'
     export default {
         data () {
             return {
+                post_id: null,
                 title: '',
                 description: '',
                 tagsList: ['news'],
                 postPrivate: true,
                 postPicture: '',
+
                 disabledEditStatus: true
             }
         },
 
         computed: {
-            postData () {
+            postItemData () {
                 return {
+                    user_id: this.$store.state.userData.id,
                     title: this.title,
                     content: JSON.stringify(this.editor.getContents()),
                     description: this.description,
                     private: this.postPrivate
                 }
+            },
+
+            sectionTitle () {
+                return this.post_id ? 'Edit item' : 'New post'
             }
         },
 
@@ -89,9 +97,31 @@
         },
 
         methods: {
-            saveUpdate () {
-//                return console.log(this.editor.getContents())
-                return console.log(this.postData)
+            createUpdatePost () {
+                this.post_id ? this.updatePost() : this.createPost()
+            },
+
+            createPost () {
+                postsService.createPost(this.postItemData)
+                    .then(response => {
+                        // update current model/data TODO
+                        this.post_id = response.data.data.id
+                    })
+                    .catch(error => {
+                        // show error message(popup/toast/alert) TODO
+                        console.log(error)
+                    })
+            },
+
+            updatePost () {
+                postsService.updatePost(this.post_id, this.postItemData)
+                    .then(response => {
+                        console.log(response)
+                    })
+                    .catch(error => {
+                        // show error message(popup/toast/alert) TODO
+                        console.log(error)
+                    })
             }
         }
     }

@@ -17,5 +17,21 @@ export default {
                 return http.axios.get(`${CONFIG.API_URL}/posts/${post_id}`)
             }
         })
+    },
+
+    createPost (data) {
+        return http.request({
+            handler: () => {
+                return http.axios.post(`${CONFIG.API_URL}/posts/`, data)
+            }
+        })
+    },
+
+    updatePost (post_id, data) {
+        return http.request({
+            handler: () => {
+                return http.axios.patch(`${CONFIG.API_URL}/posts/${post_id}`, data)
+            }
+        })
     }
 }

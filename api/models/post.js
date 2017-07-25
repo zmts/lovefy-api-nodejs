@@ -11,6 +11,7 @@ const Comment = require('./comment');
  * id
  * user_id
  * title
+ * description
  * content
  * private
  * created_at
@@ -64,7 +65,8 @@ Post.rules = {
     CreateUpdate: {
         body: Joi.object().keys({
             user_id: Joi.number().integer().required(),
-            title: Joi.string().min(5).max(50).required(),
+            title: Joi.string().min(5).max(150).required(),
+            description: Joi.string().max(500),
             content: Joi.string().min(5).max(10000).required(),
             private: Joi.boolean(), // default FALSE
         })

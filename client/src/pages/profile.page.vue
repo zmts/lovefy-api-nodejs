@@ -1,5 +1,5 @@
 <template>
-    <div class="wrapper profile-container">
+    <div class="profile-container">
         <div class="profile">
             <div class="avatar">
                 <img :src="profile._avatar" alt="">
@@ -76,6 +76,7 @@
 
     .profile-container {
         display: flex;
+        padding-bottom: 25px;
 
         .profile {
             flex-basis: 300px;
@@ -99,7 +100,7 @@
 
             .user-info{
                 position: relative;
-                z-index: 10;
+                /*z-index: 10;*/
 
                 .mixin{
                     margin: 5px 0;

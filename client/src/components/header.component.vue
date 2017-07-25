@@ -1,6 +1,6 @@
 <template>
-    <div class="header">
-        <div class="wrapper menu-wrapper">
+    <div class="header wrapper">
+        <div class="menu-wrapper">
             <ul class="menu">
                 <li><router-link :to="{ path: '/' }" exact>Главная</router-link></li>
                 <li><router-link :to="{ path: '/news' }">Новости</router-link></li>

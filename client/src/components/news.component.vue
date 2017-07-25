@@ -1,5 +1,5 @@
 <template>
-    <div class="news page wrapper">
+    <div class="news page">
         <div>
             <h1>{{ newsText }}</h1>
         </div>

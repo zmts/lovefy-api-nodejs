@@ -1,5 +1,5 @@
 <template>
-    <div class="home page wrapper">
+    <div class="home page">
         <h1>{{msg}}</h1>
     </div>
 </template>

@@ -1,48 +1,106 @@
 <template>
     <div class="new-post">
         <div>New post</div>
-        <div class="post-input">
-            <md-input-container>
-                <label>Title</label>
-                <md-input maxlength="150" required></md-input>
-            </md-input-container>
+        <md-tabs md-fixed class="md-transparent">
+            <md-tab md-label="Content">
+                <div class="post-input">
+                    <md-input-container>
+                        <label>Title</label>
+                        <md-input maxlength="150" v-model="title" required></md-input>
+                    </md-input-container>
 
-            <md-input-container>
-                <label>Description</label>
-                <md-textarea maxlength="500" required></md-textarea>
-            </md-input-container>
+                    <md-input-container>
+                        <label>Description</label>
+                        <md-textarea maxlength="500" v-model="description" required></md-textarea>
+                    </md-input-container>
 
-            <md-input-container>
-                <label>Picture</label>
-                <md-file v-model="postPicture" accept="image/*" required></md-file>
-            </md-input-container>
+                    <md-switch v-model="postPrivate" name="my-test1" class="md-primary">Private</md-switch>
 
-            <md-chips v-model="tagsList" md-input-placeholder="Add a tag"></md-chips>
+                    <div class="editor-container"></div>
 
-            <md-input-container>
-                <label>Content</label>
-                <md-textarea maxlength="5000" required></md-textarea>
-            </md-input-container>
+                    <div class="buttons">
+                        <md-button class="md-raised" @click="saveUpdate()">Post/Save</md-button>
+                        <router-link tag="md-button" :to="{ path: '/profile/posts' }" class="md-raised">Cancel</router-link>
+                    </div>
+                </div>
+            </md-tab>
 
-            <md-switch v-model="postPrivate" name="my-test1" class="md-primary">Private</md-switch>
+            <md-tab md-label="Details">
+                <md-chips v-model="tagsList"
+                          md-input-placeholder="Add a tag"
+                          :disabled="disabledEditStatus"
+                ></md-chips>
 
-            <div class="buttons">
-                <md-button class="md-raised">Post/Save</md-button>
-                <router-link tag="md-button" :to="{ path: '/profile/posts' }" class="md-raised">Cancel</router-link>
-            </div>
+                <md-input-container>
+                    <label>Picture</label>
+                    <md-file v-model="postPicture"
+                             accept="image/*"
+                             required
+                             :disabled="disabledEditStatus"
+                    ></md-file>
+                </md-input-container>
 
-        </div>
+                <div class="buttons">
+                    <md-button class="md-raised" :disabled="disabledEditStatus">Upload</md-button>
+                </div>
+            </md-tab>
+        </md-tabs>
     </div>
 </template>
 
 <script>
+    import Quill from 'quill'
     export default {
         data () {
             return {
                 currentYear: new Date().getFullYear(),
                 postPicture: '',
                 tagsList: ['news'],
-                postPrivate: false
+                postPrivate: false,
+                disabledEditStatus: true,
+                editor: {},
+                title: '',
+                description: '',
+                editorContent: {
+                    ops: []
+                },
+
+                editorConfig: {
+                    placeholder: 'Compose an epicss...'
+                }
+            }
+        },
+
+        computed: {
+            postData () {
+                return {
+                    title: this.title,
+                    content: JSON.stringify(this.editor.getContents()),
+                    description: this.description,
+                    private: this.postPrivate
+                }
+            }
+        },
+
+        mounted () {
+            /* eslint-disable no-new */
+            this.editor = new Quill('.editor-container', {
+                modules: {
+                    toolbar: [
+                        [{header: [1, 2, false]}],
+                        ['bold', 'italic', 'underline'],
+                        ['image', 'video', 'code-block', 'blockquote', 'link']
+                    ]
+                },
+                placeholder: 'Compose an epic...',
+                theme: 'snow'  // 'snow' or 'bubble'
+            })
+        },
+
+        methods: {
+            saveUpdate () {
+//                return console.log(this.editor.getContents())
+                return console.log(this.postData)
             }
         }
     }
@@ -50,11 +108,11 @@
 
 <style lang="scss" scoped>
     .new-post{
-        min-height: 500px;
+        padding: 20px;
+        /*min-height: 500px;*/
         width: 100%;
         border-radius: 5px;
         background-color: rgba(255, 255, 255, 0.5);
-        padding: 20px;
         z-index: 1;
 
         .post-input {

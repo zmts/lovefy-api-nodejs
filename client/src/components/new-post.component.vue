@@ -54,6 +54,9 @@
     export default {
         data () {
             return {
+                model :{
+                    // TODO
+                },
                 post_id: null,
                 title: '',
                 description: '',

@@ -53,21 +53,12 @@
     export default {
         data () {
             return {
-                currentYear: new Date().getFullYear(),
-                postPicture: '',
-                tagsList: ['news'],
-                postPrivate: false,
-                disabledEditStatus: true,
-                editor: {},
                 title: '',
                 description: '',
-                editorContent: {
-                    ops: []
-                },
-
-                editorConfig: {
-                    placeholder: 'Compose an epicss...'
-                }
+                tagsList: ['news'],
+                postPrivate: true,
+                postPicture: '',
+                disabledEditStatus: true
             }
         },
 

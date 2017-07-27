@@ -6,26 +6,26 @@
                 <div class="post-input">
                     <md-input-container>
                         <label>Title</label>
-                        <md-input maxlength="150" v-model="title" required></md-input>
+                        <md-input maxlength="150" v-model="model.title" required></md-input>
                     </md-input-container>
 
                     <md-input-container>
                         <label>Description</label>
-                        <md-textarea maxlength="500" v-model="description" required></md-textarea>
+                        <md-textarea maxlength="500" v-model="model.description" required></md-textarea>
                     </md-input-container>
 
-                    <md-switch v-model="postPrivate" name="my-test1" class="md-primary">Private</md-switch>
+                    <md-switch v-model="model.private" name="my-test1" class="md-primary">Private</md-switch>
 
                     <!--<div class="editor-container"></div>-->
                     <quill
-                        v-model="content"
+                        v-model="model.content"
                         :config="editorConfig"
                     ></quill>
 
 
                     <div class="buttons">
                         <md-button class="md-raised" @click="getContent()">log content</md-button>
-                        <md-button class="md-raised" @click="createUpdatePost()">Post/Save</md-button>
+                        <md-button class="md-raised" @click="createUpdatePost()">{{ buttonTitle }}</md-button>
                         <router-link tag="md-button" :to="{ path: '/profile/posts' }" class="md-raised">Cancel</router-link>
                     </div>
                 </div>
@@ -60,16 +60,16 @@
         data () {
             return {
                 model: {
-                    // TODO
-                },
-                content: {
-                    ops: []
+                    user_id: this.$store.state.userData.id,
+                    title: '',
+                    description: '',
+                    private: true,
+                    content: {
+                        ops: []
+                    }
                 },
                 post_id: null,
-                title: '',
-                description: '',
                 tagsList: ['news'],
-                postPrivate: true,
                 postPicture: '',
 
                 disabledEditStatus: true,
@@ -88,18 +88,13 @@
         },
 
         computed: {
-            postItemData () {
-                return {
-                    user_id: this.$store.state.userData.id,
-                    title: this.title,
-                    content: JSON.stringify(this.content),
-                    description: this.description,
-                    private: this.postPrivate
-                }
-            },
 
             sectionTitle () {
                 return this.post_id ? 'Edit item' : 'New post'
+            },
+
+            buttonTitle () {
+                return this.post_id ? 'Update' : 'Post new'
             }
         },
 
@@ -109,7 +104,7 @@
 
         methods: {
             getContent () {
-                console.log(this.postItemData)
+                console.log(this.model)
             },
 
             createUpdatePost () {
@@ -117,7 +112,7 @@
             },
 
             createPost () {
-                postsService.createPost(this.postItemData)
+                postsService.createPost({...this.model, content: JSON.stringify(this.model.content)})
                     .then(response => {
                         // update current model/data TODO
                         this.post_id = response.data.data.id
@@ -129,7 +124,7 @@
             },
 
             updatePost () {
-                postsService.updatePost(this.post_id, this.postItemData)
+                postsService.updatePost(this.post_id, {...this.model, content: JSON.stringify(this.model.content)})
                     .then(response => {
                         console.log(response)
                     })

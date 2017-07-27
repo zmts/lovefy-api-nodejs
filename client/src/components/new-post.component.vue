@@ -16,9 +16,15 @@
 
                     <md-switch v-model="postPrivate" name="my-test1" class="md-primary">Private</md-switch>
 
-                    <div class="editor-container"></div>
+                    <!--<div class="editor-container"></div>-->
+                    <quill
+                        v-model="content"
+                        :config="editorConfig"
+                    ></quill>
+
 
                     <div class="buttons">
+                        <md-button class="md-raised" @click="getContent()">log content</md-button>
                         <md-button class="md-raised" @click="createUpdatePost()">Post/Save</md-button>
                         <router-link tag="md-button" :to="{ path: '/profile/posts' }" class="md-raised">Cancel</router-link>
                     </div>
@@ -49,13 +55,15 @@
 </template>
 
 <script>
-    import Quill from 'quill'
     import postsService from '../services/posts.service'
     export default {
         data () {
             return {
                 model: {
                     // TODO
+                },
+                content: {
+                    ops: []
                 },
                 post_id: null,
                 title: '',
@@ -64,7 +72,18 @@
                 postPrivate: true,
                 postPicture: '',
 
-                disabledEditStatus: true
+                disabledEditStatus: true,
+                editorConfig: {
+                    modules: {
+                        toolbar: [
+                            ['bold', 'underline', 'italic'],
+                            [{header: [1, 2, false]}],
+                            ['image', 'video', 'code-block', 'blockquote', 'link']
+                        ]
+                    },
+                    placeholder: 'Whats here...',
+                    theme: 'snow'  // 'snow' or 'bubble'
+                }
             }
         },
 
@@ -73,7 +92,7 @@
                 return {
                     user_id: this.$store.state.userData.id,
                     title: this.title,
-                    content: JSON.stringify(this.editor.getContents()),
+                    content: JSON.stringify(this.content),
                     description: this.description,
                     private: this.postPrivate
                 }
@@ -85,21 +104,14 @@
         },
 
         mounted () {
-            /* eslint-disable no-new */
-            this.editor = new Quill('.editor-container', {
-                modules: {
-                    toolbar: [
-                        [{header: [1, 2, false]}],
-                        ['bold', 'italic', 'underline'],
-                        ['image', 'video', 'code-block', 'blockquote', 'link']
-                    ]
-                },
-                placeholder: 'Compose an epic...',
-                theme: 'snow'  // 'snow' or 'bubble'
-            })
+
         },
 
         methods: {
+            getContent () {
+                console.log(this.postItemData)
+            },
+
             createUpdatePost () {
                 this.post_id ? this.updatePost() : this.createPost()
             },

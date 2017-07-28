@@ -16,7 +16,6 @@
 
                     <md-switch v-model="model.private" name="my-test1" class="md-primary">Private</md-switch>
 
-                    <!--<div class="editor-container"></div>-->
                     <quill
                         v-model="model.content"
                         :config="editorConfig"
@@ -47,7 +46,7 @@
                 </md-input-container>
 
                 <div class="buttons">
-                    <md-button class="md-raised" :disabled="disabledEditStatus">Upload</md-button>
+                    <md-button class="md-raised" :enabled="disabledEditStatus">Upload</md-button>
                 </div>
             </md-tab>
         </md-tabs>
@@ -72,7 +71,6 @@
                 tagsList: ['news'],
                 postPicture: '',
 
-                disabledEditStatus: true,
                 editorConfig: {
                     modules: {
                         toolbar: [
@@ -95,6 +93,13 @@
 
             buttonTitle () {
                 return this.post_id ? 'Update' : 'Post new'
+            },
+
+            /**
+             * if new item return true, else false
+             */
+            disabledEditStatus () {
+                return !this.post_id
             }
         },
 

@@ -48,7 +48,8 @@ function _makeAccessToken(userModel){
         payload: {
             accessToken: true,
             username: userModel.name,
-            userRole: userModel.role
+            userRole: userModel.role,
+            email: userModel.email
         },
 
         options: {

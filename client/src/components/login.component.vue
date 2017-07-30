@@ -38,6 +38,7 @@
 <script>
     import http from '../services/http.init'
     import authService from '../services/auth.service'
+    import tokenService from '../services/token.service'
 
     export default {
         data () {
@@ -61,9 +62,8 @@
                     // update access token in axios defaults
                     http.axios.defaults.headers.common['token'] = localStorage.getItem('accessToken')
                     // update user data in store
-                    // ... TODO
+                    tokenService.setUserData()
                 }).then(() => {
-                    console.log('userID >>>', this.$store.state.userData)
                     this.$router.push('profile')
                 }).catch((error) => {
 //                    console.log(error.response)

@@ -27,6 +27,7 @@
                         <md-button class="md-raised" @click="createUpdatePost()">{{ buttonTitle }}</md-button>
                         <router-link tag="md-button" :to="{ path: '/profile/posts' }" class="md-raised">Cancel</router-link>
                     </div>
+                    <div>{{model.test.lol}}</div>
                 </div>
             </md-tab>
 
@@ -59,15 +60,14 @@
         data () {
             return {
                 model: {
+                    id: null,
                     user_id: this.$store.state.userData.id,
                     title: '',
                     description: '',
                     private: true,
-                    content: {
-                        ops: []
-                    }
+                    content: {},
+                    test: {}
                 },
-                post_id: null,
                 tagsList: ['news'],
                 postPicture: '',
 
@@ -87,24 +87,37 @@
 
         computed: {
 
+            updateModel () {
+                return {
+                    user_id: this.model.user_id,
+                    title: this.model.title,
+                    description: this.model.description,
+                    private: this.model.private,
+                    content: this.model.content
+                }
+            },
+
             sectionTitle () {
-                return this.post_id ? 'Edit item' : 'New post'
+                return this.model.id ? 'Edit item' : 'New post'
             },
 
             buttonTitle () {
-                return this.post_id ? 'Update' : 'Post new'
+                return this.model.id ? 'Update' : 'Post new'
             },
 
             /**
              * if new item return true, else false
              */
             disabledEditStatus () {
-                return !this.post_id
+                return !this.model.id
             }
         },
 
         mounted () {
-
+            if (this.$route.params.id) {
+                this.getPostById()
+                console.log('mounted', this.model)
+            }
         },
 
         methods: {
@@ -112,15 +125,27 @@
                 console.log(this.model)
             },
 
+            getPostById () {
+                return postsService.getPostById(this.$route.params.id)
+                    .then(post => {
+                        this.model = {...post.data.data, content: JSON.parse(post.data.data.content)}
+                        this.model.id = post.data.data.id
+                        this.model.test = {lol: ['aaa']}
+                        console.log('getdata', this.model)
+                    }).catch(error => {
+                        console.log(error)
+                    })
+            },
+
             createUpdatePost () {
-                this.post_id ? this.updatePost() : this.createPost()
+                this.model.id ? this.updatePost() : this.createPost()
             },
 
             createPost () {
-                postsService.createPost({...this.model, content: JSON.stringify(this.model.content)})
+                postsService.createPost({...this.model, content: JSON.stringify(this.model.content.ops)})
                     .then(response => {
                         // update current model/data TODO
-                        this.post_id = response.data.data.id
+                        this.model.id = response.data.data.id
                     })
                     .catch(error => {
                         // show error message(popup/toast/alert) TODO
@@ -129,7 +154,7 @@
             },
 
             updatePost () {
-                postsService.updatePost(this.post_id, {...this.model, content: JSON.stringify(this.model.content)})
+                postsService.updatePost(this.model.id, {...this.model, content: JSON.stringify(this.model.content)})
                     .then(response => {
                         console.log(response)
                     })

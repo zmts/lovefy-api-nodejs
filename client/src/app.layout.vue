@@ -15,10 +15,17 @@
 import AppHeader from '@/components/header.component'
 import AppFooter from '@/components/footer.component'
 
+import tokenService from './services/token.service'
+
 export default {
     components: {
         AppHeader,
         AppFooter
+    },
+
+    created () {
+        // set user data at app start
+        tokenService.setUserData()
     }
 }
 

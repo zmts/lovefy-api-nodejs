@@ -4,7 +4,7 @@ import Router from 'vue-router'
 import newsComponent from '@/components/news.component'
 import loginComponent from '@/components/login.component'
 import postsComponent from '@/components/posts.component'
-import postsItemComponent from '@/components/posts-item.component'
+// import postsItemComponent from '@/components/posts-item.component'
 import newPostComponent from '@/components/new-post.component'
 import albumsComponent from '@/components/albums.component'
 import settingsComponent from '@/components/settings.component'
@@ -78,7 +78,7 @@ export default new Router({
                 },
                 {
                     path: 'posts/:id',
-                    component: postsItemComponent
+                    component: newPostComponent
                 },
                 {
                     path: 'settings',

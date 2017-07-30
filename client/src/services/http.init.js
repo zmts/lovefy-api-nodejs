@@ -2,6 +2,7 @@ import axios from 'axios'
 
 import authService from '../services/auth.service'
 import tokenService from '../services/token.service'
+import $store from '../store'
 
 // set defaults to axios
 axios.defaults.headers.common['token'] = localStorage.getItem('accessToken')
@@ -17,7 +18,8 @@ export default {
         // if access token has expired >> get new token and send request
         if (!tokenService.decodeToken()) {
             return authService.refreshTokens({
-                email: 'user@user.com',
+                // 'user@user.com' vs $store.state.userData.email // TODO test it
+                email: $store.state.userData.email,
                 oldRefreshToken: localStorage.getItem('refreshToken')
             })
             .then(res => {
@@ -26,10 +28,11 @@ export default {
                 localStorage.setItem('accessToken', res.data.accessToken)
                 // update access token in axios defaults
                 axios.defaults.headers.common['token'] = localStorage.getItem('accessToken')
-                return res
+                // return res
             })
-            .then(res => {
-                // read access token >> add to $store.state.userData >> userId, userRole
+            .then(() => {
+                // update user data in store
+                tokenService.setUserData()
             })
             .then(() => {
                 // send request

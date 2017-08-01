@@ -1,8 +1,9 @@
 import axios from 'axios'
 
+import App from '../app.init'
 import authService from '../services/auth.service'
 import tokenService from '../services/token.service'
-import $store from '../store'
+// import $store from '../store'
 
 // set defaults to axios
 axios.defaults.headers.common['token'] = localStorage.getItem('accessToken')
@@ -19,7 +20,7 @@ export default {
         if (!tokenService.decodeToken()) {
             return authService.refreshTokens({
                 // 'user@user.com' vs $store.state.userData.email // TODO test it
-                email: $store.state.userData.email,
+                email: 'user@user.com',
                 oldRefreshToken: localStorage.getItem('refreshToken')
             })
             .then(res => {
@@ -40,11 +41,13 @@ export default {
             }).catch(error => {
                 if (error.response.data.badRefreshToken) {
                     console.log('badRefreshToken: true')
-                    location.pathname = 'login'
+                    // location.pathname = 'login'
+                    App.$router.push('login')
                 }
                 if (error.response.data.refreshTokenExpiredError) {
                     console.log('refreshTokenExpiredError: true, go to login')
-                    location.pathname = 'login'
+                    // location.pathname = 'login'
+                    App.$router.push('login')
                     // hide profile button and show login button TODO
                 }
             })

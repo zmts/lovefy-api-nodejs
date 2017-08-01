@@ -25,7 +25,7 @@ Vue.use(Quill)
 Vue.config.productionTip = false
 
 /* eslint-disable no-new */
-new Vue({
+export default new Vue({
     template: '<app-layout/>',
     components: {
         AppLayout

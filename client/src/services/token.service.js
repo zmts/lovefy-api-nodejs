@@ -7,7 +7,7 @@ export default {
      * if  access token is valid >> decode
      * else return false
      */
-    decodeToken: () => {
+    decodeToken () {
         let decodedAccessToken = ''
         try {
             // decode access token
@@ -20,6 +20,22 @@ export default {
             return false
         } else {
             return decodedAccessToken
+        }
+    },
+
+    decodeRefreshToken () {
+        let decodedRefreshToken = ''
+        try {
+            // decode refresh token
+            decodedRefreshToken = jwtDecode(localStorage.getItem('refreshToken'))
+        } catch (error) {
+            console.log(error)
+        }
+
+        if (decodedRefreshToken && decodedRefreshToken.exp <= Math.round(new Date().getTime() / 1000)) {
+            return false
+        } else {
+            return decodedRefreshToken
         }
     },
 

@@ -242,7 +242,6 @@ module.exports.checkTokenFreePass = () => {
         let token = req.body.token || req.headers['token'];
 
         if (token) {
-            token = _decryptToken(token);
 
             jwtp.verify(token, SECRET.access)
                 .then(decoded => {

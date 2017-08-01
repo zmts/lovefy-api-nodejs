@@ -10,7 +10,9 @@ export default new Vuex.Store({
             role: '',
             name: '',
             email: ''
-        }
+        },
+
+        accessTokenStatus: false
     },
 
     actions: {},
@@ -18,6 +20,10 @@ export default new Vuex.Store({
     mutations: {
         SET_USER (state, accessTokenData) {
             state.userData = accessTokenData
+        },
+
+        SET_ACCESS_TOKEN (state, status) {
+            state.accessTokenStatus = status
         }
     },
 

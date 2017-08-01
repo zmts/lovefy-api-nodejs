@@ -4,6 +4,7 @@ import Vue from 'vue'
 import AppLayout from './app.layout'
 import router from './app.router'
 import store from './store'
+import tokenService from './services/token.service'
 
 import VueMaterial from 'vue-material'
 import Quill from 'vue-quill'
@@ -32,5 +33,10 @@ export default new Vue({
     },
     el: '#app',
     router,
-    store
+    store,
+    mounted () {
+        tokenService.decodeToken()
+        console.log(store.state.userData)
+        console.log(store.state.accessTokenStatus)
+    }
 })

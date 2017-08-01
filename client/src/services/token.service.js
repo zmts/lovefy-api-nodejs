@@ -16,9 +16,12 @@ export default {
             console.log(error)
         }
 
+        // if token is expired
         if (decodedAccessToken && decodedAccessToken.exp <= Math.round(new Date().getTime() / 1000)) {
-            return false
-        } else {
+            $store.commit('SET_ACCESS_TOKEN', false)
+            return decodedAccessToken
+        } else { // token is valid
+            $store.commit('SET_ACCESS_TOKEN', true)
             return decodedAccessToken
         }
     },

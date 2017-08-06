@@ -61,7 +61,7 @@
                     this.profile = response.data.data
                     // add to $store.state.userData >> email, desc
                 }).catch(error => {
-                    console.log(error)
+                    console.log(error.response)
                 })
         }
     }

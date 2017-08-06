@@ -36,9 +36,7 @@
 </template>
 
 <script>
-    import http from '../services/http.init'
     import authService from '../services/auth.service'
-    import tokenService from '../services/token.service'
 
     export default {
         data () {
@@ -59,14 +57,12 @@
                     // update tokens in localStorage
                     localStorage.setItem('refreshToken', res.data.refreshToken)
                     localStorage.setItem('accessToken', res.data.accessToken)
-                    // update access token in axios defaults
-                    http.axios.defaults.headers.common['token'] = localStorage.getItem('accessToken')
+                    // update access token in to axios headers TODO
                     // update user data in store
-                    tokenService.setUserData()
                 }).then(() => {
                     this.$router.push('profile')
                 }).catch((error) => {
-//                    console.log(error.response)
+                    console.log(error.response)
                     this.error = error.response.data.description.status === 404 ? 'Пользователь с таким email не найден' : error.response.data.description.message
                 })
             }

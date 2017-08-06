@@ -27,10 +27,9 @@ export default {
 
     },
 
-    beforeCreate () {
+    mounted () {
         postsService.getPosts()
             .then(response => {
-                console.log(response)
                 this.news = response.data.data.results
             })
             .catch(error => console.log(error))

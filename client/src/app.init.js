@@ -4,7 +4,8 @@ import Vue from 'vue'
 import AppLayout from './app.layout'
 import router from './app.router'
 import store from './store'
-// import authService from './services/auth.service'
+import authService from './services/auth.service'
+import userService from './services/user.service'
 
 import VueMaterial from 'vue-material'
 import Quill from 'vue-quill'
@@ -36,6 +37,35 @@ export default new Vue({
     store,
     mounted () {
         // init userData in store
-        // authService.refreshTokens()
+        userService.getCurrentUser()
+            .then(user => {
+                // set userData in store
+                console.log(user.data.data)
+            })
+            .catch(error => {
+                if (error.response.data.accessTokenExpiredError) {
+                    console.log('accessTokenExpiredError: true')
+                    authService.refreshTokens()
+                        .then(res => {
+                            console.log('refreshing tokens... Done')
+                            // update tokens in localStorage
+                            localStorage.setItem('refreshToken', res.data.refreshToken)
+                            localStorage.setItem('accessToken', res.data.accessToken)
+                            console.log('updating tokens in localStorage... Done')
+                        })
+                        .then(() => {
+                            userService.getCurrentUser()
+                                .then(user => {
+                                    if (user) {
+                                        // set userData in store
+                                        console.log(user.data.data)
+                                    }
+                                })
+                        }).catch(error => console.log(error))
+                }
+                if (error.response.data.refreshTokenExpiredError) {
+                    console.log('refreshTokenExpiredError: true, hide profile button')
+                }
+            })
     }
 })

@@ -17,9 +17,9 @@ export default {
         })
     },
 
-    refreshTokens ({oldRefreshToken}) {
+    refreshTokens () {
         return axios.post(`${CONFIG.API_URL}/auth/refresh-tokens`, {
-            refreshToken: oldRefreshToken
+            refreshToken: localStorage.getItem('refreshToken')
         })
     }
 }

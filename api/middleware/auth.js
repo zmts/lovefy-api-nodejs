@@ -22,7 +22,7 @@ function _encryptToken(str) {
         crypted += cipher.final('hex');
         return crypted;
     } catch (error) {
-        throw { message: 'Bad encryption input string' };
+        throw new Error('Bad encryption input string');
     }
 
 }
@@ -34,18 +34,18 @@ function _decryptToken(str) {
         dec += decipher.final('utf8');
         return dec;
     } catch (error) {
-        throw { message: 'Bad decryption input string' };
+        throw new Error('Bad decryption input string');
     }
 
 }
 
 function _getTokenData (token) {
-    let tokenData = '';
-    try {
-        tokenData = jwt.decode(token);
-    } catch (error) {
-        throw { message: 'Trying get data from access token. Something wrong' };
+    let tokenData = jwt.decode(token);
+
+    if (!tokenData) {
+        throw new Error('Trying get data from access token. Something wrong');
     }
+
     return tokenData;
 }
 
@@ -78,10 +78,11 @@ function _makeAccessToken(userModel){
  * @description make refresh token
  * @return Promise
  */
-function _makeRefreshToken(){
+function _makeRefreshToken(userModel){
     let refreshTokenConfig = {
         payload: {
-            refreshToken: true
+            refreshToken: true,
+            email: userModel.email
         },
 
         options: {
@@ -110,7 +111,7 @@ module.exports.makeTokens = () => {
                         accessTokenResult = accessToken;
                     })
                     .then(() => {
-                        return _makeRefreshToken();
+                        return _makeRefreshToken(user);
                     })
                     .tap(refreshToken => {
                         return User.UPDATE(user.id, { refresh_token: _encryptToken(refreshToken) });
@@ -135,15 +136,16 @@ module.exports.refreshTokens = () => {
 
         if (refreshToken) {
             let decryptedRefreshToken = _decryptToken(refreshToken);
+            let emailFromRefreshToken = _getTokenData(decryptedRefreshToken).email;
 
-            User.GetByEmail(req.body.email)
+            User.GetByEmail(emailFromRefreshToken)
                 .then(user => {
                     if (user.refresh_token === refreshToken) {
 
                         let resultRefreshToken;
                         jwtp.verify(decryptedRefreshToken, SECRET.refresh)
                             .then(() => {
-                                return _makeRefreshToken();
+                                return _makeRefreshToken(user);
                             })
                             .tap(newRefreshToken => {
                                 resultRefreshToken = newRefreshToken;

@@ -50,7 +50,7 @@ if (app.get('env') === 'development') {
 
         res.status( error.status || (error.isJoi ? 400 : 500) ).json({
             success: false,
-            description: error,
+            description: error.message || error,
             env: 'development/regular',
             handled_in: 'app.js'
         });

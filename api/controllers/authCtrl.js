@@ -28,9 +28,8 @@ router.post('/signin', auth.checkPassword(), auth.makeTokens());
 router.post('/signout', auth.checkToken(), sec.isLoggedIn(), auth.signOut());
 
 /**
- * @description: User sign in(login) system
- * @url: auth/refresh-token
- * @headers: 'refreshToken'
+ * @url: auth/refresh-tokens
+ * @request: {"refreshToken": "string"}
  */
 router.post('/refresh-tokens', auth.refreshTokens());
 

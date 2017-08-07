@@ -4,6 +4,7 @@ import Vue from 'vue'
 import AppLayout from './app.layout'
 import router from './app.router'
 import store from './store'
+// import authService from './services/auth.service'
 
 import VueMaterial from 'vue-material'
 import Quill from 'vue-quill'
@@ -35,5 +36,6 @@ export default new Vue({
     store,
     mounted () {
         // init userData in store
+        // authService.refreshTokens()
     }
 })

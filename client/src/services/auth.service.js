@@ -17,9 +17,8 @@ export default {
         })
     },
 
-    refreshTokens ({email, oldRefreshToken}) {
+    refreshTokens ({oldRefreshToken}) {
         return axios.post(`${CONFIG.API_URL}/auth/refresh-tokens`, {
-            email,
             refreshToken: oldRefreshToken
         })
     }

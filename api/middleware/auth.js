@@ -107,7 +107,7 @@ module.exports.makeTokens = () => {
                     .then(refreshToken => {
                         res.json({
                             success: true,
-                            accessToken: accessTokenResult,
+                            accessToken: _encryptToken(accessTokenResult),
                             refreshToken: _encryptToken(refreshToken)
                         });
                     }).catch(error => {
@@ -143,7 +143,7 @@ module.exports.refreshTokens = () => {
                             .then(newAccessToken => {
                                 return res.json({
                                     success: true,
-                                    accessToken: newAccessToken,
+                                    accessToken: _encryptToken(newAccessToken),
                                     refreshToken: _encryptToken(resultRefreshToken)
                                 });
                             }).catch(error => {
@@ -194,6 +194,8 @@ module.exports.checkToken = () => {
         let token = req.body.token || req.headers['token'];
 
         if (token) {
+            token = _decryptToken(token);
+
             jwtp.verify(token, SECRET.access)
                 .then(decoded => {
                     req.body.helpData = {
@@ -242,6 +244,7 @@ module.exports.checkTokenFreePass = () => {
         let token = req.body.token || req.headers['token'];
 
         if (token) {
+            token = _decryptToken(token);
 
             jwtp.verify(token, SECRET.access)
                 .then(decoded => {

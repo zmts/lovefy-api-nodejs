@@ -61,10 +61,15 @@ export default new Vue({
                                         console.log(user.data.data)
                                     }
                                 })
-                        }).catch(error => console.log(error))
-                }
-                if (error.response.data.refreshTokenExpiredError) {
-                    console.log('refreshTokenExpiredError: true, hide profile button')
+                        })
+                        .catch(error => {
+                            if (error.response.data.badRefreshToken) {
+                                console.log('badRefreshToken: true')
+                            }
+                            if (error.response.data.refreshTokenExpiredError) {
+                                console.log('refreshTokenExpiredError: true, hide profile button')
+                            }
+                        })
                 }
             })
     }

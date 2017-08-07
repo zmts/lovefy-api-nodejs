@@ -2,6 +2,7 @@
 
 const bcrypt = require('bcryptjs');
 const jwtp = require('../util/jwt');
+const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 
 const SECRET = require('../config').tokenSecret;
@@ -36,6 +37,16 @@ function _decryptToken(str) {
         throw { message: 'Bad decryption input string' };
     }
 
+}
+
+function _getTokenData (token) {
+    let tokenData = '';
+    try {
+        tokenData = jwt.decode(token);
+    } catch (error) {
+        throw { message: 'Trying get data from access token. Something wrong' };
+    }
+    return tokenData;
 }
 
 /**
@@ -108,7 +119,8 @@ module.exports.makeTokens = () => {
                         res.json({
                             success: true,
                             accessToken: _encryptToken(accessTokenResult),
-                            refreshToken: _encryptToken(refreshToken)
+                            refreshToken: _encryptToken(refreshToken),
+                            expires_in: _getTokenData(accessTokenResult).exp
                         });
                     }).catch(error => {
                         res.status(400).json({ success: false, description: error });
@@ -144,7 +156,8 @@ module.exports.refreshTokens = () => {
                                 return res.json({
                                     success: true,
                                     accessToken: _encryptToken(newAccessToken),
-                                    refreshToken: _encryptToken(resultRefreshToken)
+                                    refreshToken: _encryptToken(resultRefreshToken),
+                                    expires_in: _getTokenData(newAccessToken).exp
                                 });
                             }).catch(error => {
                                 // expired refresh token error handling

@@ -35,41 +35,30 @@ export default new Vue({
     el: '#app',
     router,
     store,
-    mounted () {
-        // init userData in store
-        userService.getCurrentUser()
-            .then(user => {
-                // set userData in store
-                console.log(user.data.data)
+    created () {
+        // refresh tokens and init userData in store
+        authService.refreshTokens()
+            .then(res => {
+                console.log('refreshing tokens... Done')
+                // update tokens in localStorage
+                localStorage.setItem('refreshToken', res.data.refreshToken)
+                localStorage.setItem('accessToken', res.data.accessToken)
+                console.log('updating tokens in localStorage... Done')
+            })
+            .then(() => {
+                userService.getCurrentUser()
+                    .then(user => {
+                        store.commit('SET_USER', user.data.data)
+                        console.log('userData in store committed... Done')
+                        console.log(store.state)
+                    }).catch(error => console.log(error))
             })
             .catch(error => {
-                if (error.response.data.accessTokenExpiredError) {
-                    console.log('accessTokenExpiredError: true')
-                    authService.refreshTokens()
-                        .then(res => {
-                            console.log('refreshing tokens... Done')
-                            // update tokens in localStorage
-                            localStorage.setItem('refreshToken', res.data.refreshToken)
-                            localStorage.setItem('accessToken', res.data.accessToken)
-                            console.log('updating tokens in localStorage... Done')
-                        })
-                        .then(() => {
-                            userService.getCurrentUser()
-                                .then(user => {
-                                    if (user) {
-                                        // set userData in store
-                                        console.log(user.data.data)
-                                    }
-                                })
-                        })
-                        .catch(error => {
-                            if (error.response.data.badRefreshToken) {
-                                console.log('badRefreshToken: true')
-                            }
-                            if (error.response.data.refreshTokenExpiredError) {
-                                console.log('refreshTokenExpiredError: true, hide profile button')
-                            }
-                        })
+                if (error.response.data.badRefreshToken) {
+                    console.log('badRefreshToken: true')
+                }
+                if (error.response.data.refreshTokenExpiredError) {
+                    console.log('refreshTokenExpiredError: true, hide profile button')
                 }
             })
     }

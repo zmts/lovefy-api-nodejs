@@ -47,15 +47,35 @@
             }
         },
 
+        computed: {
+            userId () {
+                return this.$store.state.userData.id
+            }
+        },
+
+        watch: {
+            userId (val) {
+                console.log(val)
+                this.getCurrentUserPosts()
+            }
+        },
+
         mounted () {
-            userService.getPostsByUserId(this.$store.state.userData.id)
-                .then(response => {
-                    this.posts = response.data.data
-                }).catch(error => {
-                    console.log(error.response)
-                })
+//            console.log('userId', this.userId)
+        },
+
+        methods: {
+            getCurrentUserPosts () {
+                userService.getPostsByUserId(this.userId)
+                    .then(response => {
+                        this.posts = response.data.data
+                    }).catch(error => {
+                        console.log(error.response)
+                    })
+            }
         }
     }
+
 </script>
 
 <style lang="scss" scoped>

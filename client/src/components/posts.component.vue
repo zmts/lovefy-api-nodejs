@@ -1,7 +1,7 @@
 <template>
     <div class="feed">
         <div class="posts-list" v-if="$store.state.userData.role === 'editor'">
-            <div class="item" v-for="item in posts">
+            <div class="item" v-for="item in posts" :key="item.id">
                 <div class="item-header">
                     <div class="info">
                         <div class="title">

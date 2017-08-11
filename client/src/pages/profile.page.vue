@@ -39,6 +39,7 @@
             </div>
         </div>
 
+        <app-loading v-if="!this.$store.state.userData.id"></app-loading>
         <!-- render router-view only if userData in store -->
         <router-view v-if="this.$store.state.userData.id"></router-view>
 
@@ -46,7 +47,13 @@
 </template>
 
 <script>
+    import AppLoading from '@/components/loading.component'
+
     export default {
+        components: {
+            AppLoading
+        },
+
         data () {
             return {
                 //

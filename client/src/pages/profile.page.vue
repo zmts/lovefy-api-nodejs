@@ -16,7 +16,7 @@
 
             <div class="user-menu">
                 <ul>
-                    <li v-if="$store.state.userData.role === 'editor'">
+                    <li v-if="profile.role === 'editor'">
                         <router-link :to="{ path: '/profile/posts' }">
                             <span>Мои посты</span>
                             <span class="add-item-button">
@@ -24,7 +24,7 @@
                                 </span>
                         </router-link>
                     </li>
-                    <li v-if="$store.state.userData.role === 'editor'">
+                    <li v-if="profile.role === 'editor'">
                         <router-link :to="{ path: '/profile/albums' }">
                             <span>Мои альбомы</span>
                             <span class="add-item-button">
@@ -39,30 +39,24 @@
             </div>
         </div>
 
-        <router-view></router-view>
+        <!-- render router-view only if userData in store-->
+        <router-view v-if="this.$store.state.userData.id"></router-view>
 
     </div>
 </template>
 
 <script>
-    import userService from '../services/user.service'
-
     export default {
         data () {
             return {
-                profile: {},
-                posts: []
+                //
             }
         },
 
-        mounted () {
-            userService.getCurrentUser()
-                .then(response => {
-                    this.profile = response.data.data
-                    // add to $store.state.userData >> email, desc
-                }).catch(error => {
-                    console.log(error.response)
-                })
+        computed: {
+            profile () {
+                return this.$store.state.userData
+            }
         }
     }
 </script>

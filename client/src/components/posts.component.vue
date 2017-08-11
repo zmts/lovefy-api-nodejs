@@ -47,26 +47,13 @@
             }
         },
 
-        computed: {
-            userId () {
-                return this.$store.state.userData.id
-            }
-        },
-
-        watch: {
-            userId (val) {
-                console.log(val)
-                this.getCurrentUserPosts()
-            }
-        },
-
         mounted () {
-//            console.log('userId', this.userId)
+            this.getCurrentUserPosts()
         },
 
         methods: {
             getCurrentUserPosts () {
-                userService.getPostsByUserId(this.userId)
+                userService.getPostsByUserId(this.$store.state.userData.id)
                     .then(response => {
                         this.posts = response.data.data
                     }).catch(error => {

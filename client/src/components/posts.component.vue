@@ -18,8 +18,8 @@
                                 <md-icon>more_vert</md-icon>
                             </md-button>
                             <md-menu-content>
-                                <md-menu-item class="menux">Edit</md-menu-item>
-                                <md-menu-item class="menux">Remove</md-menu-item>
+                                <md-menu-item>Edit</md-menu-item>
+                                <md-menu-item>Remove</md-menu-item>
                             </md-menu-content>
                         </md-menu>
                 </div>

@@ -39,7 +39,7 @@
             </div>
         </div>
 
-        <!-- render router-view only if userData in store-->
+        <!-- render router-view only if userData in store -->
         <router-view v-if="this.$store.state.userData.id"></router-view>
 
     </div>

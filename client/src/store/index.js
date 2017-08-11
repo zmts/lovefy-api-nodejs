@@ -12,7 +12,7 @@ export default new Vuex.Store({
             email: ''
         },
 
-        accessTokenStatus: false
+        accessTokenExpDate: ''
     },
 
     actions: {},
@@ -20,6 +20,10 @@ export default new Vuex.Store({
     mutations: {
         SET_USER (state, accessTokenData) {
             state.userData = accessTokenData
+        },
+
+        SET_ATOKEN_EXP_DATE (state, expDate) {
+            state.accessTokenExpDate = expDate
         }
     },
 

@@ -39,18 +39,14 @@ export default new Vue({
         // refresh tokens and init userData in store
         authService.refreshTokens()
             .then(res => {
-                console.log('refreshing tokens... Done')
-                // update tokens in localStorage
                 localStorage.setItem('refreshToken', res.data.refreshToken)
                 localStorage.setItem('accessToken', res.data.accessToken)
-                console.log('updating tokens in localStorage... Done')
+                store.commit('SET_ATOKEN_EXP_DATE', res.data.expires_in)
             })
             .then(() => {
                 userService.getCurrentUser()
                     .then(user => {
                         store.commit('SET_USER', user.data.data)
-                        console.log('userData in store committed... Done')
-                        console.log(store.state)
                     }).catch(error => console.log(error))
             })
             .catch(error => {

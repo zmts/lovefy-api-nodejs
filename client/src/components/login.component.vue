@@ -37,6 +37,7 @@
 
 <script>
     import authService from '../services/auth.service'
+    import userService from '../services/user.service'
 
     export default {
         data () {
@@ -52,16 +53,21 @@
                 authService.makeLogin({
                     email: this.email,
                     password: this.password
-                }).then(res => {
+                })
+                .then(res => {
                     this.error = ''
-                    // update tokens in localStorage
                     localStorage.setItem('refreshToken', res.data.refreshToken)
                     localStorage.setItem('accessToken', res.data.accessToken)
-                    // update access token in to axios headers TODO
-                    // update user data in store
-                }).then(() => {
+                })
+                .then(() => {
+                    userService.getCurrentUser()
+                        .then(user => this.$store.commit('SET_USER', user.data.data))
+                        .catch(error => console.log(error))
+                })
+                .then(() => {
                     this.$router.push('profile')
-                }).catch((error) => {
+                })
+                .catch((error) => {
                     console.log(error.response)
                     this.error = error.response.data.description.status === 404 ? 'Пользователь с таким email не найден' : error.response.data.description.message
                 })

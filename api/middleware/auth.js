@@ -65,7 +65,7 @@ function _makeAccessToken(userModel){
 
         options: {
             algorithm: 'HS512',
-            expiresIn: '15m',
+            expiresIn: '1m',
             subject: userModel.id.toString()
         }
 
@@ -286,7 +286,9 @@ module.exports.checkTokenFreePass = () => {
     };
 };
 
-
+/**
+ * @description: sign out current user by TUID
+ */
 module.exports.signOut = function () {
     return function (req, res, next) {
         User.UPDATE(req.body.helpData.userId, { refresh_token: null })

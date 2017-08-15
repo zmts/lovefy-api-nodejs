@@ -1,12 +1,5 @@
 'use strict';
 
-/**
- * ------------------------------
- * All handlers related to authentication
- * located in 'middleware/auth' module
- * ------------------------------
- */
-
 const express = require('express');
 const router = express.Router();
 
@@ -22,7 +15,7 @@ const sec = require('../middleware/security');
 router.post('/signin', auth.checkPassword(), auth.makeTokens());
 
 /**
- * @description: User sign out(logout) system by TUID
+ * @description: sign out(logout) User by TUID
  * @headers: token
  */
 router.post('/signout', auth.checkToken(), sec.isLoggedIn(), auth.signOut());

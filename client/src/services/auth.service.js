@@ -10,11 +10,8 @@ export default {
         })
     },
 
-    makeLogout ({email, accessToken}) { // todo
-        return axios.post(`${CONFIG.API_URL}/auth/signout`, {
-            email,
-            accessToken
-        })
+    makeLogout ({email, accessToken}) { // todo test
+        return axios.post(`${CONFIG.API_URL}/auth/signout`, {})
     },
 
     refreshTokens () {

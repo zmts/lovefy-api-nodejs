@@ -10,7 +10,7 @@ import axios from 'axios'
 import authService from '../services/auth.service'
 import $store from '../store'
 
-export default (status) => {
+export default function Request (status) {
     this.isAuth = status && status.auth ? status.auth : false
     this.instance = axios.create()
 
@@ -39,9 +39,9 @@ export default (status) => {
                             // App.$router.push('login')
                         }
                     })
+            } else {
+                return request
             }
-
-            return request
         }, error => {
             return Promise.reject(error)
         })

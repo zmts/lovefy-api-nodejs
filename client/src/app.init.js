@@ -35,27 +35,39 @@ export default new Vue({
     el: '#app',
     router,
     store,
+
     created () {
-        // refresh tokens and init userData in store
-        authService.refreshTokens()
-            .then(res => {
-                localStorage.setItem('refreshToken', res.data.refreshToken)
-                localStorage.setItem('accessToken', res.data.accessToken)
-                store.commit('SET_ATOKEN_EXP_DATE', res.data.expires_in)
-            })
-            .then(() => {
-                userService.getCurrentUser()
-                    .then(user => {
-                        store.commit('SET_USER', user.data.data)
-                    }).catch(error => console.log(error))
-            })
-            .catch(error => {
-                if (error.response.data.badRefreshToken) {
-                    console.log('badRefreshToken: true')
-                }
-                if (error.response.data.refreshTokenExpiredError) {
-                    console.log('refreshTokenExpiredError: true, hide profile button')
-                }
-            })
+        if (localStorage.getItem('refreshToken')) {
+            this.initAppState()
+        }
+    },
+
+    methods: {
+
+        /**
+         * refresh tokens and init userData in store
+         */
+        initAppState () {
+            authService.refreshTokens()
+                .then(res => {
+                    localStorage.setItem('refreshToken', res.data.refreshToken)
+                    localStorage.setItem('accessToken', res.data.accessToken)
+                    store.commit('SET_ATOKEN_EXP_DATE', res.data.expires_in)
+                })
+                .then(() => {
+                    userService.getCurrentUser()
+                        .then(user => {
+                            store.commit('SET_USER', user.data.data)
+                        }).catch(error => console.log(error))
+                })
+                .catch(error => {
+                    if (error.response.data.badRefreshToken) {
+                        console.log('badRefreshToken: true')
+                    }
+                    if (error.response.data.refreshTokenExpiredError) {
+                        console.log('refreshTokenExpiredError: true, hide profile button')
+                    }
+                })
+        }
     }
 })

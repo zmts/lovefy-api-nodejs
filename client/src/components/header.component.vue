@@ -8,8 +8,9 @@
                 <li><router-link :to="{ path: '/video' }">Видео</router-link></li>
             </ul>
             <ul class="menu side">
-                <li><router-link :to="{ path: '/login' }">login</router-link></li>
-                <li><router-link :to="{ path: '/profile' }">profile</router-link></li>
+                <li v-if="!this.$store.state.userData.id"><router-link :to="{ path: '/login' }">login</router-link></li>
+                <li v-if="this.$store.state.userData.id"><router-link :to="{ path: '/profile' }">profile</router-link></li>
+                <li v-if="this.$store.state.userData.id"><router-link :to="{ path: '/logout' }">logout</router-link></li>
             </ul>
         </div>
 

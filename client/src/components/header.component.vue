@@ -10,7 +10,7 @@
             <ul class="menu side">
                 <li v-if="!this.$store.state.userData.id"><router-link :to="{ path: '/login' }">login</router-link></li>
                 <li v-if="this.$store.state.userData.id"><router-link :to="{ path: '/profile' }">profile</router-link></li>
-                <li v-if="this.$store.state.userData.id"><router-link :to="{ path: '/logout' }">logout</router-link></li>
+                <li v-if="this.$store.state.userData.id"><span class="logout-button" @click="logout()">logout</span></li>
             </ul>
         </div>
 
@@ -20,6 +20,7 @@
 
 <script>
     import AppLogin from '@/components/login.component'
+    import authService from '../services/auth.service'
 
     export default {
         components: {
@@ -28,6 +29,22 @@
 
         created () {
         //
+        },
+
+        methods: {
+            logout () {
+                authService.makeLogout()
+                    .then(res => res)
+                    .then(() => {
+                        this.$router.push('/')
+                        // reset userData
+                        this.$store.commit('SET_USER', {})
+                        this.$store.commit('SET_ATOKEN_EXP_DATE', null)
+                        // reset tokens
+                        localStorage.setItem('refreshToken', '')
+                        localStorage.setItem('accessToken', '')
+                    }).catch(error => console.log(error))
+            }
         }
     }
 </script>
@@ -67,6 +84,10 @@
 
             &.side{
                 font-size: 15px;
+
+                .logout-button {
+                    cursor: pointer;
+                }
             }
         }
 

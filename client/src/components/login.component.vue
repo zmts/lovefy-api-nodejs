@@ -58,6 +58,7 @@
                     this.error = ''
                     localStorage.setItem('refreshToken', res.data.refreshToken)
                     localStorage.setItem('accessToken', res.data.accessToken)
+                    this.$store.commit('SET_ATOKEN_EXP_DATE', res.data.expires_in)
                 })
                 .then(() => {
                     userService.getCurrentUser()

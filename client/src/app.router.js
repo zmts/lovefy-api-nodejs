@@ -39,7 +39,14 @@ export default new Router({
                 {
                     path: '',
                     name: 'profile',
-                    component: postsComponent
+                    component: postsComponent,
+                    beforeEnter: (to, from, next) => {
+                        if ($store.state.userData.id) {
+                            next()
+                        } else {
+                            next('/')
+                        }
+                    }
                 },
                 {
                     path: 'albums',

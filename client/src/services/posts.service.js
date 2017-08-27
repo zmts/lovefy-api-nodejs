@@ -4,11 +4,11 @@ import CONFIG from '../app.config'
 
 export default {
     getPosts () {
-        return new Http({auth: false}).get(`${CONFIG.API_URL}/posts`)
+        return new Http().get(`${CONFIG.API_URL}/posts`)
     },
 
     getPostById (post_id) {
-        return new Http().get(`${CONFIG.API_URL}/posts/${post_id}`)
+        return new Http({auth: true}).get(`${CONFIG.API_URL}/posts/${post_id}`)
     },
 
     createPost (data) {

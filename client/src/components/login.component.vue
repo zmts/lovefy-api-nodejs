@@ -63,10 +63,8 @@
                 .then(() => {
                     userService.getCurrentUser()
                         .then(user => this.$store.commit('SET_USER', user.data.data))
+                        .then(() => this.$router.push('profile'))
                         .catch(error => console.log(error))
-                })
-                .then(() => {
-                    this.$router.push('profile')
                 })
                 .catch((error) => {
                     console.log(error.response)

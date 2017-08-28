@@ -5,7 +5,7 @@ import newsComponent from '@/components/news.component'
 import loginComponent from '@/components/login.component'
 import postsComponent from '@/components/posts.component'
 // import postsItemComponent from '@/components/posts-item.component'
-import newPostComponent from '@/components/new-post.component'
+import editPostComponent from '@/components/edit-post.component'
 import albumsComponent from '@/components/albums.component'
 import settingsComponent from '@/components/settings.component'
 
@@ -74,7 +74,7 @@ export default new Router({
                 },
                 {
                     path: 'posts/new',
-                    component: newPostComponent,
+                    component: editPostComponent,
                     beforeEnter: (to, from, next) => {
                         if ($store.state.userData.role === 'editor') {
                             next()
@@ -85,7 +85,7 @@ export default new Router({
                 },
                 {
                     path: 'posts/:id',
-                    component: newPostComponent
+                    component: editPostComponent
                 },
                 {
                     path: 'settings',

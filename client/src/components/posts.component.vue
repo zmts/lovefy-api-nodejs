@@ -47,7 +47,7 @@
             }
         },
 
-        mounted () {
+        created () {
             this.getCurrentUserPosts()
         },
 

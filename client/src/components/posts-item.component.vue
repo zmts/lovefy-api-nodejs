@@ -17,7 +17,7 @@
             }
         },
 
-        mounted () {
+        created () {
             postsService.getPostById(this.$route.params.id)
                 .then(post => {
                     this.postItem = post.data.data

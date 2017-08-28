@@ -6,7 +6,7 @@
 
 import axios from 'axios'
 
-// import App from '../app.init'
+import App from '../app.init'
 import authService from '../services/auth.service'
 import $store from '../store'
 
@@ -32,11 +32,12 @@ export default function Request (status) {
                         if (error.response.data.badRefreshToken) {
                             console.log(error)
                             console.log('badRefreshToken: true')
-                            // App.$router.push('login')
+                            $store.commit('SET_USER', {})
                         }
                         if (error.response.data.refreshTokenExpiredError) {
                             console.log('refreshTokenExpiredError: true, hide profile button')
-                            // App.$router.push('login')
+                            $store.commit('SET_USER', {})
+                            App.$router.push('/')
                         }
                     })
             } else {

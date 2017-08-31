@@ -30,12 +30,11 @@ export default function Request (status) {
                     })
                     .catch(error => {
                         if (error.response.data.badRefreshToken) {
-                            console.log(error)
-                            console.log('badRefreshToken: true')
+                            console.log('http.init.js >> badRefreshToken: true')
                             $store.commit('SET_USER', {})
                         }
                         if (error.response.data.refreshTokenExpiredError) {
-                            console.log('refreshTokenExpiredError: true, hide profile button')
+                            console.log('http.init.js >> refreshTokenExpiredError')
                             $store.commit('SET_USER', {})
                             App.$router.push('/')
                         }

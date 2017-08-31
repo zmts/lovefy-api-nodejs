@@ -17,7 +17,7 @@
                     <md-switch v-model="model.private" name="my-test1" class="md-primary">Private</md-switch>
 
                     <quill
-                        v-model="model.content"
+                        v-model="content"
                         :config="editorConfig"
                     ></quill>
 
@@ -59,14 +59,13 @@
     export default {
         data () {
             return {
+                content: [],
                 model: {
                     id: null,
                     user_id: this.$store.state.userData.id,
                     title: '',
                     description: '',
-                    private: true,
-                    content: {},
-                    test: {}
+                    private: true
                 },
                 tagsList: ['news'],
                 postPicture: '',
@@ -113,25 +112,25 @@
             }
         },
 
-        mounted () {
+        created () {
             if (this.$route.params.id) {
                 this.getPostById()
-                console.log('mounted', this.model)
+                console.log('created', this.model)
             }
         },
 
         methods: {
             getContent () {
-                console.log(this.model)
+                console.log(this.content)
             },
 
             getPostById () {
                 return postsService.getPostById(this.$route.params.id)
                     .then(post => {
-                        this.model = {...post.data.data, content: JSON.parse(post.data.data.content)}
+                        this.model = post.data.data
                         this.model.id = post.data.data.id
-                        this.model.test = {lol: ['aaa']}
-                        console.log('getdata', this.model)
+                        this.content = JSON.parse(post.data.data.content)
+                        console.log('test!!!!', this.model.test = {lol: 'aaaaa'})
                     }).catch(error => {
                         console.log(error)
                     })

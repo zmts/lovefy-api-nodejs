@@ -62,10 +62,10 @@ export default new Vue({
                 })
                 .catch(error => {
                     if (error.response.data.badRefreshToken) {
-                        console.log('badRefreshToken: true')
+                        console.log('app.init.js >> badRefreshToken: true')
                     }
                     if (error.response.data.refreshTokenExpiredError) {
-                        console.log('refreshTokenExpiredError: true, hide profile button')
+                        console.log('app.init.js >> refreshTokenExpiredError: true')
                     }
                 })
         }

@@ -17,8 +17,10 @@
                     <md-switch v-model="model.private" name="my-test1" class="md-primary">Private</md-switch>
 
                     <quill
-                        v-model="content"
+                        v-if="content.length"
+                        :content="content"
                         :config="editorConfig"
+                        @input="updateContent"
                     ></quill>
 
 
@@ -27,7 +29,6 @@
                         <md-button class="md-raised" @click="createUpdatePost()">{{ buttonTitle }}</md-button>
                         <router-link tag="md-button" :to="{ path: '/profile/posts' }" class="md-raised">Cancel</router-link>
                     </div>
-                    <div>{{model.test.lol}}</div>
                 </div>
             </md-tab>
 
@@ -56,6 +57,7 @@
 
 <script>
     import postsService from '../services/posts.service'
+
     export default {
         data () {
             return {
@@ -110,12 +112,12 @@
             disabledEditStatus () {
                 return !this.model.id
             }
+
         },
 
         created () {
             if (this.$route.params.id) {
                 this.getPostById()
-                console.log('created', this.model)
             }
         },
 
@@ -124,13 +126,16 @@
                 console.log(this.content)
             },
 
+            updateContent (data) {
+                this.content = data
+            },
+
             getPostById () {
-                return postsService.getPostById(this.$route.params.id)
+                postsService.getPostById(this.$route.params.id)
                     .then(post => {
                         this.model = post.data.data
                         this.model.id = post.data.data.id
                         this.content = JSON.parse(post.data.data.content)
-                        console.log('test!!!!', this.model.test = {lol: 'aaaaa'})
                     }).catch(error => {
                         console.log(error)
                     })

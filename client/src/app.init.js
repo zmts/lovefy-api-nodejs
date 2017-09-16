@@ -9,7 +9,6 @@
 import Vue from 'vue'
 import VueMaterial from 'vue-material'
 import Quill from 'vue-quill'
-import VueQuillEditor from 'vue-quill-editor'
 
 // app imports
 import AppLayout from './app.layout'
@@ -27,7 +26,6 @@ import 'quill/dist/quill.bubble.css'
 import './scss/style.scss'
 
 Vue.use(VueMaterial)
-Vue.use(VueQuillEditor)
 Vue.use(Quill)
 
 Vue.config.productionTip = false

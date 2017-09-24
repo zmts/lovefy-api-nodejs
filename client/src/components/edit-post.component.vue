@@ -23,6 +23,12 @@
                         @input="updateContent"
                     ></quill>
 
+                    <br>
+                    <br>
+                    <div v-html=""> {{ contentToHTML | quill }}</div>
+                    <br>
+                    <br>
+
 
                     <div class="buttons">
                         <md-button class="md-raised" @click="getContent()">log content</md-button>
@@ -88,6 +94,10 @@
 
         computed: {
 
+            contentToHTML () {
+                return {ops: this.content}
+            },
+
             updateModel () {
                 return {
                     user_id: this.model.user_id,
@@ -119,6 +129,7 @@
             if (this.$route.params.id) {
                 this.getPostById()
             }
+            console.log(this.contentToHTML)
         },
 
         methods: {

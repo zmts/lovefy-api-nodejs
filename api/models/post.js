@@ -49,6 +49,19 @@ class Post extends MainModel {
         };
     }
 
+    static get permissions () {
+        return {
+            admin: [
+                ...this.basePermissions,
+                `${this.tableName}:add-tag`
+            ],
+            editor: [
+                ...this.basePermissions,
+                `${this.tableName}:add-tag`
+            ]
+        };
+    }
+
     /**
      * ------------------------------
      * @HOOKS

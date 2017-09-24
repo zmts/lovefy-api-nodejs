@@ -1,5 +1,7 @@
 'use strict';
 
+const _ = require('lodash');
+
 const SUPERUSER = require('../config').roles.superuser;
 const ADMINROLES = require('../config').roles.adminRoles;
 const EDITORROLES = require('../config').roles.editorRoles;
@@ -237,3 +239,39 @@ module.exports.checkItemAccess = {
         };
     }
 };
+
+/**
+ * @description set access tag
+ */
+module.exports.setAccessTag = function (tagName) {
+    if (!tagName || typeof tagName !== 'string') throw new Error('setAccessTag function expect "tagName" parameter as string');
+    return (req, res, next) => {
+        req.body.helpData.accessTag = tagName;
+        next();
+    };
+};
+
+/**
+ * @description
+ */
+module.exports.hasAccess = function (entity) {
+    if (!entity) throw new Error('hasAccess function expect "entity" parameter');
+
+    return (req, res, next) => {
+        // check role from TUID in entity permissions
+        if (entity.permissions[req.body.helpData.userRole]) {
+            // check actionTag from controller(route) in entity permissions
+            if (entity.permissions[req.body.helpData.userRole].includes(req.body.helpData.accessTag)) return next();
+            return res.status(403).send({
+                success: false,
+                description: 'Forbidden. Permissions don\'t founded'
+            });
+        }
+        res.status(403).send({
+            success: false,
+            description: 'Forbidden. Current role don\'t have access'
+        });
+    };
+};
+
+

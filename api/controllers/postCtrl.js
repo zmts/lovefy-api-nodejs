@@ -63,6 +63,13 @@ router.post('/:id/detach-tag/:tag_id',
  * ------------------------------------------------------------
  */
 
+router.get('/test',
+    auth.checkToken(),
+    sec.setAccessTag(`${Post.tableName}:read`),
+    sec.hasAccess(Post),
+    test()
+);
+
 /**
  * @description get all POST's list
  * @url posts?page=0
@@ -128,6 +135,11 @@ router.delete('/:id',
  * @CONTROLLERS
  * ------------------------------------------------------------
  */
+function test() {
+    return (req, res) => {
+        res.json({ success: true, data: req.body.helpData.accessTag });
+    };
+}
 
 function createAndAttachTagToPost() {
     return function (req, res, next) {

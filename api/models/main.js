@@ -8,7 +8,14 @@ const Model = require('../config/db');
  */
 
 class MainModel extends Model {
-
+    static get basePermissions () {
+        return [
+            `${this.tableName}:create`,
+            `${this.tableName}:read`,
+            `${this.tableName}:update`,
+            `${this.tableName}:delete`
+        ];
+    }
 }
 
 MainModel.CREATE = function (data) {

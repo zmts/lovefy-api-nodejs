@@ -10,6 +10,53 @@ const auth = require('../middleware/auth');
 const sec = require('../middleware/security');
 const validate = require('../middleware/validateReq');
 
+class MainController {
+    static get name () {
+        return 'main';
+    }
+
+    static get baseActions () {
+        return [
+            `${this.name}:create`,
+            `${this.name}:read`,
+            `${this.name}:update`,
+            `${this.name}:delete`
+        ];
+    }
+}
+
+class PostController extends MainController {
+    static get name () {
+        return Post.tableName;
+    }
+
+    static get permissions () {
+        return {
+            admin: [
+                ...this.baseActions,
+                `${this.name}:add-tag`
+            ],
+            editor: [
+                ...this.baseActions,
+                `${this.name}:add-tag`
+            ]
+        };
+    }
+
+    static test () {
+        return (req, res) => {
+            global.console.log(req.body.meta);
+            res.json({ success: true, data: req.body.helpData.accessTag });
+        };
+    }
+
+    static hello () {
+        return (req, res, next) => {
+            res.json({ test2: 'test2' });
+        };
+    }
+}
+
 /**
  * ------------------------------------------------------------
  * @BASE_URL: posts/
@@ -65,9 +112,13 @@ router.post('/:id/detach-tag/:tag_id',
 
 router.get('/test',
     auth.checkToken(),
-    sec.setAccessTag(`${Post.tableName}:read`),
-    sec.hasAccess(Post),
-    test()
+    sec.setAccessTag(`${PostController.name}:read`),
+    sec.hasAccess(PostController),
+    PostController.test()
+);
+
+router.get('/test2',
+    PostController.hello()
 );
 
 /**
@@ -135,11 +186,6 @@ router.delete('/:id',
  * @CONTROLLERS
  * ------------------------------------------------------------
  */
-function test() {
-    return (req, res) => {
-        res.json({ success: true, data: req.body.helpData.accessTag });
-    };
-}
 
 function createAndAttachTagToPost() {
     return function (req, res, next) {

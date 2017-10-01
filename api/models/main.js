@@ -7,16 +7,7 @@ const Model = require('../config/db');
  * extends other models by own basic methods
  */
 
-class MainModel extends Model {
-    static get basePermissions () {
-        return [
-            `${this.tableName}:create`,
-            `${this.tableName}:read`,
-            `${this.tableName}:update`,
-            `${this.tableName}:delete`
-        ];
-    }
-}
+class MainModel extends Model {}
 
 MainModel.CREATE = function (data) {
     return this.query().insert(data);

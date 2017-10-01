@@ -65,7 +65,7 @@ function _makeAccessToken(userModel){
 
         options: {
             algorithm: 'HS512',
-            expiresIn: '1m',
+            expiresIn: '60m',
             subject: userModel.id.toString()
         }
 

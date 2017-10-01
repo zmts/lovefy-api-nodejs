@@ -11,8 +11,19 @@ const albumCtrl = require('./albumCtrl');
 const photoCtrl = require('./photoCtrl');
 const commentCtrl = require('./commentCtrl');
 
+// handle root route
 router.get('/', function (req, res) {
     res.json({ success: true, data: 'hello' });
+});
+
+// set metadata object
+router.use((req, res, next) => {
+    req.body.meta = {
+        user: {
+            id: false
+        }
+    };
+    next();
 });
 
 router.use('/auth', authCtrl);

@@ -83,3 +83,13 @@ input[type=button], button{
         left: 15px !important;
     }
 }
+
+.readmode {
+    em {
+        font-style: italic;
+    }
+
+    strong, b {
+        font-weight: bold;
+    }
+}

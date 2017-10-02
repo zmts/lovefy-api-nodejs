@@ -1,72 +1,80 @@
 <template>
-    <div class="new-post">
-        <div>{{ sectionTitle }}</div>
-        <md-tabs md-fixed class="md-transparent">
-            <md-tab md-label="Content">
-                <div class="post-input">
-                    <md-input-container>
-                        <label>Title</label>
-                        <md-input maxlength="150" v-model="model.title" required></md-input>
-                    </md-input-container>
+    <div class="post">
+        <br>
+        <div v-if="readmode" class="readmode">
+            <div class="content" v-html="contentHTML"></div>
+
+            <div class="buttons">
+                <md-button class="md-raised" @click="readmode=false">edit</md-button>
+            </div>
+        </div>
+        <br>
+
+        <div v-if="!readmode" class="editmode">
+            <div>{{ sectionTitle }}</div>
+
+            <md-tabs md-fixed class="md-transparent">
+                <md-tab md-label="Content">
+                    <div class="post-input">
+                        <md-input-container>
+                            <label>Title</label>
+                            <md-input maxlength="150" v-model="model.title" required></md-input>
+                        </md-input-container>
+
+                        <md-input-container>
+                            <label>Description</label>
+                            <md-textarea maxlength="500" v-model="model.description" required></md-textarea>
+                        </md-input-container>
+
+                        <md-switch v-model="model.private" name="my-test1" class="md-primary">Private</md-switch>
+
+                        <quill
+                            v-if="content.length"
+                            :content="content"
+                            :config="editorConfig"
+                            @input="updateContent"
+                        ></quill>
+
+                        <div class="buttons">
+                            <md-button class="md-raised" @click="getContent()">log content</md-button>
+                            <md-button class="md-raised" @click="createUpdatePost()">{{ buttonTitle }}</md-button>
+                            <md-button class="md-raised" @click="readmode=true">Cancel</md-button>
+                        </div>
+                    </div>
+                </md-tab>
+
+                <md-tab md-label="Details">
+                    <md-chips v-model="tagsList"
+                              md-input-placeholder="Add a tag"
+                              :disabled="disabledEditStatus"
+                    ></md-chips>
 
                     <md-input-container>
-                        <label>Description</label>
-                        <md-textarea maxlength="500" v-model="model.description" required></md-textarea>
+                        <label>Picture</label>
+                        <md-file v-model="postPicture"
+                                 accept="image/*"
+                                 required
+                                 :disabled="disabledEditStatus"
+                        ></md-file>
                     </md-input-container>
-
-                    <md-switch v-model="model.private" name="my-test1" class="md-primary">Private</md-switch>
-
-                    <quill
-                        v-if="content.length"
-                        :content="content"
-                        :config="editorConfig"
-                        @input="updateContent"
-                    ></quill>
-
-                    <br>
-                    <br>
-                    <div v-html=""> {{ contentToHTML | quill }}</div>
-                    <br>
-                    <br>
-
 
                     <div class="buttons">
-                        <md-button class="md-raised" @click="getContent()">log content</md-button>
-                        <md-button class="md-raised" @click="createUpdatePost()">{{ buttonTitle }}</md-button>
-                        <router-link tag="md-button" :to="{ path: '/profile/posts' }" class="md-raised">Cancel</router-link>
+                        <md-button class="md-raised" :enabled="disabledEditStatus">Upload</md-button>
                     </div>
-                </div>
-            </md-tab>
-
-            <md-tab md-label="Details">
-                <md-chips v-model="tagsList"
-                          md-input-placeholder="Add a tag"
-                          :disabled="disabledEditStatus"
-                ></md-chips>
-
-                <md-input-container>
-                    <label>Picture</label>
-                    <md-file v-model="postPicture"
-                             accept="image/*"
-                             required
-                             :disabled="disabledEditStatus"
-                    ></md-file>
-                </md-input-container>
-
-                <div class="buttons">
-                    <md-button class="md-raised" :enabled="disabledEditStatus">Upload</md-button>
-                </div>
-            </md-tab>
-        </md-tabs>
+                </md-tab>
+            </md-tabs>
+        </div>
     </div>
 </template>
 
 <script>
     import postsService from '../services/posts.service'
+    import render from 'quill-render'
 
     export default {
         data () {
             return {
+                readmode: true,
                 content: [],
                 model: {
                     id: null,
@@ -93,9 +101,8 @@
         },
 
         computed: {
-
-            contentToHTML () {
-                return {ops: this.content}
+            contentHTML () {
+                return render(this.content)
             },
 
             updateModel () {
@@ -129,7 +136,6 @@
             if (this.$route.params.id) {
                 this.getPostById()
             }
-            console.log(this.contentToHTML)
         },
 
         methods: {
@@ -183,7 +189,7 @@
 </script>
 
 <style lang="scss" scoped>
-    .new-post{
+    .post{
         padding: 20px;
         /*min-height: 500px;*/
         width: 100%;

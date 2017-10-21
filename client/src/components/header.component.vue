@@ -23,6 +23,7 @@
     import authService from '../services/auth.service'
 
     export default {
+        name: 'HeaderComponent',
         components: {
             AppLogin
         },

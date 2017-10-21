@@ -50,6 +50,7 @@
     import AppLoading from '@/components/loading.component'
 
     export default {
+        name: 'ProfilePage',
         components: {
             AppLoading
         },

@@ -6,6 +6,7 @@
 
 <script>
     export default {
+        name: 'IndexPage',
         data () {
             return {
                 msg: 'Welcome to Index!!!'

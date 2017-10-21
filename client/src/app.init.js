@@ -17,6 +17,9 @@ import store from './store'
 import authService from './services/auth.service'
 import userService from './services/user.service'
 
+// mixins imports
+import currentUser from './mixins/currentUser'
+
 // styles imports
 import 'vue-material/dist/vue-material.css'
 import 'quill/dist/quill.core.css'
@@ -28,10 +31,13 @@ import './scss/style.scss'
 Vue.use(VueMaterial)
 Vue.use(Quill)
 
+Vue.mixin(currentUser)
+
 Vue.config.productionTip = false
 
 /* eslint-disable no-new */
 export default new Vue({
+    name: 'Root',
     template: '<app-layout/>',
     components: {
         AppLayout

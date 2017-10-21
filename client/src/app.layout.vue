@@ -16,6 +16,7 @@ import AppHeader from '@/components/header.component'
 import AppFooter from '@/components/footer.component'
 
 export default {
+    name: 'AppLayout',
     components: {
         AppHeader,
         AppFooter

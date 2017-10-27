@@ -1,6 +1,7 @@
 node_modules/
 bower_components/
 tmp/
+.env
 .tmp/
 tmp_files/
 public/

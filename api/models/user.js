@@ -61,6 +61,11 @@ User.rules = {
             helpData: Joi.object()
         })
     },
+    SendResetEmail: {
+        body: Joi.object().keys({
+            email: Joi.string().email().min(6).max(30).required(),
+        })
+    },
 
     ChangeUserRole: {
         body: Joi.object().keys({

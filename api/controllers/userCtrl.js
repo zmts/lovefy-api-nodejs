@@ -8,6 +8,7 @@ const auth = require('../middleware/auth');
 const sec = require('../middleware/security');
 const upload = require('../middleware/upload');
 const validate = require('../middleware/validateReq');
+const emailService = require('../services/email');
 
 /**
  * ------------------------------------------------------------
@@ -154,6 +155,14 @@ router.post('/change-password',
     validate.body(User.rules.ChangePassword),
     updatePassword()
 );
+/**
+ * @description send email with reset-link password
+ * @hasaccess OWNER
+ */
+router.post('/send-reset-email',
+    validate.body(User.rules.SendResetEmail),
+    sendResetEmail()
+);
 
 /**
  * @description update User by id
@@ -263,6 +272,16 @@ function updatePassword () {
         User.UPDATE(req.body.helpData.userId, { password_hash: req.body.password_hash })
             .then(function (updated_user) {
                 res.json({ success: true, data: updated_user });
+            }).catch(next);
+    };
+}
+
+function sendResetEmail () {
+    return (req, res, next) => {
+        User.GetByEmail(req.body.email)
+            .then(user => {
+                emailService.send();
+                res.json({ success: true });
             }).catch(next);
     };
 }

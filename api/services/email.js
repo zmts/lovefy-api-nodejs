@@ -31,6 +31,4 @@ module.exports.send = (letter) => {
             return resolve(response)
         })
     })
-
-
-};
+}

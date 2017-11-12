@@ -276,13 +276,21 @@ function updatePassword () {
     };
 }
 
-function sendResetEmail () {
+function sendResetEmail () { // TODO
     return (req, res, next) => {
+        let letter = {
+            from: '',
+            to: '',
+            subject: 'Hello Test(sendResetEmail)',
+            text: 'Testing some Mailgun awesomness!'
+        }
         User.GetByEmail(req.body.email)
             .then(user => {
-                emailService.send();
-                res.json({ success: true });
-            }).catch(next);
+                // letter.to = user.email // TODO uncomment it in prod
+                return emailService.send(letter)
+            })
+            .then(email => res.json({ success: true, data: email }))
+            .catch(next);
     };
 }
 

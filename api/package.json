@@ -34,39 +34,5 @@
   "devDependencies": {
     "eslint": "^3.17.1",
     "standard": "^8.6.0"
-  },
-  "eslintConfig": {
-    "extends": "eslint:recommended",
-    "commonjs": true,
-    "root": true,
-    "env": {
-      "node": true,
-      "es6": true
-    },
-    "rules": {
-      "indent": [
-        "error",
-        4,
-        {
-          "SwitchCase": 1
-        }
-      ],
-      "quotes": [
-        "error",
-        "single"
-      ],
-      "semi": "error",
-      "object-curly-spacing": [
-        "error",
-        "always"
-      ],
-      "key-spacing": [
-        "error",
-        {
-          "afterColon": true
-        }
-      ],
-      "no-multi-spaces": "error"
-    }
   }
 }

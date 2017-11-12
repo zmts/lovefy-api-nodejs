@@ -1,17 +1,36 @@
-module.exports.send = () => {
-    const api_key = process.env.MAILGUN_API_KEY;
-    const DOMAIN = process.env.MAILGUN_DOMAIN;
-    const mailgun = require('mailgun-js')({ apiKey: api_key, domain: DOMAIN });
+/**
+ * https://documentation.mailgun.com/en/latest/api-sending.html#examples
+ */
 
+const Promise = require('bluebird')
+
+const API_KEY = process.env.MAILGUN_API_KEY
+const DOMAIN = process.env.MAILGUN_DOMAIN
+const EMAIL_FROM = process.env.EMAIL_FROM
+const EMAIL_TO_TEST = process.env.EMAIL_TO_TEST
+const mailgun = require('mailgun-js')({ apiKey: API_KEY, domain: DOMAIN })
+
+/*
+ * Example:
+ * from: 'Title <hello@super.com>'
+ * to: 'best.user@mail.com'
+ * subject: 'Hello',
+ * text: 'Testing some Mailgun awesomness!'
+ */
+module.exports.send = (letter) => {
     const data = {
-        from: 'Whiteside <hello@whiteside.in.ua>',
-        to: 'zloy.root@gmail.com',
-        subject: 'Hello',
-        text: 'Testing some Mailgun awesomness!'
-    };
+        from: letter.from || EMAIL_FROM,
+        to: letter.to || EMAIL_TO_TEST,
+        subject: letter.subject || 'Hello',
+        text: letter.text || 'Testing some Mailgun awesomness!'
+    }
 
-    mailgun.messages().send(data, function (error, response) {
-        if (error) { console.log(error) }
-        else { console.log(response) }
-    });
+    return new Promise((resolve, reject) => {
+        mailgun.messages().send(data, function (error, response) {
+            if (error) return reject(error)
+            return resolve(response)
+        })
+    })
+
+
 };

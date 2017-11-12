@@ -95,6 +95,27 @@ function _makeRefreshToken(userModel){
 }
 
 /**
+ * @description make reset token
+ * @return Promise
+ */
+function _makeResetToken(userModel){
+    let resetTokenConfig = {
+        payload: {
+            resetToken: true,
+            email: userModel.email
+        },
+
+        options: {
+            algorithm: 'HS512',
+            expiresIn: '30m',
+            subject: userModel.id.toString()
+        }
+    };
+
+    return jwtp.sign(resetTokenConfig.payload, SECRET.access, resetTokenConfig.options)
+}
+
+/**
  * ------------------------------
  * @MIDDLEWARE
  * ------------------------------
@@ -193,6 +214,27 @@ module.exports.refreshTokens = () => {
     };
 };
 
+module.exports.makeResetToken = () => {
+    return (req, res, next) => {
+        let userData
+
+        User.GetByEmail(req.body.email)
+            .then(user => {
+                userData = user
+                return _makeResetToken(user)
+            })
+            .tap(resetToken => User.UPDATE(userData.id, { reset_token: resetToken }))
+            .then(resetToken => {
+                // set helpData for emailService
+                req.body.helpData = {
+                    resetToken: resetToken, // send it in email body as part of reset link
+                    userEmail: userData.email // use it in 'letter.to' field
+                }
+                return next()
+            }).catch(error => next(error))
+    }
+}
+
 /**
  * @description: check ACCESS(Hard check) token from client request.
  *
@@ -204,12 +246,14 @@ module.exports.refreshTokens = () => {
  * if token is missing >> set 'helpData' object 'userId', 'userRole' fields to false
  * and pass to next middleware
  */
-module.exports.checkToken = () => {
+module.exports.checkToken = (options) => {
+    let decryptStatus = options && !options.decrypt ? false : true
+
     return (req, res, next) => {
         let token = req.body.token || req.headers['token'];
 
         if (token) {
-            token = _decryptToken(token);
+            if (decryptStatus) token = _decryptToken(token)
 
             jwtp.verify(token, SECRET.access)
                 .then(decoded => {

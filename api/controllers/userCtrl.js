@@ -156,12 +156,25 @@ router.post('/change-password',
     updatePassword()
 );
 /**
- * @description send email with reset-link password
- * @hasaccess OWNER
+ * @description send email with reset password link
+ * @request {"email": "string"}
  */
 router.post('/send-reset-email',
     validate.body(User.rules.SendResetEmail),
+    auth.makeResetToken(),
     sendResetEmail()
+);
+
+/**
+ * @description reset User password
+ * @headers token (from 'send-reset-email' endpoint)
+ * @request {"password": "string"}
+ */
+router.post('/reset-password',
+    auth.checkToken({ decrypt: false }),
+    auth.hashPassword(),
+    validate.body(User.rules.ResetPassword),
+    resetPassword()
 );
 
 /**
@@ -276,22 +289,36 @@ function updatePassword () {
     };
 }
 
-function sendResetEmail () { // TODO
+function sendResetEmail () {
     return (req, res, next) => {
+        if (!req.body.helpData || !req.body.helpData.resetToken) {
+            throw new Error('\'resetToken\' is not defined. Add \'auth.makeResetToken\' before middleware Dude!')
+        }
+
         let letter = {
             from: '',
-            to: '',
-            subject: 'Hello Test(sendResetEmail)',
-            text: 'Testing some Mailgun awesomness!'
+            to: req.body.helpData.userEmail,
+            subject: 'Reset password email(Whiteside.in.ua)',
+            text: `Take this magic token >> ${req.body.helpData.resetToken}`
         }
-        User.GetByEmail(req.body.email)
-            .then(user => {
-                // letter.to = user.email // TODO uncomment it in prod
-                return emailService.send(letter)
-            })
+        emailService.send(letter)
             .then(email => res.json({ success: true, data: email }))
+            .catch(next)
+    }
+}
+
+function resetPassword () {
+    return (req, res, next) => {
+        let token = req.body.token || req.headers['token']
+
+        User.GETbyId(req.body.helpData.userId)
+            .then(user => {
+                if (user.reset_token !== token) throw new Error('Invalid token. Try to get new reset email and repeat request')
+                return User.UPDATE(req.body.helpData.userId, { password_hash: req.body.password_hash, reset_token: '' })
+            })
+            .then(updated_user => res.json({ success: true, description: 'Password is changed' }))
             .catch(next);
-    };
+    }
 }
 
 function remove() {

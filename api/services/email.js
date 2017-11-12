@@ -26,7 +26,7 @@ module.exports.send = (letter) => {
     }
 
     return new Promise((resolve, reject) => {
-        mailgun.messages().send(data, function (error, response) {
+        mailgun.messages().send(data, (error, response) => {
             if (error) return reject(error)
             return resolve(response)
         })

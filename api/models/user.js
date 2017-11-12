@@ -61,6 +61,15 @@ User.rules = {
             helpData: Joi.object()
         })
     },
+
+    ResetPassword: {
+        body: Joi.object().keys({
+            password_hash: Joi.string().required(),
+            password: Joi.string().min(6).max(30),
+            helpData: Joi.object()
+        })
+    },
+
     SendResetEmail: {
         body: Joi.object().keys({
             email: Joi.string().email().min(6).max(30).required(),

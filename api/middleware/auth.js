@@ -236,14 +236,14 @@ module.exports.makeResetToken = () => {
 }
 
 /**
- * @description: check ACCESS(Hard check) token from client request.
+ * @description: check RESET(Hard check) token from client request.
  *
- * if token is valid define help object 'helpData' with current 'userId', 'userRole' fields
+ * if token is valid define help object 'helpData' with current 'userId', 'userEmail' fields
  * and pass to next middleware
  *
- * if access token is out of date >> send 'TokenExpiredError'
+ * if reset token is out of date >> send 'TokenExpiredError'
  *
- * if token is missing >> set 'helpData' object 'userId', 'userRole' fields to false
+ * if token is missing >> set 'helpData' object 'userId', 'userEmail' fields to false
  * and pass to next middleware
  */
 module.exports.checkResetToken = () => {
@@ -267,7 +267,7 @@ module.exports.checkResetToken = () => {
                     } else {
                         req.body.helpData = {
                             userId: false,
-                            userRole: false
+                            userEmail: false
                         };
                         return next();
                     }
@@ -276,7 +276,7 @@ module.exports.checkResetToken = () => {
         } else {
             req.body.helpData = {
                 userId: false,
-                userRole: false
+                userEmail: false
             };
             return next();
         }

@@ -171,7 +171,7 @@ router.post('/send-reset-email',
  * @request {"password": "string"}
  */
 router.post('/reset-password',
-    auth.checkToken({ decrypt: false }),
+    auth.checkResetToken(),
     auth.hashPassword(),
     validate.body(User.rules.ResetPassword),
     resetPassword()

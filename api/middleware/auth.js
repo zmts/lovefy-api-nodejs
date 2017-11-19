@@ -112,7 +112,7 @@ function _makeResetToken(userModel){
         }
     };
 
-    return jwtp.sign(resetTokenConfig.payload, SECRET.access, resetTokenConfig.options)
+    return jwtp.sign(resetTokenConfig.payload, SECRET.reset, resetTokenConfig.options)
 }
 
 /**
@@ -246,14 +246,60 @@ module.exports.makeResetToken = () => {
  * if token is missing >> set 'helpData' object 'userId', 'userRole' fields to false
  * and pass to next middleware
  */
-module.exports.checkToken = (options) => {
-    let decryptStatus = options && !options.decrypt ? false : true
-
+module.exports.checkResetToken = () => {
     return (req, res, next) => {
         let token = req.body.token || req.headers['token'];
 
         if (token) {
-            if (decryptStatus) token = _decryptToken(token)
+            jwtp.verify(token, SECRET.reset)
+                .then(decoded => {
+                    req.body.helpData = {
+                        userId: decoded.sub,
+                        userEmail: decoded.email
+                    };
+                    return next();
+                }).catch(error => {
+                    if (error.name === 'TokenExpiredError') {
+                        return res.status(401).json({
+                            success: false,
+                            resetTokenExpiredError: true
+                        });
+                    } else {
+                        req.body.helpData = {
+                            userId: false,
+                            userRole: false
+                        };
+                        return next();
+                    }
+                });
+
+        } else {
+            req.body.helpData = {
+                userId: false,
+                userRole: false
+            };
+            return next();
+        }
+    };
+};
+
+/**
+ * @description: check ACCESS(Hard check) token from client request.
+ *
+ * if token is valid define help object 'helpData' with current 'userId', 'userRole' fields
+ * and pass to next middleware
+ *
+ * if access token is out of date >> send 'TokenExpiredError'
+ *
+ * if token is missing >> set 'helpData' object 'userId', 'userRole' fields to false
+ * and pass to next middleware
+ */
+module.exports.checkToken = () => {
+    return (req, res, next) => {
+        let token = req.body.token || req.headers['token'];
+
+        if (token) {
+            token = _decryptToken(token)
 
             jwtp.verify(token, SECRET.access)
                 .then(decoded => {

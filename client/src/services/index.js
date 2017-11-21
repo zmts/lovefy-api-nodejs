@@ -21,6 +21,9 @@ function getErrorMessage (status) {
     case 404:
         message = 'Not found'
         break
+    case 503:
+        message = 'Service Unavailable'
+        break
     default:
         message = 'Something wrong. Default error message'
         break
@@ -29,28 +32,32 @@ function getErrorMessage (status) {
 }
 
 /**
- * Create instant, which represent current status of response
- * @param {boolean} success status
- * @param {number} status - HTTP status code
- * @param {string|boolean} [message] - Custom message to display
+ * Create instant, which represent response object
  * @param {Object} [data] - custom data
+ * @param {Object} [response] - axios response object
+ * @param {String} [message] - custom message to display
  */
 export class ResponseWrapper {
-    constructor (response, message, data = {}) {
+    constructor (data = {}, response, message) {
+        this.data = data
         this.success = response.data.success
         this.status = response.status
         this.message = message || getErrorMessage(response.status)
-        this.data = data
     }
 }
 
+/**
+ * Create instant, which represent error object
+ * @param {Object} [error] - axios error object
+ * @param {String} [message] - custom message to display
+ */
 export class ErrorWrapper extends Error {
     constructor (error, message) {
         super()
         this.name = 'ErrorWrapper'
-        this.stack = (new Error()).stack
-        this.success = error.response.data.success
-        this.status = error.response.status
-        this.message = message || getErrorMessage(error.response.status)
+        this.stack = new Error().stack
+        this.success = error.response ? error.response.data.success : false
+        this.status = error.response ? error.response.status : 503
+        this.message = message || getErrorMessage(this.status)
     }
 }

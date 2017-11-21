@@ -7,13 +7,13 @@ import CONFIG from '../app.config'
 export default {
     getPosts () {
         return new Promise((resolve, reject) => {
-            new Http().get(`${CONFIG.API_URL}/posts`)
+            new Http().get(`${CONFIG.API_URL}/postss`)
                 .then(response => {
                     let data = {
                         content: response.data.data.results,
                         total: response.data.data.total
                     }
-                    resolve(new ResponseWrapper(response, response.statusText, data))
+                    resolve(new ResponseWrapper(data, response))
                 })
                 .catch(error => {
                     let message = error.response.data ? error.response.data.error : error.response.statusText

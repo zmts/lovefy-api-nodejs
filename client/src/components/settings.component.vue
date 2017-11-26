@@ -9,9 +9,10 @@
     import moment from 'moment'
 
     export default {
+        name: 'Settings',
         data () {
             return {
-                dateTime: `${moment().format('MMM DD YYYY ')} at ${moment().format('hh:mm')}`
+                dateTime: `${moment().format('MM DD YYYY ')} at ${moment().format('hh:mm')}`
             }
         },
 

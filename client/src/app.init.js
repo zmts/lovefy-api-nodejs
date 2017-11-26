@@ -11,8 +11,8 @@ import VueMaterial from 'vue-material'
 import Quill from 'vue-quill'
 
 // app imports
-import AppLayout from './app.layout'
-import router from './app.router'
+import AppLayout from '@/app.layout'
+import router from './router'
 import store from './store'
 import authService from './services/auth.service'
 import userService from './services/user.service'

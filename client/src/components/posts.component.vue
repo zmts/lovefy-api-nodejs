@@ -40,6 +40,7 @@
     import userService from '../services/user.service'
 
     export default {
+        name: 'Posts',
         data () {
             return {
                 moment,

@@ -8,6 +8,7 @@
     import moment from 'moment'
 
     export default {
+        name: 'Albums',
         data () {
             return {
                 dateTime: `${moment().format('MMM DD YYYY ')} at ${moment().format('hh:mm')}`

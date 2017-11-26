@@ -1,4 +1,2 @@
-export default {
-    API_URL: 'http://localhost:4000',
-    API_PORT: '3000'
-}
+export const API_PORT = '4000'
+export const API_URL = `http://localhost:${API_PORT}`

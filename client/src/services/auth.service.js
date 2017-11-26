@@ -1,7 +1,7 @@
 import axios from 'axios'
 import Http from '../services/http.init'
 
-import CONFIG from '../app.config'
+import * as CONFIG from '../app.config'
 
 export default {
     makeLogin ({email, password}) {

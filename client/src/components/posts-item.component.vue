@@ -11,6 +11,7 @@
 <script>
     import postsService from '@/services/posts.service'
     export default {
+        name: 'PostsItem',
         data () {
             return {
                 postItem: {}

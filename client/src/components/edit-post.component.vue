@@ -72,6 +72,7 @@
     import render from 'quill-render'
 
     export default {
+        name: 'EditPost',
         data () {
             return {
                 readmode: true,

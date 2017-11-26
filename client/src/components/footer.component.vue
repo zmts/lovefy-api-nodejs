@@ -8,7 +8,7 @@
 
 <script>
     export default {
-        name: 'FooterComponent',
+        name: 'Footer',
         data () {
             return {
                 currentYear: new Date().getFullYear()

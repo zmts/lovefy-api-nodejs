@@ -16,7 +16,7 @@
 import postsService from '../services/posts.service'
 
 export default {
-    name: 'NewsComponent',
+    name: 'News',
     data () {
         return {
             newsText: 'News Component !!!',

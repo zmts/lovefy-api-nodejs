@@ -2,7 +2,7 @@ import Promise from 'bluebird'
 import Http from './http.init'
 import { ResponseWrapper, ErrorWrapper } from './util'
 
-import CONFIG from '../app.config'
+import * as CONFIG from '../app.config'
 
 export default {
     getPosts () {

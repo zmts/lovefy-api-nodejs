@@ -1,6 +1,6 @@
 import Http from './http.init'
 
-import CONFIG from '../app.config'
+import * as CONFIG from '../app.config'
 
 export default {
     getCurrentUser () {

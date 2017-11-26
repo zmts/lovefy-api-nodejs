@@ -3,7 +3,7 @@
  * @param {number} status - HTTP status code
  * @returns {string} Message of network operation
  */
-function getErrorMessage (status) {
+function _getResponseMessage (status) {
     let message = ''
     switch (status) {
     case 200:
@@ -38,11 +38,11 @@ function getErrorMessage (status) {
  * @param {String} [message] - custom message to display
  */
 export class ResponseWrapper {
-    constructor (data = {}, response, message) {
+    constructor (response, data = {}, message) {
         this.data = data
         this.success = response.data.success
         this.status = response.status
-        this.message = message || getErrorMessage(response.status)
+        this.message = message || _getResponseMessage(response.status)
     }
 }
 
@@ -58,6 +58,6 @@ export class ErrorWrapper extends Error {
         this.stack = new Error().stack
         this.success = error.response ? error.response.data.success : false
         this.status = error.response ? error.response.status : 503
-        this.message = message || getErrorMessage(this.status)
+        this.message = message || _getResponseMessage(this.status)
     }
 }

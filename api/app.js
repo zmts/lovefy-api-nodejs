@@ -51,28 +51,26 @@ if (app.get('env') === 'development') {
         res.status( error.status || (error.isJoi ? 400 : 500) ).json({
             success: false,
             description: error.message || error,
-            env: 'development/regular',
-            handled_in: 'app.js'
+            env: 'development/regular'
         });
     });
 }
 
-// production uncaughtException error handler // todo >> send email if error
+// production error handler
+app.use(function (error, req, res, next) {
+    res.status(error.status || 500).json({
+        success: false,
+        description: error.message || error,
+        env: 'production/regular'
+    });
+});
+
+// uncaughtException error handler
 process.on('uncaughtException', function(error) {
     global.console.error((new Date).toUTCString() + ' uncaughtException:', error.message);
     global.console.log('error.stack >>');
     global.console.error(error.stack);
     process.exit(1);
-});
-
-// production error handler // todo >> send email if error
-app.use(function (error, req, res, next) {
-    res.status(error.status || 500).json({
-        success: false,
-        description: error.message || error,
-        env: 'production/regular',
-        handled_in: 'app.js'
-    });
 });
 
 module.exports = app;
